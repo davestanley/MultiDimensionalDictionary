@@ -9,7 +9,7 @@ format compact
 
 % Check if in right folder
 [parentfolder,currfolder] = fileparts(pwd);
-if ~strcmp(currfolder,'demos'); error('Should be in demos folder to run this code.'); end
+if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
 % Set path to your copy of the DynaSim toolbox
 dynasim_path = fullfile(parentfolder);
@@ -18,7 +18,7 @@ dynasim_path = fullfile(parentfolder);
 addpath(genpath(dynasim_path)); % comment this out if already in path
 
 % Set where to save outputs
-output_directory = fullfile(pwd, 'outputs');
+output_directory = fullfile(parentfolder, 'outputs');
 study_dir = fullfile(output_directory,'demo_sPING_3b');
 
 % move to root directory where outputs will be saved
