@@ -6,28 +6,51 @@
 classdef nDDict
 
     properties
+        
+        
+        meta = struct;     % Metadata about stuff that's stored in data
+    end
+    
+    properties (Access = private)
         data               % Storing the actual data (multi-dimensional matrix or cell array)
         axis = nDDictAxis  % 1xNdims - array of nDDictAxis classes for each axis. Ndims = ndims(data)
-        meta = struct;     % Metadata about stuff that's stored in data
+    end
+    
+    
+    properties (Dependent)
+        datDep
+        axDep
     end
     
     
     methods
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+        % % % % % % % % % % % Getter and Setters % % % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %        
+        function obj = set.datDep(obj,value)
+            obj.data = value;
+            obj.checkDims;
+        end
+        function value = get.datDep(obj)
+            value = obj.data;
+        end
+        
+        function obj = set.axDep(obj,value)
+            obj.axis = value;
+            obj.checkDims;
+        end
+        
+        function value = get.axDep(obj)
+            value = obj.axis;
+        end
+        
+        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % CLASS SETUP % % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function obj = nDDict(data,axis,meta)
-            if exist('data','var')
-                obj.data = data;
-            end
+        function obj = nDDict
             
-            if exist('axis','var')
-                obj.axis = axis;
-            end
-            
-            if exist('meta','var')
-                obj.meta = meta;
-            end
+            obj.axis = repmat(nDDictAxis,1,ndims(obj.data));     % For a 2D matrix
+            obj = obj.fixAxes;
             
         end
         
@@ -465,7 +488,7 @@ classdef nDDict
             % be alerted to mismatches, but not to correct them. Use fixAxes to
             % automatically correct everything.
             
-            if isempty(obj); error('Object is empty. Input some data first!'); return; end
+            %if isempty(obj); error('Object is empty. Input some data first!'); return; end
             
             % Make sure obj.data, obj.axis.name, and obj.axis.values have the right data types
             if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data must be either numeric or cell array'); end
