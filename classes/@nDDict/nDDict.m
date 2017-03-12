@@ -40,8 +40,8 @@ classdef nDDict
             obj.checkDims;
         end
         
-        function value = get.axis(obj)
-            value = obj.axis_pr;
+        function varargout = get.axis(obj)
+            [varargout{1:nargout}] = obj.axis_pr;
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -158,10 +158,12 @@ classdef nDDict
                 ax_names = cellfun(@(s) ['Dim ' s],ax_names,'UniformOutput',0);
             end
             
-            if length(ax_names) < Nd
-                error('Mismatch between number of axis names supplied and number of dimensions in dataset.'); end
+            if ~iscellstr(ax_names); error('ax_names must be a cell array of chars'); end
+            
+            if length(ax_names) > Na
+                error('Mismatch between number of axis names supplied and number of axes in object.'); end
 
-            for i = 1:Nd
+            for i = 1:length(ax_names)
                 obj.axis_pr(i).name = ax_names{i};
             end
         end
@@ -170,7 +172,45 @@ classdef nDDict
             obj.meta = meta_struct;
         end
         
-        xp = importLinearData(xp,X,varargin)            % Function for importing data in a linear format
+        obj = importLinearData(obj,X,varargin)            % Function for importing data in a linear format
+        
+        function obj = importData(obj,data,axis_vals,axis_names)
+            
+            obj.data_pr = data;
+            obj = obj.fixAxes;
+            
+            if nargin > 2
+                if ~isempty(axis_vals)
+                    if ~iscell(axis_vals); error('axis_vals must be a cell array.'); end
+                    for i = 1:length(axis_vals);
+                        obj.axis_pr(i).values = axis_vals{i};
+                    end
+                    obj.checkDims;
+                end
+            end
+            
+            if nargin > 3
+                if ~isempty(axis_names)
+                    obj = obj.importAxisNames(axis_names);
+                end
+            end
+            
+        end
+        
+        function out = exportAxisVals(obj)
+            Na = length(obj.axis);
+            out = cell(1,Na);
+            for i = 1:Na
+                out{i} = obj.axis(i).values;
+            end
+        end
+        function out = exportAxisNames(obj)
+            Na = length(obj.axis);
+            out = cell(1,Na);
+            for i = 1:Na
+                out{i} = obj.axis(i).name;
+            end
+        end
         
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -618,17 +658,14 @@ classdef nDDict
             Na = length(obj.axis_pr);
 
             if Nd > Na
-                error('checkDims: Error found! Number of dimensions in nDDict.data_pr does not equal number of axes');
+                error('checkDims: Error found! Number of dimensions in nDDict.data_pr does not equal number of axes. Try using method importData or importLinearData if you want to alter objects dimensions.');
             end
 
             % For all dimensions in obj.data_pr
             for i = 1:Nd
                 if sza(i) ~= szd(i)
-                    fprintf(['checkDims: Error found! obj.data_pr dimension ',num2str(i), ...
-                        ' is ', num2str(szd(i)) , ...
-                        '. But corresponding axis \"', obj.axis_pr(i).name , ...
-                        '\" has ', num2str(sza(i)) , ' values. Dimension mismatch. \nTry running nDDict.getaxisinfo and then nDDict.fixAxes. \n' ]);
-                    error(' ');
+                    obj.getaxisinfo
+                    error('Mismatch between obj.data and obj.axis dimensionality. Use importData to make modifications like this.');
                 end
             end
             
@@ -637,7 +674,7 @@ classdef nDDict
             if any(ind(Nd+1:Na))
                 ind2 = find(ind);
                 ind2 = ind2(ind2 > Nd);
-                fprintf(['checkDims: Error found! ndims(obj.data_pr)=' num2str(Nd) ' but axis obj.axis_pr(' num2str(ind2) ').values has ' num2str(sza(ind2)) ' entries.\n']);
+                fprintf(['checkDims: Error found! ndims(obj.data_pr)=' num2str(Nd) ' but axis obj.axis_pr(' num2str(ind2) ').values has ' num2str(sza(ind2)) ' entries. Try using method importData or importLinearData if you want to alter objects dimensions.\n']);
                 error(' ');
             end
             

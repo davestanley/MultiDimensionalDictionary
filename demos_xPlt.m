@@ -117,6 +117,10 @@ disp(xp.axis(1).name)
 % Axis.astruct is for internal use and is currently empty.
 xp.axis(1).astruct
 
+% All of this information can be obtained in summary form by running
+% getaxisinfo
+xp.getaxisinfo
+
 % xp.meta stores meta data for use by the user as they see fit.
 % Here we will add some custom info to xp.metadata. This can be whatever
 % you want. Here, I will use this to provide information about what is
@@ -135,44 +139,59 @@ clear meta
 %% % % % % % % % % % % % % % % xPlt BASICS % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% Validate & get some properties of the data
-clc
-xp.checkDims;       % Makes sure all the dimensions match up (e.g. xp.axis 
-                    % must have the same length as number of dimensions in
-                    % xp.data, and the size of each dimension must match
-                    % the number of labels
-                    
-xp.fixAxes;         % This attempts to automatically fix any dimension
-                    % mismatches between xp.data and the axis labels. This
-                    % particular command does nothing because there are no
-                    % errors in xp
+%% Importing data
 
-% % Can comment this out for now, thanks to new getter/setter methods
-% % Make a "bad" xPlt class, containing errors. 
-% disp(size(xp.data));                % The 4th dimension of xp.data is of size 8
-% disp(xp.axis(4).values);            % It's corresponding axis should have 8 labels
-% xp_bad = xp; 
-% xp_bad.axis(4).values={'test'};     % Reduce this to 1 (mismatch)
+% xPlt objects are just matrices or cell arrays with extra functionality to
+% keep track of what each dimension is storing. 
 
-% Check errors in new class (this produces an error, so disabling it)
-% xp_bad.checkDims;
+% Above, we imported data linearized data into an xPlt object. But
+% it is also possible to import a high dimensional matrix directly.
 
-% Auto fix errors in labels
-xp_fixed = xp_bad.fixAxes; 
+% For example let's say we have a random cell array.
+data = xp.data;
 
-% View new labels
-xp_fixed.axis(4).values         % The original cell array had been replaced by 
-                                % one of appropriate length
-                                
-% View summary of the classes. Tells the dimensionality of xp.data and also
-% the number of labels in each axis.
-xp.getaxisinfo
-xp_fixed.getaxisinfo
+% We can import the data as follows.
+xp2 = xPlt;
+xp2 = xp2.importData(data);
+
+% We didn't supply any axis names/values, so default values were assgined
+xp2.getaxisinfo;
+
+% We can instead import axis values along with the data
+ax_vals = xp.exportAxisVals;
+clear xp2
+xp2 = xPlt;
+xp2 = xp2.importData(data,ax_vals);
+xp2.getaxisinfo
+
+
+% Axis names can be assigned in this way as well
+ax_names = xp.exportAxisNames;
+xp2 = xp2.importData(data,ax_vals,ax_names);
+xp2.getaxisinfo
+
+% While it is encouraged to use importData, xPlt.data can also be written
+% to directly. For example, we can take the average across all cells by
+% doing the following.
+xp2 = xp;
+for i = 1:numel(xp2.data)
+    xp2.data{i} = mean(xp2.data{i},2);
+end
+disp(xp2.data);         % (Note the size is 10001x1 instead of by 10001x20 or 10001x80)
+
+% However, you cannot make modifications that would destroy the 1:1 matchup
+% between data and axis (commenting out error producing commands below).
+xp2 = xp;
+xp2.data{5} = randn(100);       % Ok
+% xp2.axis = xp2.axis(1:2);       % Not ok
+% mydata = reshape(xp2.data,[3,3,16]);
+% xp2.data = mydata;              % Not ok.
+
 
 %% xPlt Indexing
 
-% Indexing works just like with normal data. This creates a new xPlt object
-% based on the original data, with the correct axis labels
+% Indexing works just like with normal matrices and cell arrays and axis
+% labels are updated appropriately.
 clc
 xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp.subset([],[],1,8), which was the old way
                                     % of pulling data subsets. Note that [] and : are equivalent.
@@ -199,6 +218,8 @@ mydata2 = xp.data(:,:,1,8);
 disp(isequal(mydata,mydata2));
 
 clear mydata mydata2 xp4 xp5
+
+
 
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
