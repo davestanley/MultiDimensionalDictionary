@@ -164,28 +164,10 @@ xp2 = xPlt;
 xp2 = xp2.importData(data,ax_vals);
 xp2.getaxisinfo
 
-
 % Axis names can be assigned in this way as well
 ax_names = xp.exportAxisNames;
 xp2 = xp2.importData(data,ax_vals,ax_names);
 xp2.getaxisinfo
-
-% While it is encouraged to use importData, xPlt.data can also be written
-% to directly. For example, we can take the average across all cells by
-% doing the following.
-xp2 = xp;
-for i = 1:numel(xp2.data)
-    xp2.data{i} = mean(xp2.data{i},2);
-end
-disp(xp2.data);         % (Note the size is 10001x1 instead of by 10001x20 or 10001x80)
-
-% However, you cannot make modifications that would destroy the 1:1 matchup
-% between data and axis (commenting out error producing commands below).
-xp2 = xp;
-xp2.data{5} = randn(100);       % Ok
-% xp2.axis = xp2.axis(1:2);       % Not ok
-% mydata = reshape(xp2.data,[3,3,16]);
-% xp2.data = mydata;              % Not ok.
 
 
 %% xPlt Indexing
@@ -347,6 +329,26 @@ figl; recursivePlot(xp_img,{@xp_subplot_grid,@xp_plotimage},dimensions,func_argu
 
 %% % % % % % % % % % % % % % % ADVANCED xPlt / nDDict USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+%% Modifying xPlt.data directly
+
+% While it is encouraged to use importData, xPlt.data can also be written
+% to directly. For example, we can take the average across all cells by
+% doing the following.
+xp2 = xp;
+for i = 1:numel(xp2.data)
+    xp2.data{i} = mean(xp2.data{i},2);
+end
+disp(xp2.data);         % (Note the size is 10001x1 instead of by 10001x20 or 10001x80)
+
+% However, you cannot make modifications that would destroy the 1:1 matchup
+% between data and axis (commenting out error producing commands below).
+xp2 = xp;
+xp2.data{5} = randn(100);       % Ok
+% xp2.axis = xp2.axis(1:2);       % Not ok
+% mydata = reshape(xp2.data,[3,3,16]);
+% xp2.data = mydata;              % Not ok.
+
 
 
 %% Method packDims
