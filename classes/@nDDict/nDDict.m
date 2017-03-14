@@ -425,7 +425,7 @@ classdef nDDict
         function obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values)
             
             % Temporarily linearize obj.data_pr.
-            sz0 = size(obj.data_pr);
+            sz0 = size(obj);
             dim0 = length(sz0);
             obj.data_pr = reshape(obj.data_pr,prod(sz0),1);
             
@@ -534,7 +534,9 @@ classdef nDDict
             obj_new.axis_pr = axis_new;
             
             % Putting unpacked dimension in dim_target, if given.
-            if nargin >= 3 && ~isempty(dim_target)
+            if nargin < 3, dim_target = []; end
+            if isempty(dim_target), dim_target = 1; end
+            if dim_target ~= 1
                 new_dim_order = [2:dim_target 1 (dim_target + 1):(dim0 + 1)];
                 obj_new = permute(obj_new, new_dim_order);
             end
