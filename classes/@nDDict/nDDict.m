@@ -60,6 +60,16 @@ classdef nDDict
             obj.meta = struct;
         end
         
+        % TO DO: Fix this.
+        function obj_xp = xPlt(obj)
+            % Converter nDDict -> xPlt.
+            obj_xp = xPlt;
+            obj_xp = importData(obj_xp, obj.data);
+            obj_xp.axis = obj.axis;
+            obj_xp.meta = obj.meta;
+            
+        end
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % INDEXING/SEARCHING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -439,7 +449,8 @@ classdef nDDict
             
             % Initialize new nDDict object which will have dim_src
             % unpacked.
-            obj_new = nDDict;
+            obj_new = obj; % eval(['obj_new = ', class(obj), ';'])
+            obj_new = obj_new.reset;
             
             % % Creating obj_new.data_pr. % % % % % % % % % % % % % % % % % % 
             % Loop over linearized indices of old obj.data_pr cell array.

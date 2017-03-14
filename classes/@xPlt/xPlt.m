@@ -6,4 +6,13 @@ classdef xPlt < nDDict
     % dictionaries). xPlt adds some plotting functionality (see
     % xPlt.RecursivePlot)
     
+%     methods
+%     
+%         function obj = nDDict(obj)
+%             % Converter xPlt/nDDict
+%             obj = obj;
+%         end
+%             
+%     end
+    
 end
