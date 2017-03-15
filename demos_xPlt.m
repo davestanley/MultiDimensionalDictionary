@@ -13,13 +13,13 @@ restoredefaultpath
 if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
 % Set path to your copy of the DynaSim toolbox
-dynasim_path = fullfile(parentfolder,'..');
+dynasim_path = fullfile(parentfolder,'../..');
 
 % add DynaSim toolbox to Matlab path
 addpath(genpath(dynasim_path)); % comment this out if already in path
 
 % Set where to save outputs
-output_directory = fullfile(parentfolder, '..','outputs');
+output_directory = fullfile(parentfolder,'outputs');
 study_dir = fullfile(output_directory,'demo_sPING_3b');
 
 % move to root directory where outputs will be saved
@@ -245,7 +245,7 @@ xp4 = xp(:,1:2,:,'v');
 xp4.getaxisinfo
 
 % This will plot E cells and I cells (axis 3) each in separate figures and
-% the parameter sweeps (axes 1 and 2) in as subplots.
+% the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
@@ -259,17 +259,12 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimen
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
-
-
-
-
 %% Plot 4D data
 
 % Pull out sodium channel state variables for E and I cells.
 clc
 xp4 = xp(1:2,1:2,:,6:7);
 xp4.getaxisinfo
-
 
 dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note - we can also use a mixture of strings and index locations to specify dimensions
 
@@ -281,6 +276,12 @@ function_arguments = {{},{},{1},{}};
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
 
+%% Plot multiple dimensions adaptively.
+
+% Another option is to use @xp_subplot_grid_adaptive, which will plot the data using axes in
+% descending order of the size of axis(n).values.
+
+recursivePlot(xp,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
 %% Plot two xPlt objects combined
 clc
@@ -294,8 +295,6 @@ xp5 = merge(xp3,xp4);
 
 dimensions = {[1,2],0};
 figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
-
-
 
 %% Plot saved figures rather than raw data
 
@@ -350,9 +349,7 @@ xp2.data{5} = randn(100);       % Ok
 % mydata = reshape(xp2.data,[3,3,16]);
 % xp2.data = mydata;              % Not ok.
 
-
-
-%% Method packDims
+%% Method packDim
 % Analogous to cell2mat.
 clear xp2 xp3 xp4 xp5
 
@@ -369,7 +366,6 @@ disp(xp2.data);         % (E cells don't receive AMPA synapses, and I cells don'
 src = 2;                    % Take 2nd dimension in xp2
 dest = 3;                   % Pack into 3rd dimension in xp2.data matrix
 xp3 = xp2.packDim(src,dest);
-
 
 % Check dimensionality of xp3.data
 disp(xp3.data)             % The dimension "variables", which was dimension 2
@@ -389,17 +385,18 @@ ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-
 subplot(212); imagesc(temp2);
 ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-%% Method unPackDims (undoing packDims)
-% However, the information in the missing axis is stored in the nDDictAxis matrix_dim_3, a field of xp3.meta.
+%% Method unpackDim (undoing packDims)
+% When packDim is applied to an xPlt object, say to pack dimension 3, the
+% information from the packed axis is stored in the nDDictAxis
+% matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.getaxisinfo
 
-% And if dimension 3 of each cell in xp3.data is unpacked using unpackDim,
+% If dimension 3 of each cell in xp3.data is unpacked using unpackDim,
 % xp3.meta.matrix_dim_3 will be used to provide axis info for the new
 % xPlt object.
 xp4 = xp3.unpackDim(dest, src);
@@ -411,8 +408,6 @@ xp4.getaxisinfo;
 
 xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', {'One','Two','Three','Four','Five','Six'});
 xp4.getaxisinfo;
-
-
 
 %% Use packDim to average across cells
 
@@ -438,7 +433,6 @@ xp3 = xp2.packDim(src,dest);
 
 % Plot 
 figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
-
 
 %% Use packDim to average over synaptic currents
 % Analogous to cell2mat
@@ -487,10 +481,6 @@ disp(xp3.axis(2).values);
 [~,I] = sort(xp3.axis(2).values);
 xp4 = xp3(:,I);
 disp(xp4.axis(2).values);
-
-
-
-
 
 %% To implement
 % 

@@ -66,13 +66,9 @@ function hsg = xp_subplot_grid3D (xp, display_mode, transpose_on)
             colstr = setup_axis_labels(xp.axis(3));
             hsg(i).coltitles(colstr);
             
-            
         end
         
     end
-    
-    
-    
     
 end
 
