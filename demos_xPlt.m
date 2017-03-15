@@ -1,4 +1,4 @@
-%% % % % % % % % % % % % % % % SETTING UP xPlt OBJECT % % % % % % % % % %
+%% % % % % % % % % % % % % % % xPlt DEMO - Requires DynaSim % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Set up paths 
