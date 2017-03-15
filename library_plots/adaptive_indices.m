@@ -16,7 +16,7 @@ function [dim_indices, subplot_indices, figure_indices, no_rows, no_cols, figs_t
         
         no_figures = figs_through_dim1*prod(sz(2:end));
     
-    elseif (sz(1) <= max_subplot_side^2 && sz(1) > max_subplot_side) || sz(2) > max_subplot_side
+    elseif (sz(1) <= max_subplot_side^2 && sz(1) > max_subplot_side) || sz(2) > max_subplot_side || sz(2) == 1
         
         [no_rows, no_cols] = subplot_size(sz(1));
         
