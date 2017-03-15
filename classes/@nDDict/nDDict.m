@@ -6,8 +6,6 @@
 classdef nDDict
 
     properties
-        
-        
         meta = struct;     % Metadata about stuff that's stored in data
     end
     
@@ -15,7 +13,6 @@ classdef nDDict
         data_pr               % Storing the actual data (multi-dimensional matrix or cell array)
         axis_pr = nDDictAxis  % 1xNdims - array of nDDictAxis classes for each axis. Ndims = ndims(data)
     end
-    
     
     properties (Dependent)
         data
@@ -310,7 +307,20 @@ classdef nDDict
         
         function obj = packDim(obj,dim_src,dim_target)
             
-            if nargin < 3; dim_target = dim_src; end
+            if isstr(dim_src)
+                dim_src = obj.axis.findAxes(dim_src);
+            end
+            
+            if ~isscalar(dim_src)
+                error('Dimension to pack must be a scalar.')
+            end
+            
+            if nargin < 3
+                % Should pack dimension as last dimension of obj.data.
+                sizes = cellfun(@(x) length(size(x)), obj.data);
+                dim_target = max(sizes(:)) + 1; 
+            end
+            
             checkDims(obj);
             
             % Make sure that obj.data_pr is a cell array

@@ -203,7 +203,6 @@ disp(isequal(mydata,mydata2));
 clear mydata mydata2 xp4 xp5
 
 
-
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -279,9 +278,10 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matr
 %% Plot multiple dimensions adaptively.
 
 % Another option is to use @xp_subplot_grid_adaptive, which will plot the data using axes in
-% descending order of the size of axis(n).values.
+% descending order of the size of the axis values, and plot remaining
+% combinations of axis values across figures.
 
-recursivePlot(xp,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
+recursivePlot(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
 %% Plot two xPlt objects combined
 clc
@@ -374,6 +374,13 @@ disp(xp3.data)             % The dimension "variables", which was dimension 2
 
 % View axis of xp3
 xp3.getaxisinfo;            % The dimension "variables" is now missing
+
+% Alternatively, you can use a regular expression to select the dimension
+% you want to pack; if the destination dimension is left empty, the first
+% dimension which is not occupied in any of the matrix entries of xp.data
+% will be used.
+xp3 = xp2.packDim('var');
+xp3.getaxisinfo;
 
 % Note some of this data is sparse! We can see this sparseness by plotting
 % as follows (note the NaNs)

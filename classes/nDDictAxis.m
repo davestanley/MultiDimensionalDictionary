@@ -26,8 +26,10 @@ classdef nDDictAxis
             else
                 temp = [obj.name, ' -> '];
             end
+            
             Nvals = length(obj.values);
             Nvals = min(Nvals,max_values_to_display);          % Limit to displaying 10 values
+            
             for i = 1:Nvals-1
                 temp = [temp,obj.getvaluestring(i),', '];
             end
@@ -45,10 +47,15 @@ classdef nDDictAxis
             end
         end
         
+        function out = findAxes(obj, axis_string_ref)
+            % Finds numbers of axis matching a given regular expression.
+            allnames = {obj.name};
+            out = regex_lookup(allnames, axis_string_ref);
+        end
+        
         function out = getvaluenoncell(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
-            % numeric, regardless of whether it is actually cell array
-            
+            % numeric, regardless of whether it is actually cell array.
             if length(i) > 1; error('i must be singleton'); end
             if iscell(obj.values)
                 out = obj.values{i};
@@ -75,8 +82,6 @@ classdef nDDictAxis
             for i = 1:length(obj.values)
                 out{i} = num2str(obj.getvaluenoncell(i));
             end
-            
-            
         end
         
         function out = getclass_values(obj)
@@ -86,7 +91,6 @@ classdef nDDictAxis
         function out = getclass_name(obj)
             out = obj.calcClasses(obj.name,'name');
         end
-        
         
         function out = calcClasses(obj,input,field)
             switch field
@@ -123,6 +127,7 @@ classdef nDDictAxis
             S = varargin{2};
             
             switch S(1).type
+                
                 case '()'
 %                     % Default
 %                     [varargout{1:nargout}] = builtin('subsref',varargin{:});                        
@@ -137,8 +142,6 @@ classdef nDDictAxis
                         [varargout{1:nargout}] = builtin('subsref',varargin{:});                        
                     end
                     
-                    
-                    
                 case '{}'
                     % Default
                     [varargout{1:nargout}] = builtin('subsref',varargin{:});
@@ -148,11 +151,9 @@ classdef nDDictAxis
                 otherwise
                     error('Unknown indexing method. Should never reach this');
             end
-            
              
         end
 
-        
     end
 end
 
