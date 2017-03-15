@@ -159,6 +159,7 @@ classdef nDDict
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
         function obj = importAxisNames(obj,ax_names)
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
@@ -734,7 +735,6 @@ classdef nDDict
             obj.axis_pr = obj.axis_pr(order);
         end
         
-        
         function obj = transpose(obj)
             checkDims(obj);
             Nd = ndims(obj.data_pr);
@@ -784,6 +784,10 @@ classdef nDDict
             checkDims(obj);
         end
         
+        function obj = abs(obj)
+            checkDims(obj);
+            obj.data = abs(obj.data_pr);
+        end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
