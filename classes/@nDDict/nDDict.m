@@ -735,6 +735,13 @@ classdef nDDict
             obj.axis_pr = obj.axis_pr(order);
         end
         
+        function obj = ipermute(obj,order)
+            checkDims(obj);
+            inverseorder(order) = 1:numel(order);
+            obj.data_pr = permute(obj.data_pr,inverseorder);
+            obj.axis_pr = obj.axis_pr(inverseorder);
+        end
+        
         function obj = transpose(obj)
             checkDims(obj);
             Nd = ndims(obj.data_pr);
