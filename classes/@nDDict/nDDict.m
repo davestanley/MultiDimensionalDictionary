@@ -308,11 +308,15 @@ classdef nDDict
         function obj = packDim(obj,dim_src,dim_target)
             
             if isstr(dim_src)
-                dim_src = obj.axis.findAxes(dim_src);
+                dim_src_string = dim_src;
+                dim_src = obj.axis.findAxes(dim_src_string);
+                if ~isscalar(dim_src) || isempty(dim_src)
+                    error('Multiple or zero dimensions matching %s.', dim_src_string)
+                end
             end
             
-            if ~isscalar(dim_src)
-                error('Dimension to pack must be a scalar.')
+            if ~isscalar(dim_src) || isempty(dim_src) || dim_src == 0
+                error('Dimension to pack must be a nonempty, nonzero scalar.')
             end
             
             if nargin < 3
