@@ -35,6 +35,14 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
     sz = size(xp);
     
     if isempty(dim_order), [~, dim_order] = sort(sz, 2, 'descend'); end
+    
+    if iscellstr(dim_order)
+        dim_order_cell = dim_order;
+        dim_order = nan(size(dim_order_cell));
+        for d = 1:length(dim_order)
+            dim_order(d) = xp.axis.findAxes(dim_order_cell{d});
+        end
+    end
         
     xp = permute(xp, dim_order);
     

@@ -1,5 +1,5 @@
 function [dim_indices, subplot_indices, figure_indices, no_rows, no_cols, figs_through] = adaptive_indices(sz, max_subplot_side)
-    
+
     [dim_indices{1:length(sz)}] = ind2sub(sz, (1:prod(sz))');
     
     dim_indices = mat2cell(cell2mat(dim_indices), ones(prod(sz), 1), ones(length(sz), 1));
@@ -14,7 +14,7 @@ function [dim_indices, subplot_indices, figure_indices, no_rows, no_cols, figs_t
         
         max_subplots = mod(sz(1), max_subplot_side^2);
         
-        no_figures = figs_through_dim1*prod(sz(2:end));
+        no_figures = pre_figs_through(1)*prod(sz(2:end));
     
     elseif (sz(1) <= max_subplot_side^2 && sz(1) > max_subplot_side) || sz(2) > max_subplot_side || sz(2) == 1
         
@@ -49,5 +49,17 @@ function [dim_indices, subplot_indices, figure_indices, no_rows, no_cols, figs_t
     subplot_indices(extra_subplots) = [];
     
     figure_indices(extra_subplots) = [];
+    
+    if figs_through(2) == 1
+       
+        for dim = 1:2
+            
+            temp_dim_indices{dim} = cell2mat(dim_indices(:, dim));
+            
+        end
+        
+        subplot_indices = sub2ind([no_cols no_rows], temp_dim_indices{2}, temp_dim_indices{1});
+        
+    end
     
 end

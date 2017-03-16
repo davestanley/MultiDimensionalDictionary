@@ -807,7 +807,7 @@ classdef nDDict
         
         function obj = abs(obj)
             checkDims(obj);
-            obj.data = abs(obj.data_pr);
+            obj.data = cellfun(@(x) abs(x), obj.data_pr, 'UniformOutput', 0);
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
