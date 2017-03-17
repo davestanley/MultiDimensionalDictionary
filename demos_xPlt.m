@@ -437,7 +437,6 @@ src=3;
 dest=2;
 xp3 = xp2.packDim(src,dest);
 
-
 % Plot 
 figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 

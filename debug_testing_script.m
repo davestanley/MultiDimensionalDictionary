@@ -163,8 +163,6 @@ xp4.getaxisinfo
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_matrix_basicplot},{[3,1,2]},{{},{}});
 recursivePlot(xp4,{@xp_subplot,@xp_matrix_basicplot},{[1,2]},{{0,0},{}});
 
-
-
 %% Plot for 3D data (larger one)
 
 xp4 = xp(1:2,1:2,1,:);
@@ -175,9 +173,6 @@ xp4.getaxisinfo
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{},{0,1},{}});
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_matrix_basicplot},{[3,1,2]},{{},{}});
 recursivePlot(xp4,{@xp_subplot_grid3D,@xp_matrix_basicplot},{[3,1,2],0},{{},{}});
-
-
-
 
 %% Test subset selection using regular expressions
 xp5 = xp.subset([],[],[1],'iNa*');
@@ -219,19 +214,15 @@ xp = xp.importAxisNames(ax_names);
 %% Run recursive plot of images
 recursivePlot(xp,{@xp_subplot_grid3D,@xp_plotimage},{[1,2]},{{},{.25}});
 
-
-
 %% Run PlotData2
 % ...Assumes we have some DynaSim data already loaded...
 cd outputs
 data=ImportData('demo_sPING_3b');
 cd ..
 
-
 PlotData2(data);
 PlotData2(data,'population','E','variable','iNa','varied',{'E_Iapp',1:2});
 PlotData2(data,'population','E','variable','iNa','varied',{{'E_Iapp',1:2},{'I_E_tauD',3}});
-
 
 %% To implement
 % 
