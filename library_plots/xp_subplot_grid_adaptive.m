@@ -55,7 +55,11 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
     open_figures = findall(0, 'Type', 'figure');
     
     if ~isempty(open_figures)
-        last_figure = max([open_figures(:).Number]);
+        if isstruct(open_figures)
+            last_figure = max([open_figures(:).Number]);
+        elseif isnumeric(open_figures)
+            last_figure = max(open_figures);
+        end
     else
         last_figure = 0;
     end
