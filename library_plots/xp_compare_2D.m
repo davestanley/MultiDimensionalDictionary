@@ -59,9 +59,9 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     for t = 1:no_tests
         
-        [~, p_values(t, 1)] = eval(test_handle, xp.data_pr{1}(t, :)', xp.data_pr{2}(t, :)', 'tail', 'left');
+        [~, p_values(t, 1)] = feval(test_handle, xp.data_pr{1}(t, :)', xp.data_pr{2}(t, :)', 'tail', 'left');
         
-        [~, p_values(t, 2)] = eval(test_handle, xp.data_pr{1}(t, :)', xp.data_pr{2}(t, :)', 'tail', 'right');
+        [~, p_values(t, 2)] = feval(test_handle, xp.data_pr{1}(t, :)', xp.data_pr{2}(t, :)', 'tail', 'right');
        
     end
 
@@ -83,11 +83,13 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     %% Plot w/ stars for signifcance.
     
-    if length(axis_values{1}) < plot_length, axis_values((end + 1):plot_length) = nan; end
+    if length(axis_values{1}) < plot_length, axis_values{1}((end + 1):plot_length) = nan; end
     
     boundedline(axis_values{1}, sample_mean, prep_for_boundedline(norminv(significance)*sample_se))
     
-    add_stars(axis_values{1}(1:no_tests), test, [1 0], [1 0 0; 1 .5 0])
+    axis tight, box off
+    
+    add_stars(gca, axis_values{1}(1:no_tests), test, [1 0], [1 0 0; 1 .5 0])
     
     %% Make legend.
     
@@ -97,11 +99,11 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
         
         if isnumeric(xp.axis(xp_dim_compared).values)
             
-            legend{sample} = sprintf('%s = %g', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values(sample));
+            mylegend{sample} = sprintf('%s = %g', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values(sample));
             
         elseif iscellstr(xp.axis(xp_dim_compared).values)
             
-            legend{sample} = sprintf('%s = %s', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values{sample});
+            mylegend{sample} = sprintf('%s = %s', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values{sample});
             
         end
         

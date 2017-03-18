@@ -50,7 +50,7 @@ function [dim_indices, subplot_indices, figure_indices, no_rows, no_cols, figs_t
     
     figure_indices(extra_subplots) = [];
     
-    if figs_through(2) == 1
+    if figs_through(2) == 1 && sz(2) > 1
        
         for dim = 1:2
             

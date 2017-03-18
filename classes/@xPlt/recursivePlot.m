@@ -109,11 +109,16 @@ function varargout = recursivePlot(xp,function_handles,dimensions,function_argum
         xp2 = xp2.importData(mydata,myvalues,ax_names);
         xp2 = xp2.fixAxes;
         
+        xp2 = xp2.importMeta(xp.meta);
+        
         [varargout{1:nargout}] = function_handles{1}(xp2,function_arguments{1}{:});
         
     else
+        
         [varargout{1:nargout}] = function_handles{1}(xp,function_arguments{1}{:});
+    
     end
+    
 end
           
 
@@ -127,9 +132,16 @@ function dimensions = dimensions_regex_2_index(xp,dimensions)
                 dim_curr{j} = findaxis_mod(xp,dim_curr{j});
             end
             
-            if any(cellfun(@length,dim_curr) > 1); error('Ambiguous dimension supplied'); end
+            if any(cellfun(@length,dim_curr) > 1)
+                warning('Ambiguous dimension supplied')
+            end
             
-            dim_curr = cell2mat(dim_curr);
+            try
+                dim_curr = cell2mat(dim_curr);
+            catch err
+                error('Ambiguous dimension supplied, unable to create matrix of dimensions for recursivePlot.')
+                display(err)
+            end
         elseif ischar(dim_curr)
             dim_curr = findaxis_mod(xp,dim_curr);
         end

@@ -39,8 +39,11 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
     if iscellstr(dim_order)
         dim_order_cell = dim_order;
         dim_order = nan(size(dim_order_cell));
+        dim_order_index = 0;
         for d = 1:length(dim_order)
-            dim_order(d) = xp.axis.findAxes(dim_order_cell{d});
+            dims_referenced = xp.axis.findAxes(dim_order_cell{d});
+            dim_order(dim_order_index + (1:length(dims_referenced))) = dims_referenced;
+            dim_order_index = dim_order_index + length(dims_referenced);
         end
     end
         
@@ -88,7 +91,7 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
         
         % Titles for subplots or rows/columns.
         
-        if figs_through(2) > 1
+        if figs_through(2) > 1 || sz(2) == 1
             
             title([figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(plot))])
             
@@ -100,9 +103,17 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
                 rowstr = setup_axis_labels(xp.axis(1));
                 hsg(fig_for_plot).rowtitles(rowstr);
                 
-                % Do labels for columns
+                % Do labels for (tops of) columns
                 colstr = setup_axis_labels(xp.axis(2));
                 hsg(fig_for_plot).coltitles(colstr);
+                
+                % Do labels for x-axis.
+                xaxis_name = 'matrix_dim_1';
+                if isfield(xp.meta, xaxis_name)
+                    xlabels = cell(size(colstr));
+                    xlabels(:) = {xp.meta.matrix_dim_1.name};
+                    hsg(fig_for_plot).coltitles(xlabels, 'bottom');
+                end
                 
             end
             
