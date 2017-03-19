@@ -177,7 +177,7 @@ figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}}; 
 figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 
-%% Plot 3D data 
+0%% Plot 3D data 
 
 % Pull out a 3D subset of data (parameter sweeps and the 2 cell
 % types)
@@ -188,7 +188,7 @@ xp4.getaxisinfo
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) in as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -198,7 +198,7 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimen
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dimensions);
 
 
 
