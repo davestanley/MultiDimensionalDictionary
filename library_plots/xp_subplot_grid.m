@@ -1,21 +1,28 @@
 
 
-function hsg = xp_subplot_grid (xp, display_mode, transpose_on)
+function hsg = xp_subplot_grid (xp, options)
 	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
-    if nargin < 3
-        transpose_on = [];
-    end
-    
     if nargin < 2
-        display_mode = [];
+        options = struct;
     end
     
-    if isempty(transpose_on); transpose_on = 0; end
-    if isempty(display_mode); display_mode = 0; end
+    if isempty(options); options = struct; end;
+    
+    if ~isfield(options,'transpose_on'); options.transpose_on = 0; end
+    if ~isfield(options,'display_mode'); options.display_mode = 0; end
+    if ~isfield(options,'xlims'); options.xlims = []; end
+    if ~isfield(options,'ylims'); options.ylims = []; end
+    if ~isfield(options,'subplotzoom_enabled'); subplotzoom_enabled = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
+                          
+    transpose_on = options.transpose_on;
+    display_mode = options.display_mode;
+    xlims = options.xlims;
+    ylims = options.ylims;
+    subplotzoom_enabled = options.subplotzoom_enabled;
     
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)
@@ -42,7 +49,11 @@ function hsg = xp_subplot_grid (xp, display_mode, transpose_on)
                 %figure;
             end
             
-            hsg = subplot_grid(N1,N2,subplot_grid_options{:});
+            if subplotzoom_enabled
+                hsg = subplot_grid(N1,N2,subplot_grid_options{:});
+            else
+                hsg = subplot_grid(N1,N2,'no_zoom',subplot_grid_options{:});
+            end
             c=0;
             for i = 1:N1
                 for j = 1:N2
@@ -52,6 +63,8 @@ function hsg = xp_subplot_grid (xp, display_mode, transpose_on)
                 end
             end
             
+
+            
             % Do labels for rows
             rowstr = setup_axis_labels(xp.axis(1));
             hsg.rowtitles(rowstr);
@@ -59,6 +72,7 @@ function hsg = xp_subplot_grid (xp, display_mode, transpose_on)
             % Do labels for columns
             colstr = setup_axis_labels(xp.axis(2));
             hsg.coltitles(colstr);
+            
             
             if display_mode == 1
                 

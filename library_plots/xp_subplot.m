@@ -1,21 +1,27 @@
 
 
-function h=xp_subplot (xp,display_mode,transpose_on)
+function h=xp_subplot (xp,options)
     % xp must be 1D or 2D
     
-    if nargin < 3
-        transpose_on = [];
-    end
-    
     if nargin < 2
-        display_mode = [];
+        options = struct;
     end
     
-    if isempty(transpose_on); transpose_on = 0; end
-    if isempty(display_mode); display_mode = 0; end
+    if isempty(options); options = struct; end;
+    
+    if ~isfield(options,'transpose_on'); options.transpose_on = 0; end
+    if ~isfield(options,'display_mode'); options.display_mode = 0; end
+    if ~isfield(options,'xlims'); options.xlims = []; end
+    if ~isfield(options,'ylims'); options.ylims = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
-                          % 2-Save to a figure file
+                          % 2-Save to a figure file 
+                          
+    transpose_on = options.transpose_on;
+    display_mode = options.display_mode;
+    xlims = options.xlims;
+    ylims = options.ylims;
+    
     
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)

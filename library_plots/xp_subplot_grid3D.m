@@ -1,23 +1,24 @@
 
 
-function hsg = xp_subplot_grid3D (xp, display_mode, transpose_on)
+function hsg = xp_subplot_grid3D (xp, options)
 	% This handles 1D, 2D, or 3D xp data. 3D data is tiled across the
 	% screen in different figures.
     
-    if nargin < 3
-        transpose_on = [];
-    end
-    
     if nargin < 2
-        display_mode = [];
+        options = struct;
     end
     
-    if isempty(transpose_on); transpose_on = 0; end
-    if isempty(display_mode); display_mode = 0; end
+    if isempty(options); options = struct; end;
+    
+    if ~isfield(options,'transpose_on'); options.transpose_on = 0; end
+    if ~isfield(options,'display_mode'); options.display_mode = 0; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
-    
+                          
+    transpose_on = options.transpose_on;
+    display_mode = options.display_mode;
+%       
                           
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)
