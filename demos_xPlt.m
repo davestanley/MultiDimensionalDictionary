@@ -1,4 +1,4 @@
-%% % % % % % % % % % % % % % % SETTING UP xPlt OBJECT % % % % % % % % % %
+%% % % % % % % % % % % % % % % xPlt DEMO - Requires DynaSim % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Set up paths 
@@ -6,19 +6,20 @@
 
 % Format
 format compact
+restoredefaultpath
 
 % Check if in right folder
 [parentfolder,currfolder] = fileparts(pwd);
 if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
 % Set path to your copy of the DynaSim toolbox
-dynasim_path = fullfile(parentfolder);
+dynasim_path = fullfile(parentfolder,'..');
 
 % add DynaSim toolbox to Matlab path
 addpath(genpath(dynasim_path)); % comment this out if already in path
 
 % Set where to save outputs
-output_directory = fullfile(parentfolder, 'outputs');
+output_directory = fullfile(parentfolder,'..','outputs');
 study_dir = fullfile(output_directory,'demo_sPING_3b');
 
 % move to root directory where outputs will be saved
@@ -117,6 +118,10 @@ disp(xp.axis(1).name)
 % Axis.astruct is for internal use and is currently empty.
 xp.axis(1).astruct
 
+% All of this information can be obtained in summary form by running
+% getaxisinfo
+xp.getaxisinfo
+
 % xp.meta stores meta data for use by the user as they see fit.
 % Here we will add some custom info to xp.metadata. This can be whatever
 % you want. Here, I will use this to provide information about what is
@@ -135,44 +140,41 @@ clear meta
 %% % % % % % % % % % % % % % % xPlt BASICS % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% Validate & get some properties of the data
-clc
-xp.checkDims;       % Makes sure all the dimensions match up (e.g. xp.axis 
-                    % must have the same length as number of dimensions in
-                    % xp.data, and the size of each dimension must match
-                    % the number of labels
-                    
-xp.fixAxes;         % This attempts to automatically fix any dimension
-                    % mismatches between xp.data and the axis labels. This
-                    % particular command does nothing because there are no
-                    % errors in xp
+%% Importing data
 
-                    
-% Make a "bad" xPlt class, containing errors.
-disp(size(xp.data));                % The 4th dimension of xp.data is of size 8
-disp(xp.axis(4).values);            % It's corresponding axis should have 8 labels
-xp_bad = xp; 
-xp_bad.axis(4).values={'test'};     % Reduce this to 1 (mismatch)
+% xPlt objects are just matrices or cell arrays with extra functionality to
+% keep track of what each dimension is storing. 
 
-% Check errors in new class (this produces an error, so disabling it)
-% xp_bad.checkDims;
+% Above, we imported data linearized data into an xPlt object. But
+% it is also possible to import a high dimensional matrix directly.
 
-% Auto fix errors in labels
-xp_fixed = xp_bad.fixAxes; 
+% For example let's say we have a random cell array.
+data = xp.data;
 
-% View new labels
-xp_fixed.axis(4).values         % The original cell array had been replaced by 
-                                % one of appropriate length
-                                
-% View summary of the classes. Tells the dimensionality of xp.data and also
-% the number of labels in each axis.
-xp.getaxisinfo
-xp_fixed.getaxisinfo
+% We can import the data as follows.
+xp2 = xPlt;
+xp2 = xp2.importData(data);
+
+% We didn't supply any axis names/values, so default values were assgined
+xp2.getaxisinfo;
+
+% We can instead import axis values along with the data
+ax_vals = xp.exportAxisVals;
+clear xp2
+xp2 = xPlt;
+xp2 = xp2.importData(data,ax_vals);
+xp2.getaxisinfo
+
+% Axis names can be assigned in this way as well
+ax_names = xp.exportAxisNames;
+xp2 = xp2.importData(data,ax_vals,ax_names);
+xp2.getaxisinfo
+
 
 %% xPlt Indexing
 
-% Indexing works just like with normal data. This creates a new xPlt object
-% based on the original data, with the correct axis labels
+% Indexing works just like with normal matrices and cell arrays and axis
+% labels are updated appropriately.
 clc
 xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp.subset([],[],1,8), which was the old way
                                     % of pulling data subsets. Note that [] and : are equivalent.
@@ -199,6 +201,7 @@ mydata2 = xp.data(:,:,1,8);
 disp(isequal(mydata,mydata2));
 
 clear mydata mydata2 xp4 xp5
+
 
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -241,7 +244,7 @@ xp4 = xp(:,1:2,:,'v');
 xp4.getaxisinfo
 
 % This will plot E cells and I cells (axis 3) each in separate figures and
-% the parameter sweeps (axes 1 and 2) in as subplots.
+% the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
@@ -255,17 +258,12 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimen
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
-
-
-
-
 %% Plot 4D data
 
 % Pull out sodium channel state variables for E and I cells.
 clc
 xp4 = xp(1:2,1:2,:,6:7);
 xp4.getaxisinfo
-
 
 dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note - we can also use a mixture of strings and index locations to specify dimensions
 
@@ -277,6 +275,13 @@ function_arguments = {{},{},{1},{}};
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
 
+%% Plot multiple dimensions adaptively.
+
+% Another option is to use @xp_subplot_grid_adaptive, which will plot the data using axes in
+% descending order of the size of the axis values, and plot remaining
+% combinations of axis values across figures.
+
+recursivePlot(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
 %% Plot two xPlt objects combined
 clc
@@ -290,8 +295,6 @@ xp5 = merge(xp3,xp4);
 
 dimensions = {[1,2],0};
 figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
-
-
 
 %% Plot saved figures rather than raw data
 
@@ -327,8 +330,26 @@ figl; recursivePlot(xp_img,{@xp_subplot_grid,@xp_plotimage},dimensions,func_argu
 %% % % % % % % % % % % % % % % ADVANCED xPlt / nDDict USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
+%% Modifying xPlt.data directly
 
-%% Method packDims
+% While it is encouraged to use importData, xPlt.data can also be written
+% to directly. For example, we can take the average across all cells by
+% doing the following.
+xp2 = xp;
+for i = 1:numel(xp2.data)
+    xp2.data{i} = mean(xp2.data{i},2);
+end
+disp(xp2.data);         % (Note the size is 10001x1 instead of by 10001x20 or 10001x80)
+
+% However, you cannot make modifications that would destroy the 1:1 matchup
+% between data and axis (commenting out error producing commands below).
+xp2 = xp;
+xp2.data{5} = randn(100);       % Ok
+% xp2.axis = xp2.axis(1:2);       % Not ok
+% mydata = reshape(xp2.data,[3,3,16]);
+% xp2.data = mydata;              % Not ok.
+
+%% Method packDim
 % Analogous to cell2mat.
 clear xp2 xp3 xp4 xp5
 
@@ -346,7 +367,6 @@ src = 2;                    % Take 2nd dimension in xp2
 dest = 3;                   % Pack into 3rd dimension in xp2.data matrix
 xp3 = xp2.packDim(src,dest);
 
-
 % Check dimensionality of xp3.data
 disp(xp3.data)             % The dimension "variables", which was dimension 2
                            % in xp2, is now dimension 3 in xp3.data.
@@ -354,6 +374,13 @@ disp(xp3.data)             % The dimension "variables", which was dimension 2
 
 % View axis of xp3
 xp3.getaxisinfo;            % The dimension "variables" is now missing
+
+% Alternatively, you can use a regular expression to select the dimension
+% you want to pack; if the destination dimension is left empty, the first
+% dimension which is not occupied in any of the matrix entries of xp.data
+% will be used.
+xp3 = xp2.packDim('var');
+xp3.getaxisinfo;
 
 % Note some of this data is sparse! We can see this sparseness by plotting
 % as follows (note the NaNs)
@@ -365,17 +392,18 @@ ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-
 subplot(212); imagesc(temp2);
 ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-%% Method unPackDims (undoing packDims)
-% However, the information in the missing axis is stored in the nDDictAxis matrix_dim_3, a field of xp3.meta.
+%% Method unpackDim (undoing packDims)
+% When packDim is applied to an xPlt object, say to pack dimension 3, the
+% information from the packed axis is stored in the nDDictAxis
+% matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.getaxisinfo
 
-% And if dimension 3 of each cell in xp3.data is unpacked using unpackDim,
+% If dimension 3 of each cell in xp3.data is unpacked using unpackDim,
 % xp3.meta.matrix_dim_3 will be used to provide axis info for the new
 % xPlt object.
 xp4 = xp3.unpackDim(dest, src);
@@ -387,8 +415,6 @@ xp4.getaxisinfo;
 
 xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', {'One','Two','Three','Four','Five','Six'});
 xp4.getaxisinfo;
-
-
 
 %% Use packDim to average across cells
 
@@ -414,7 +440,6 @@ xp3 = xp2.packDim(src,dest);
 
 % Plot 
 figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
-
 
 %% Use packDim to average over synaptic currents
 % Analogous to cell2mat
@@ -463,10 +488,6 @@ disp(xp3.axis(2).values);
 [~,I] = sort(xp3.axis(2).values);
 xp4 = xp3(:,I);
 disp(xp4.axis(2).values);
-
-
-
-
 
 %% To implement
 % 
