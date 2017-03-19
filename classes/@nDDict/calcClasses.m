@@ -1,7 +1,7 @@
 
 
 
-function [out, outsimple] = calcClasses(xp,input,field_type)
+function [out, outsimple] = calcClasses(obj,input,field_type)
     % For internal use in importing data in to nDDict.
 
     switch field_type

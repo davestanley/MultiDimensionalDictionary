@@ -2,8 +2,8 @@ function obj = importLinearData(obj,X,varargin)
 %% obj = importLinearData(obj,X,varargin)
 %     Purpose:
 %     Imports a linear array of data, converts it into a matrix
-%     based on the supplied axislabels, and stores it in xp.data.
-%     Also populates the xp.axis.values appropriately.
+%     based on the supplied axislabels, and stores it in xp.data_pr.
+%     Also populates the xp.axis_pr.values appropriately.
 % 
 %     Forms:
 %     xp = importLinearData(X,axislabels1,...,axislabelsN)
@@ -48,10 +48,10 @@ function obj = importLinearData(obj,X,varargin)
     N = length(X);
     Ndims = length(axeslinear);
 
-    % Set up xp.axis
+    % Set up xp.axis_pr
     for j = 1:Ndims
-        obj.axis(j).values = unique(axeslinear{j});
-        sz(j) = length(obj.axis(j).values);
+        obj.axis_pr(j).values = unique(axeslinear{j});
+        sz(j) = length(obj.axis_pr(j).values);
 
         if isnumeric(axeslinear{j}(1))
             if any(isnan(axeslinear{j})) || any(isinf(axeslinear{j}))
@@ -63,31 +63,31 @@ function obj = importLinearData(obj,X,varargin)
     % Set up target matrix
     switch Xformat
         case 'cell'
-            obj.data=cell(sz);
+            obj.data_pr=cell(sz);
 %         case 'string'
-%             xp.data = repmat(string(''),sz);
+%             xp.data_pr = repmat(string(''),sz);
         case 'numeric'
-            obj.data = zeros(sz);
+            obj.data_pr = zeros(sz);
         otherwise
             error('Case not implemented');
     end
 
-    % Set up xp.data -> Convert linear data into a multi dimensional matrix
+    % Set up xp.data_pr -> Convert linear data into a multi dimensional matrix
     for i = 1:N
         % Get subscripts
         subs = cell(1,Ndims);
         for j = 1:Ndims
             if iscellstr(axeslinear{j})
-                subs{j} = find(strcmp(axeslinear{j}{i},obj.axis(j).values));
+                subs{j} = find(strcmp(axeslinear{j}{i},obj.axis_pr(j).values));
             else
-                subs{j} = find(axeslinear{j}(i) == obj.axis(j).values);
+                subs{j} = find(axeslinear{j}(i) == obj.axis_pr(j).values);
             end
         end
 
         % Add data to sparse cell array or matrix based on subscripts
             % Note: Need to find a good way for dealing with duplicate
             % rows. Right now, default behavior is to overwrite
-        obj.data(subs{:}) = X(i);
+        obj.data_pr(subs{:}) = X(i);
 
     end
 

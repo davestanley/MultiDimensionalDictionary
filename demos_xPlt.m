@@ -147,12 +147,12 @@ xp.fixAxes;         % This attempts to automatically fix any dimension
                     % particular command does nothing because there are no
                     % errors in xp
 
-                    
-% Make a "bad" xPlt class, containing errors.
-disp(size(xp.data));                % The 4th dimension of xp.data is of size 8
-disp(xp.axis(4).values);            % It's corresponding axis should have 8 labels
-xp_bad = xp; 
-xp_bad.axis(4).values={'test'};     % Reduce this to 1 (mismatch)
+% % Can comment this out for now, thanks to new getter/setter methods
+% % Make a "bad" xPlt class, containing errors. 
+% disp(size(xp.data));                % The 4th dimension of xp.data is of size 8
+% disp(xp.axis(4).values);            % It's corresponding axis should have 8 labels
+% xp_bad = xp; 
+% xp_bad.axis(4).values={'test'};     % Reduce this to 1 (mismatch)
 
 % Check errors in new class (this produces an error, so disabling it)
 % xp_bad.checkDims;
