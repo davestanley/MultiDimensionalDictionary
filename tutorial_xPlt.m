@@ -6,25 +6,15 @@
 
 % Format
 format compact
+clear all
 restoredefaultpath
 
 % Check if in right folder
 [parentfolder,currfolder] = fileparts(pwd);
 if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
-% Set path to your copy of the DynaSim toolbox
-dynasim_path = fullfile(parentfolder,'..');
-
 % add DynaSim toolbox to Matlab path
-addpath(genpath(dynasim_path)); % comment this out if already in path
-
-% Set where to save outputs
-output_directory = fullfile(parentfolder, '..','outputs');
-study_dir = fullfile(output_directory,'demo_sPING_3b');
-
-% move to root directory where outputs will be saved
-mkdir_silent(output_directory);
-% cd(fullfile(dynasim_path, output_directory));
+addpath(genpath(pwd)); % comment this out if already in path
 
 
 %% Load some sample data
@@ -177,7 +167,7 @@ figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}}; 
 figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 
-0%% Plot 3D data 
+%% Plot 3D data 
 
 % Pull out a 3D subset of data (parameter sweeps and the 2 cell
 % types)
