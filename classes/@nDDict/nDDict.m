@@ -356,7 +356,7 @@ classdef nDDict
             sz = size(obj.data_pr);
             empties = cellfun(@isempty,obj.data_pr);    % 2D matrix with 1's marking empty cells
             se = sum(empties,1);                    % Number of empties per column in this matrix
-            bad_inds = se ~= 0 & se ~= sz(2);     % Good columns must be either all empty or all non-empty
+            bad_inds = se ~= 0 & se ~= sz(1);     % Good columns must be either all empty or all non-empty
             
             if any(bad_inds)
                 fprintf('Note: Empty entries found along collapsing dim. Using NaNs as placeholders to fill out the matrix. \n');
