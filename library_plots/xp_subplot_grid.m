@@ -11,18 +11,16 @@ function hsg = xp_subplot_grid (xp, options)
     
     if ~isfield(options,'transpose_on'); options.transpose_on = 0; end
     if ~isfield(options,'display_mode'); options.display_mode = 0; end
-    if ~isfield(options,'xlims'); options.xlims = []; end
-    if ~isfield(options,'ylims'); options.ylims = []; end
     if ~isfield(options,'subplotzoom_enabled'); options.subplotzoom_enabled = []; end
+    if ~isfield(options,'legend1'); options.legend1 = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
                           
     transpose_on = options.transpose_on;
     display_mode = options.display_mode;
-    xlims = options.xlims;
-    ylims = options.ylims;
     subplotzoom_enabled = options.subplotzoom_enabled;
+    legend1 = options.legend1;
     
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)
@@ -59,7 +57,11 @@ function hsg = xp_subplot_grid (xp, options)
                 for j = 1:N2
                     c=c+1;
                     hsg.set_gca(c);
-                    xp.data{i,j}(); 
+                    xp.data{i,j}();
+                    if i == 1 && j == 1 && ~isempty(legend1)
+                        % Place a legend in the 1st subplot
+                        legend(legend1{:});
+                    end
                 end
             end
             

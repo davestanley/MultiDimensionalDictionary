@@ -13,6 +13,7 @@ function hsg = xp_subplot_grid3D (xp, options)
     if ~isfield(options,'transpose_on'); options.transpose_on = 0; end
     if ~isfield(options,'display_mode'); options.display_mode = 0; end
     if ~isfield(options,'subplotzoom_enabled'); options.subplotzoom_enabled = []; end
+    if ~isfield(options,'legend1'); options.legend1 = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -20,6 +21,7 @@ function hsg = xp_subplot_grid3D (xp, options)
     transpose_on = options.transpose_on;
     display_mode = options.display_mode;
     subplotzoom_enabled = options.subplotzoom_enabled;
+    legend1 = options.legend1;
 %       
                           
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
@@ -62,8 +64,10 @@ function hsg = xp_subplot_grid3D (xp, options)
                     c=c+1;
                     hsg(i).set_gca(c);
                     xp.data{i,j,k}(); 
-%                     xp2 = xp.subset(i,j);
-%                     title(strrep(xp2.getaxisinfo,'_',' '));
+                    if j == 1 && k == 1 && ~isempty(legend1)
+                        % Place a legend in the 1st subplot
+                        legend(legend1{:});
+                    end
                 end
             end
             
