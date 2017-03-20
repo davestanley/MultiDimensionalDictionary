@@ -265,6 +265,7 @@ classdef nDDict
             % axis
             obj.axis_pr(dims2pack(1)).values = tempstr;
             obj.axis_pr(dims2pack(1)).astruct.premerged_values = temp;
+            obj.axis_pr(dims2pack(1)).astruct.premerged_names = {obj.axis_pr(dims2pack).name};
             
             % Give it a new axis name, reflecting the merger of all the
             % others
