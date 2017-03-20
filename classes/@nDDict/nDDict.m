@@ -48,6 +48,7 @@ classdef nDDict
             
             obj.axis_pr = repmat(nDDictAxis,1,ndims(obj.data_pr));     % For a 2D matrix
             obj = obj.fixAxes;
+            obj.meta.datainfo = nDDictAxis;
             
         end
         

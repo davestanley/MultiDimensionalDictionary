@@ -19,7 +19,12 @@ function xp_matrix_basicplot (xp, options)
     xlims = options.xlims;
     ylims = options.ylims;
     
-    plot(xp.data{1});
+    if ~isempty(xp.meta.datainfo(1).values)
+        t = xp.meta.datainfo(1).values;
+        plot(t,xp.data{1});
+    else
+        plot(xp.data{1});
+    end
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
     
