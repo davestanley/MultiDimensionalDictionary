@@ -3,4 +3,4 @@
 .DS_Store
 outputs
 models/personal
-Figs_date*
+*.png
