@@ -65,8 +65,6 @@ function hsg = xp_subplot_grid (xp, options)
                 end
             end
             
-
-            
             % Do labels for rows
             if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if its not an empty axis
                 rowstr = setup_axis_labels(xp.axis(1));
