@@ -16,7 +16,7 @@ function h = xp_handles_newfig (xp, op)
     op = struct_addDef(op,'save_figname_prefix','fig_');
     op = struct_addDef(op,'save_figname_path','Figs');
     op = struct_addDef(op,'postpend_date_time',true);
-    op = struct_addDef(op,'supersize_me',true);
+    op = struct_addDef(op,'supersize_me',false);
     op = struct_addDef(op,'supersize_me_factor',3);
     
     % Postpend date/time to save path
@@ -40,7 +40,15 @@ function h = xp_handles_newfig (xp, op)
         pos = [0,0,1,1];
         if op.supersize_me
             pos(3:4) = pos(3:4) * op.supersize_me_factor;
-            op.visible = 'off';
+            if strcmp(op.visible,'on')
+                fprintf('For supersize_me mode, visible should be off. Setting to off \n');
+                op.visible = 'off';
+            end
+        end
+        
+        if ~op.save_figures && strcmp(op.visible,'off')
+                fprintf('For supersize_me mode or visible off, should save figures. Autosaving figures... \n');
+                op.save_figures = 1;
         end
         
         h.hf(i) = figure('Units','normalized','Position',pos,'visible',op.visible); h.hsg(i) = xp.data{i}();
