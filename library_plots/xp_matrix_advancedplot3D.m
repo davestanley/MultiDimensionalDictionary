@@ -25,14 +25,16 @@ function xp_matrix_advancedplot3D (xp, op)
     end
     
     d = xp.data{1};
-    if ismatrix(d)
-        plot(t,d);
-    elseif ndims(d) == 3
-        for i = 1:size(d,3)
-            hold on; plot(t,d(:,:,i));
+    if ~isempty(d)
+        if ismatrix(d)
+            plot(t,d);
+        elseif ndims(d) == 3
+            for i = 1:size(d,3)
+                hold on; plot(t,d(:,:,i));
+            end
+        else
+            error('Too many dimensions');
         end
-    else
-        error('Too many dimensions');
     end
     
     if ~isempty(xlims); xlim(xlims); end
