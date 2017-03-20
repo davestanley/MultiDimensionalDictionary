@@ -133,6 +133,11 @@ meta.datainfo(1).name = 'time(ms)';
 meta.datainfo(1).values = time;
 meta.datainfo(2).name = 'cells';
 meta.datainfo(2).values = [];
+meta.dynasim.labels = data.labels;
+meta.dynasim.model = data.model;
+meta.dynasim.simulator_options = data.simulator_options;
+meta.dynasim.time = data.time;
+meta.dynasim.varied = data.varied;
 xp.meta = meta;
 clear meta
 
