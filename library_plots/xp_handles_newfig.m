@@ -29,6 +29,17 @@ function h = xp_handles_newfig (xp, op)
         foldername = op.save_figname_path;
     end
     
+    
+    if op.supersize_me && strcmp(op.visible,'on')
+        fprintf('For supersize_me mode, visible should be off. Setting to off \n');
+        op.visible = 'off';
+    end
+
+    if ~op.save_figures && strcmp(op.visible,'off')
+            fprintf('For supersize_me mode or visible off, should save figures. Autosaving figures... \n');
+            op.save_figures = 1;
+    end
+    
     if op.save_figures
         mkdir_silent(foldername);
     end
@@ -40,15 +51,6 @@ function h = xp_handles_newfig (xp, op)
         pos = [0,0,1,1];
         if op.supersize_me
             pos(3:4) = pos(3:4) * op.supersize_me_factor;
-            if strcmp(op.visible,'on')
-                fprintf('For supersize_me mode, visible should be off. Setting to off \n');
-                op.visible = 'off';
-            end
-        end
-        
-        if ~op.save_figures && strcmp(op.visible,'off')
-                fprintf('For supersize_me mode or visible off, should save figures. Autosaving figures... \n');
-                op.save_figures = 1;
         end
         
         h.hf(i) = figure('Units','normalized','Position',pos,'visible',op.visible); h.hsg(i) = xp.data{i}();
