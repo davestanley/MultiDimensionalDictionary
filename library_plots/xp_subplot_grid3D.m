@@ -12,12 +12,14 @@ function hsg = xp_subplot_grid3D (xp, options)
     
     if ~isfield(options,'transpose_on'); options.transpose_on = 0; end
     if ~isfield(options,'display_mode'); options.display_mode = 0; end
+    if ~isfield(options,'subplotzoom_enabled'); options.subplotzoom_enabled = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
                           
     transpose_on = options.transpose_on;
     display_mode = options.display_mode;
+    subplotzoom_enabled = options.subplotzoom_enabled;
 %       
                           
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
@@ -45,6 +47,12 @@ function hsg = xp_subplot_grid3D (xp, options)
         for i = 1:N1
             figure;
             hsg(i) = subplot_grid(N2,N3,subplot_grid_options{:});
+            if subplotzoom_enabled
+                hsg(i) = subplot_grid(N2,N3,subplot_grid_options{:});
+            else
+                hsg(i) = subplot_grid(N2,N3,'no_zoom',subplot_grid_options{:});
+            end
+            
             if ~verLessThan('matlab','8.4'); hsg(i).figplace(N1,i); end
             mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(i))];
             hsg(i).figtitle(mytitle);
@@ -60,12 +68,16 @@ function hsg = xp_subplot_grid3D (xp, options)
             end
             
             % Do labels for rows
-            rowstr = setup_axis_labels(xp.axis(2));
-            hsg(i).rowtitles(rowstr);
+            if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
+                rowstr = setup_axis_labels(xp.axis(2));
+                hsg(i).rowtitles(rowstr);
+            end
             
             % Do labels for columns
-            colstr = setup_axis_labels(xp.axis(3));
-            hsg(i).coltitles(colstr);
+            if ~strcmp(xp.axis(3).name(1:3),'Dim')          % Only display if its not an empty axis
+                colstr = setup_axis_labels(xp.axis(3));
+                hsg(i).coltitles(colstr);
+            end
             
         end
         

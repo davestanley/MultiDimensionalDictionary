@@ -13,7 +13,7 @@ function hsg = xp_subplot_grid (xp, options)
     if ~isfield(options,'display_mode'); options.display_mode = 0; end
     if ~isfield(options,'xlims'); options.xlims = []; end
     if ~isfield(options,'ylims'); options.ylims = []; end
-    if ~isfield(options,'subplotzoom_enabled'); subplotzoom_enabled = []; end
+    if ~isfield(options,'subplotzoom_enabled'); options.subplotzoom_enabled = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -66,12 +66,16 @@ function hsg = xp_subplot_grid (xp, options)
 
             
             % Do labels for rows
-            rowstr = setup_axis_labels(xp.axis(1));
-            hsg.rowtitles(rowstr);
+            if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if its not an empty axis
+                rowstr = setup_axis_labels(xp.axis(1));
+                hsg.rowtitles(rowstr);
+            end
             
             % Do labels for columns
-            colstr = setup_axis_labels(xp.axis(2));
-            hsg.coltitles(colstr);
+            if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
+                colstr = setup_axis_labels(xp.axis(2));
+                hsg.coltitles(colstr);
+            end
             
             
             if display_mode == 1
