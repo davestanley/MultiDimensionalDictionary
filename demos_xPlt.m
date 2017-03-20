@@ -275,7 +275,8 @@ dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note -
 % Note that here we will supply a function argument. This tells the second
 % subplot command to write its output to the axis as an RGB image, rather than
 % as subplots. This "hack" enables nested subplots.
-function_arguments = {{},{},{1},{}};
+xp_subplot_grid_options.display_mode = 1;
+function_arguments = {{},{},{xp_subplot_grid_options},{}};
 
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
@@ -325,9 +326,10 @@ xp_img = xp_img.importLinearData(X, axislabels{:});
 xp_img = xp_img.importAxisNames(column_titles(2:end));
 
 dimensions = {[1,2],[0]};
-func_arguments = {{},{.5}};         % The 0.5 argument tells xp_plotimage to
-                                    % scale down the resolution of its
-                                    % plots by 0.5. This increases speed.
+plotimage_options.scale = 0.5;
+func_arguments = {{},{plotimage_options}};         % The 0.5 argument tells xp_plotimage to
+                                                   % scale down the resolution of its
+                                                   % plots by 0.5. This increases speed.
 
 figl; recursivePlot(xp_img,{@xp_subplot_grid,@xp_plotimage},dimensions,func_arguments);
 
