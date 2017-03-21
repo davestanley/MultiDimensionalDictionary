@@ -17,7 +17,7 @@ function h = xp_handles_newfig (xp, op)
     op = struct_addDef(op,'save_figname_path','Figs');
     op = struct_addDef(op,'postpend_date_time',true);
     op = struct_addDef(op,'supersize_me',false);
-    op = struct_addDef(op,'supersize_me_factor',3);
+    op = struct_addDef(op,'supersize_me_factor',2);
     
     % Postpend date/time to save path
     if op.postpend_date_time
@@ -66,7 +66,7 @@ function h = xp_handles_newfig (xp, op)
             filename = [op.save_figname_prefix num2str(i) ext];
             
             set(h.hf(i),'PaperPositionMode','auto');
-            tic; print(h.hf(i),'-dpng','-r100','-opengl',fullfile(foldername,filename));toc
+            tic; print(h.hf(i),'-dpng','-r300','-opengl',fullfile(foldername,filename));toc
         end
         
     end
