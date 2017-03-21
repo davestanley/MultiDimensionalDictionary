@@ -14,6 +14,7 @@ function hsg = xp_subplot_grid3D (xp, op)
     op = struct_addDef(op,'display_mode',0);
     op = struct_addDef(op,'subplotzoom_enabled',1);
     op = struct_addDef(op,'legend1',[]);
+    op = struct_addDef(op,'max_legend',20);
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -65,7 +66,7 @@ function hsg = xp_subplot_grid3D (xp, op)
                     xp.data{i,j,k}(); 
                     if j == 1 && k == 1 && ~isempty(legend1)
                         % Place a legend in the 1st subplot
-                        legend(legend1{:});
+                        legend(legend1{1:min(end,op.max_legend)});
                     end
                 end
             end

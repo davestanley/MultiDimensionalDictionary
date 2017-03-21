@@ -386,7 +386,7 @@ classdef nDDict
             myfunc = @(x,y) any(x(:) ~= y(:));
             bool_size_mismatch = cellfun(myfunc,data_sz,data_sz_firsts);
             if any(bool_size_mismatch(:))
-                warning('Sizes of nDDict.data_pr are not uniform along packing dimension. (This usually results form trying to combine populations with different numbers of cells. Filling out with NaNs');
+                warning('Sizes of nDDict.data_pr are not uniform along packing dimension. (E.g. This usually results form trying to combine populations with different numbers of cells). Filling out with NaNs');
                 for j = 1:sz(2)
                     % For each column in the cell array data_sz, find the
                     % dimensions of the largest matrix (sz_max)
