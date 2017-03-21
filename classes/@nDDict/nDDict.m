@@ -386,7 +386,27 @@ classdef nDDict
             myfunc = @(x,y) any(x(:) ~= y(:));
             bool_size_mismatch = cellfun(myfunc,data_sz,data_sz_firsts);
             if any(bool_size_mismatch(:))
-                error('Sizes of nDDict.data_pr are not uniform along packing dimension. (This usually results form trying to combine populations with different numbers of cells.');
+                warning('Sizes of nDDict.data_pr are not uniform along packing dimension. (This usually results form trying to combine populations with different numbers of cells. Filling out with NaNs');
+                for j = 1:sz(2)
+                    % For each column in the cell array data_sz, find the
+                    % dimensions of the largest matrix (sz_max)
+                    sz_max = zeros(size(data_sz{1,j}));
+                    for k = 1:length(sz_max)
+                        sz_max(k) = max(cellfun(@(x) size(x,k),obj.data_pr(:,j)));
+                    end
+                    
+                    % For every entry in this column, create a blank
+                    % template full of nans of this "max size", and then
+                    % drop the actual data into the top-left corner. This
+                    % will ensure everything is the same size, although
+                    % highly space-inefficient.
+                    for i = 1:sz(1)
+                        temp = NaN*ones(sz_max);
+                        dat_curr = obj.data_pr{i,j};
+                        temp(deal(ind2sub(size(dat_curr),1:numel(dat_curr)))) = dat_curr;
+                        obj.data_pr{i,j} = temp;
+                    end
+                end
             end
         
             for j = 1:sz(2)
