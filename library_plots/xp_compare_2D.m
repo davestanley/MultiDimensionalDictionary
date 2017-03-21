@@ -77,7 +77,7 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
        
         sample_mean(1:length_sample(sample), sample) = nanmean(xp.data_pr{sample}, 2);
         
-        sample_se(1:length_sample(sample), sample) = nanstd(xp.data_pr{2}, [], 2)/sqrt(n_sample(sample));
+        sample_se(1:length_sample(sample), sample) = nanstd(xp.data_pr{sample}, [], 2)/sqrt(n_sample(sample));
         
     end
     
@@ -85,7 +85,7 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     if length(axis_values{1}) < plot_length, axis_values{1}((end + 1):plot_length) = nan; end
     
-    boundedline(axis_values{1}, sample_mean, prep_for_boundedline(norminv(significance)*sample_se))
+    boundedline(axis_values{1}, sample_mean, prep_for_boundedline(norminv(significance/2)*sample_se))
     
     axis tight, box off
     

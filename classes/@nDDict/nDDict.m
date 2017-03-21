@@ -242,23 +242,23 @@ classdef nDDict
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        function obj = mergeDims(obj,dims2pack)
+        function obj = mergeDims(obj,dims2merge)
             
             obj.checkDims;
-            Nd2p = length(dims2pack);
+            Nd2p = length(dims2merge);
             %sz = size(obj.data_pr);
             sz = size(obj);
             N = ndims(obj);
-            Nmerged = prod(sz(dims2pack));       % Final number entries in the merged dimension
+            Nmerged = prod(sz(dims2merge));       % Final number entries in the merged dimension
             
             % % First, do axis names
             % Get cell array of all linearized axis values.
             inds = 1:Nmerged;
-            [subs{1:Nd2p}] = ind2sub(sz(dims2pack),inds);
+            [subs{1:Nd2p}] = ind2sub(sz(dims2merge),inds);
             temp = cell(1,Nd2p);
             for i = 1:Nd2p
                 for j = 1:Nmerged
-                    ax = obj.axis_pr(dims2pack(i));
+                    ax = obj.axis_pr(dims2merge(i));
                     currval = ax.values(subs{i}(j));
                     temp{i}(j) = currval;
                 end
@@ -280,19 +280,19 @@ classdef nDDict
             
             % Finally drop this into the values entry for the new "merged"
             % axis
-            obj.axis_pr(dims2pack(1)).values = tempstr;
-            obj.axis_pr(dims2pack(1)).astruct.premerged_values = temp;
+            obj.axis_pr(dims2merge(1)).values = tempstr;
+            obj.axis_pr(dims2merge(1)).astruct.premerged_values = temp;
             
             % Give it a new axis name, reflecting the merger of all the
             % others
-            allnames = {obj.axis_pr(dims2pack).name};
+            allnames = {obj.axis_pr(dims2merge).name};
             allnames = cat(1,allnames(:)',repmat({'_'},1,length(allnames)));
-            obj.axis_pr(dims2pack(1)).name = strcat(allnames{1:end-1});
+            obj.axis_pr(dims2merge(1)).name = strcat(allnames{1:end-1});
             
             % Clear the remaining axes names
             for i = 2:Nd2p
-                obj.axis_pr(dims2pack(i)).name = ['Dim ' num2str(dims2pack(i))];
-                obj.axis_pr(dims2pack(i)).values = 1;
+                obj.axis_pr(dims2merge(i)).name = ['Dim ' num2str(dims2merge(i))];
+                obj.axis_pr(dims2merge(i)).values = 1;
             end
 
             % % Now, work on obj.data_pr
@@ -303,14 +303,14 @@ classdef nDDict
             Nd = ndims(dat);
             alldims = 1:Nd;
             ind_chosen = false(size(alldims));
-            for i = 1:length(dims2pack)
-                ind_chosen = ind_chosen | alldims == dims2pack(i);
+            for i = 1:length(dims2merge)
+                ind_chosen = ind_chosen | alldims == dims2merge(i);
             end
             ind_unchosen = ~ind_chosen;
             dims_remaining = find(ind_unchosen);
             
             % Bring the dims to be merged to the front
-            dat = permute(dat,[dims2pack,dims_remaining]);
+            dat = permute(dat,[dims2merge,dims_remaining]);
             
             % REshape these into a single dim
             %sz = size(dat);
@@ -318,7 +318,7 @@ classdef nDDict
             dat = reshape(dat,[ prod(sz(1:Nd2p)), ones(1,Nd2p-1), sz(Nd2p+1:end) ]);
             
             % Undo the earlier permute, and put back into obj.data_pr
-            dat = ipermute(dat,[dims2pack,dims_remaining]);
+            dat = ipermute(dat,[dims2merge,dims_remaining]);
             obj.data_pr = dat;
         end
         
