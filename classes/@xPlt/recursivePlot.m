@@ -39,7 +39,7 @@ function varargout = recursivePlot(xp,function_handles,dimensions,function_argum
         
         xp2 = xPlt;
         selection_curr = cell(1,length(sz));
-        % Just cardcode in the various cases for dimensionality. It's
+        % Just hardcode in the various cases for dimensionality. It's
         % unlikely they will ever want to go above showing 4D in a single
         % plot.
         switch length(dimensions{1})        

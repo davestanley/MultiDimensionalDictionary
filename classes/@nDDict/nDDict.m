@@ -244,6 +244,19 @@ classdef nDDict
         
         function obj = mergeDims(obj,dims2merge)
             
+            if iscellstr(dims2merge)
+                dims2merge_string = dims2merge;
+                dims2merge = nan(size(dims2merge_string));
+                for c = 1:length(dims2merge_string)
+                    dim_index = obj.findaxis(dims2merge_string{c});
+                    if ~isscalar(dim_index) || isempty(dim_index)
+                        error('Multiple or zero dimensions matching %s.', dims2merge_string{c})
+                    else
+                        dims2merge(c) = dim_index;
+                    end
+                end
+            end
+            
             obj.checkDims;
             Nd2p = length(dims2merge);
             %sz = size(obj.data_pr);
@@ -310,15 +323,15 @@ classdef nDDict
             dims_remaining = find(ind_unchosen);
             
             % Bring the dims to be merged to the front
-            dat = permute(dat,[dims2merge,dims_remaining]);
+            dat = permute(dat, [dims2merge, dims_remaining]);
             
             % REshape these into a single dim
             %sz = size(dat);
-            sz = arrayfun(@(x) size(dat,x), 1:N);       % Need to use this extended size command to get extra railing 1's for certain use cases.
+            sz = arrayfun(@(x) size(dat,x), 1:N);       % Need to use this extended size command to get extra trailing 1's for certain use cases.
             dat = reshape(dat,[ prod(sz(1:Nd2p)), ones(1,Nd2p-1), sz(Nd2p+1:end) ]);
             
             % Undo the earlier permute, and put back into obj.data_pr
-            dat = ipermute(dat,[dims2merge,dims_remaining]);
+            dat = ipermute(dat, [dims2merge, dims_remaining]);
             obj.data_pr = dat;
         end
         
@@ -326,7 +339,7 @@ classdef nDDict
             
             if isstr(dim_src)
                 dim_src_string = dim_src;
-                dim_src = obj.axis.findAxes(dim_src_string);
+                dim_src = obj.findaxis(dim_src_string);
                 if ~isscalar(dim_src) || isempty(dim_src)
                     error('Multiple or zero dimensions matching %s.', dim_src_string)
                 end
@@ -337,9 +350,17 @@ classdef nDDict
             end
             
             if nargin < 3
-                % Should pack dimension as last dimension of obj.data.
-                sizes = cellfun(@(x) length(size(x)), obj.data);
-                dim_target = max(sizes(:)) + 1; 
+                % Should pack dimension as last non-singleton dimension of obj.data.
+                data_dims = cellfun(@(x) length(size(x)), obj.data);
+                max_dim = max(data_dims(:));
+                for d = 1:max_dim
+                    data_sz_d = cellfun(@(x) size(x, d), obj.data);
+                    data_sz(:, d) = data_sz_d(:);
+                end
+                number_non_singleton_cells = sum(data_sz > 1);
+                number_non_singleton_cells(end + 1) = 0;
+                last_non_singleton = find(number_non_singleton_cells > 0, 1, 'last');
+                dim_target = last_non_singleton + 1;
             end
             
             checkDims(obj);
@@ -825,6 +846,30 @@ classdef nDDict
         function obj = abs(obj)
             checkDims(obj);
             obj.data = cellfun(@(x) abs(x), obj.data_pr, 'UniformOutput', 0);
+        end
+        
+        function obj_out = repmat(obj, new_axis_values, new_axis_name)
+            checkDims(obj);
+            
+            if nargin < 3, new_axis_name = []; end
+            
+            if isempty(new_axis_name), new_axis_name = sprintf('Dim %d', length(obj.axis) + 1); end
+            
+            if ~isempty(obj.findaxis(new_axis_name))
+                error('Axis %s already exists.', new_axis_name)
+            end
+            
+            obj_out = obj;
+            obj_out.axis(end + 1).name = new_axis_name;
+            obj_out.axis(end).values = new_axis_values(1);
+            
+            for val = 2:length(new_axis_values)
+                obj_copy = obj;
+                obj_copy.axis(end + 1).name = new_axis_name;
+                obj_copy.axis(end).values = new_axis_values(val);
+                obj_out = obj_out.merge(obj_copy);
+            end
+            
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
