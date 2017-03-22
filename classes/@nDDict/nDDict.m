@@ -333,6 +333,7 @@ classdef nDDict
             % Undo the earlier permute, and put back into obj.data_pr
             dat = ipermute(dat, [dims2merge, dims_remaining]);
             obj.data_pr = dat;
+            
         end
         
         function obj = packDim(obj,dim_src,dim_target)
@@ -483,6 +484,8 @@ classdef nDDict
             obj_out = importLinearData(obj_out,X,axl{:});
             
             obj_out = obj_out.importAxisNames(names);
+            
+            obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
         end
         
         function obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values)
