@@ -376,7 +376,7 @@ classdef nDDict
             
             % Make sure target dimension in nDDict.data_pr is a singleton
             temp = cellfun(@(x) size(x,dim_target),obj.data_pr);
-            if any(temp(:) ~= 1); error('Target dimension in nDDict.data_pr needs to be size 1. Try reshaping contents of nDDict.data_pr or choosing a different target dimension.'); end
+            if any(temp(:) > 1); error('Target dimension in nDDict.data_pr needs to be size 1. Try reshaping contents of nDDict.data_pr or choosing a different target dimension.'); end
             clear sz_targets
             
             % Bring chosen dimension to the front. Thus, we will be
@@ -400,13 +400,13 @@ classdef nDDict
                 fprintf('Note: Empty entries found along collapsing dim. Using NaNs as placeholders to fill out the matrix. \n');
                 bi = find(bad_inds);
                 for j = 1:length(bi)                    % Sweep through bad columns
-                    curr_bad = find(empties(:,j));      % Empties along this particular column
-                    curr_good = find(~empties(:,j));    % Non-empties along this particular column.
+                    curr_bad = find(empties(:,bi(j)));      % Empties along this particular column
+                    curr_good = find(~empties(:,bi(j)));    % Non-empties along this particular column.
                     for i = 1:length(curr_bad)
                         % Populate the empty cells with matrices of NaNs
                         % that are the same dimensionality as the first
                         % good entry.
-                        obj.data_pr{curr_bad(i),bi(j)} = NaN*ones(size(obj.data_pr{curr_good(1),bi(j)}));
+                        obj.data_pr{curr_bad(i),bi(j)} = nan(size(obj.data_pr{curr_good(1),bi(j)}));
                     end
                 end
             end
