@@ -10,11 +10,11 @@ function xp_plotimage (xp,op)
     if isempty(op); op = struct; end;
     
     op = struct_addDef(op,'scale',[]);
-    op = struct_addDef(op,'fig_number',1);
+    op = struct_addDef(op,'saved_fignum',1);
     
     
     if iscellstr(xp.data{1})
-        rgb = imread(xp.data{1}{op.fig_number});
+        rgb = imread(xp.data{1}{op.saved_fignum});
     elseif ischar(xp.data{1})
         rgb = imread(xp.data{1});
     end
