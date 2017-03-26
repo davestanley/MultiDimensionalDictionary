@@ -103,6 +103,17 @@ classdef nDDict
                 clear selection2
             end
             
+            % Replace any ':' entries in selection with []. Empty
+            % entries code for taking all entries along a dimension; ':' is
+            % an alias for this.
+            for i = 1:length(selection)
+                if ischar(selection{i})
+                    if strcmp(selection{i},':')
+                        selection{i} = [];
+                    end
+                end
+            end
+            
             % If Ns is still wrong dimensions, return error
             Ns = length(selection);
             if Ns ~= Na
