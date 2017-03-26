@@ -228,6 +228,8 @@ classdef nDDict
         
         function obj = mergeDims(obj,dims2pack)
             
+            if isempty(dims2pack); return; end
+            
             obj.checkDims;
             Nd2p = length(dims2pack);
             %sz = size(obj.data_pr);
