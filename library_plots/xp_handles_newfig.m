@@ -18,6 +18,8 @@ function h = xp_handles_newfig (xp, op)
     op = struct_addDef(op,'postpend_date_time',true);
     op = struct_addDef(op,'supersize_me',false);
     op = struct_addDef(op,'supersize_me_factor',2);
+    op = struct_addDef(op,'max_num_newfigs',5);
+    
     
     % Postpend date/time to save path
     if op.postpend_date_time
@@ -47,6 +49,12 @@ function h = xp_handles_newfig (xp, op)
 
     % Open one figure for each data point along this dimension
     for i = 1:length(xp.data)
+        
+        % If too many figures are open, break
+        if i > op.max_num_newfigs && strcmp(op.visible,'on') && ~op.save_figures
+            fprintf('max_num_newfigs value of %s reached. Aborting. Increase max_num_newfigs to plot more. \n',num2str(op.max_num_newfigs));
+            break
+        end
         
         pos = [0,0,1,1];
         if op.supersize_me
