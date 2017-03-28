@@ -152,6 +152,37 @@ classdef nDDict
             % obj2 = fixAxes(obj2);
             
         end
+
+        function [obj2, ro] = axissubset(obj, axis, values)
+            % Define variables and check that all dimensions are consistent
+            % ro - if regular expressions are used, returns the index
+            % values discovered by the regular expression.
+            
+            % Verify that size of obj is correct
+            checkDims(obj);
+            
+            % Find axis if axis.name is given.
+            if ischar(axis)
+                dim_string = axis;
+                axis = obj.findaxis(dim_string);
+                if ~isscalar(axis) || isempty(axis)
+                    error('Multiple or zero dimensions matching %s.', dim_string)
+                end
+            end
+            
+            if ~isscalar(axis) || isempty(axis)
+                error('Multiple or zero dimensions %d', axis)
+            end
+            
+            % Make sure that size of selection doesnt exceed size of data
+            Na = length(obj.axis_pr);
+            selection = cell(1, Na);
+            selection(:) = [];
+            selection{axis} = values;
+            
+            [obj2, ro] = obj.subset(selection{:});
+            
+        end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
@@ -351,7 +382,7 @@ classdef nDDict
             end
             
             if nargin < 3
-                % Should pack dimension as last non-singleton dimension of obj.data.
+                % Should pack dimension as dimesion after last non-singleton dimension of obj.data.
                 data_dims = cellfun(@(x) length(size(x)), obj.data);
                 max_dim = max(data_dims(:));
                 for d = 1:max_dim
@@ -465,13 +496,13 @@ classdef nDDict
             
             % Merge two objects together
             Nd1 = ndims(obj1);
-            obj1 = obj1.mergeDims(1:Nd1);
+            obj1 = squeeze(obj1.mergeDims(1:Nd1));
             X1 = obj1.data_pr;
             axislabels1 = obj1.axis_pr(1).astruct.premerged_values;
             
             
             Nd2 = ndims(obj2);
-            obj2 = obj2.mergeDims(1:Nd2);
+            obj2 = squeeze(obj2.mergeDims(1:Nd2));
             X2 = obj2.data_pr;
             axislabels2 = obj2.axis_pr(1).astruct.premerged_values;
             
@@ -846,13 +877,12 @@ classdef nDDict
             checkDims(obj);
         end
         
-        function obj = abs(obj)
+        function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
             checkDims(obj);
-            obj.data = cellfun(@(x) abs(x), obj.data_pr, 'UniformOutput', 0);
-        end
-        
-        function obj_out = repmat(obj, new_axis_values, new_axis_name)
-            checkDims(obj);
+            
+            if nargin < 4, new_axis_dim = []; end
+            
+            if isempty(new_axis_dim); new_axis_dim = length(obj.axis) + 1; end
             
             if nargin < 3, new_axis_name = []; end
             
@@ -872,6 +902,9 @@ classdef nDDict
                 obj_copy.axis(end).values = new_axis_values(val);
                 obj_out = obj_out.merge(obj_copy);
             end
+            
+            obj_out = permute(obj_out, [1:(new_axis_dim - 1) length(obj_out.axis)...
+                new_axis_dim:(length(obj_out.axis) - 1)]);
             
         end
         
@@ -1031,6 +1064,19 @@ function [selection_out, startIndex] = regex_lookup(vals, selection)
     selection_out = logical(~cellfun(@isempty,startIndex));
     selection_out = find(selection_out);
     
+end
+
+function last_non_singleton = lastNonSingletonDim(obj)
+    % Should pack dimension as dimesion after last non-singleton dimension of obj.data.
+    data_dims = cellfun(@(x) length(size(x)), obj.data);
+    max_dim = max(data_dims(:));
+    for d = 1:max_dim
+        data_sz_d = cellfun(@(x) size(x, d), obj.data);
+        data_sz(:, d) = data_sz_d(:);
+    end
+    number_non_singleton_cells = sum(data_sz > 1);
+    number_non_singleton_cells(end + 1) = 0;
+    last_non_singleton = find(number_non_singleton_cells > 0, 1, 'last');
 end
 
 % function varargout = size2(varargin)
