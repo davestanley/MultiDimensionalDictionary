@@ -1,7 +1,11 @@
 
 
-function xp_matrix_imagesc (xp)
+function xp_matrix_imagesc (xp, transpose_on)
     % xp must be 1x1 (e.g. zero dimensional)
+    
+    if nargin < 2, transpose_on = 0; end
+    
+    if transpose_on, xp = xp_matrix_transpose(xp); end
     
     meta = xp.meta;
     

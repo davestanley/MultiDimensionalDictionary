@@ -184,6 +184,19 @@ classdef nDDict
             
         end
         
+        function last_non_singleton = lastNonSingletonDim(obj)
+            % Should pack dimension as dimesion after last non-singleton dimension of obj.data.
+            data_dims = cellfun(@(x) length(size(x)), obj.data);
+            max_dim = max(data_dims(:));
+            for d = 1:max_dim
+                data_sz_d = cellfun(@(x) size(x, d), obj.data);
+                data_sz(:, d) = data_sz_d(:);
+            end
+            number_non_singleton_cells = sum(data_sz > 1);
+            number_non_singleton_cells(end + 1) = 0;
+            last_non_singleton = find(number_non_singleton_cells > 0, 1, 'last');
+        end
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -835,7 +848,7 @@ classdef nDDict
             if Nd > 2; error('Can only transpose data with at most 2 dimensions');
             end
             
-            obj.data_pr = obj.data_pr';
+            obj.data_pr = (obj.data_pr)';
             obj.axis_pr([1,2]) = obj.axis_pr([2,1]);        % Axis should always be at least length=2.
         end
         
@@ -1064,19 +1077,6 @@ function [selection_out, startIndex] = regex_lookup(vals, selection)
     selection_out = logical(~cellfun(@isempty,startIndex));
     selection_out = find(selection_out);
     
-end
-
-function last_non_singleton = lastNonSingletonDim(obj)
-    % Should pack dimension as dimesion after last non-singleton dimension of obj.data.
-    data_dims = cellfun(@(x) length(size(x)), obj.data);
-    max_dim = max(data_dims(:));
-    for d = 1:max_dim
-        data_sz_d = cellfun(@(x) size(x, d), obj.data);
-        data_sz(:, d) = data_sz_d(:);
-    end
-    number_non_singleton_cells = sum(data_sz > 1);
-    number_non_singleton_cells(end + 1) = 0;
-    last_non_singleton = find(number_non_singleton_cells > 0, 1, 'last');
 end
 
 % function varargout = size2(varargin)

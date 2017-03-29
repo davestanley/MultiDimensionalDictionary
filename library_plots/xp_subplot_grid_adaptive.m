@@ -17,6 +17,12 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
     
     if isempty(transpose_on), transpose_on = 0; end
     
+    if transpose_on && ismatrix(xp)
+        xp = xp.transpose;
+    elseif transpose_on && ~ismatrix(xp.data)
+        error('xp must be a matrix (e.g. ndims < 3) in order to use transpose');
+    end
+    
     if isempty(display_mode), display_mode = 0; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
@@ -41,7 +47,7 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
         dim_order = nan(size(dim_order_cell));
         dim_order_index = 0;
         for d = 1:length(dim_order)
-            dims_referenced = xp.axis.findAxes(dim_order_cell{d});
+            dims_referenced = xp.findaxis(dim_order_cell{d});
             dim_order(dim_order_index + (1:length(dims_referenced))) = dims_referenced;
             dim_order_index = dim_order_index + length(dims_referenced);
         end
