@@ -55,6 +55,8 @@ function obj = importLinearData(obj,X,varargin)
             end
         end
     end
+    
+    if length(sz) == 1; sz(2) = 1; end
 
     % Set up target matrix
     switch Xformat
@@ -86,6 +88,8 @@ function obj = importLinearData(obj,X,varargin)
         obj.data_pr(subs{:}) = X(i);
 
     end
+    
+    obj = obj.fixAxes;
 
 end
 
