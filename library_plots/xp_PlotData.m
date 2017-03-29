@@ -28,11 +28,6 @@ function xp_PlotData (xp, op)
     end
 
     
-    % Add dummy axis for variables
-    Na = length(xp.axis);
-    xp.axis(Na+1).name = 'variables';
-    xp.axis(Na+1).values = {'v'};
-    
     % Convert xp to DynaSim data struct
     data = xPlt2DynaSim(xp);
     
