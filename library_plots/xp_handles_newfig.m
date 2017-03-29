@@ -43,7 +43,7 @@ function h = xp_handles_newfig (xp, op)
     end
     
     if op.save_figures
-        mkdir_silent(foldername);
+        mkdir(foldername);
     end
     
 
