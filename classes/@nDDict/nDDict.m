@@ -75,7 +75,11 @@ classdef nDDict
         function [selection_out, startIndex] = findaxis(obj,str)
             % Returns the index of the axis with name matching str
             allnames = {obj.axis_pr.name};
-            [selection_out, startIndex] = regex_lookup(allnames, str);
+            try
+                [selection_out, startIndex] = regex_lookup(allnames, str);
+            catch
+                selection_out = [];         % Return empty if no result found.
+            end
         end
 
         function [obj2, ro] = subset(obj,varargin)
@@ -399,7 +403,8 @@ classdef nDDict
             myfunc = @(x,y) any(x(:) ~= y(:));
             bool_size_mismatch = cellfun(myfunc,data_sz,data_sz_firsts);
             if any(bool_size_mismatch(:))
-                warning('Sizes of nDDict.data_pr are not uniform along packing dimension. (E.g. This usually results form trying to combine populations with different numbers of cells). Filling out with NaNs');
+                % Suppressing this warning.
+                %warning('Sizes of nDDict.data_pr are not uniform along packing dimension. (E.g. This usually results form trying to combine populations with different numbers of cells). Filling out with NaNs');
                 for j = 1:sz(2)
                     % For each column in the cell array data_sz, find the
                     % dimensions of the largest matrix (sz_max)
