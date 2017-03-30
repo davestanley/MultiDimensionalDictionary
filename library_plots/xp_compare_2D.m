@@ -1,4 +1,4 @@
-function xp_compare_2D(xp, test_handle, significance, transpose_flag)
+function xp_compare_2D(xp, test_handle, significance, transpose_flag, flip_axis_flag)
 
     if nargin < 2, test_handle = []; end
     
@@ -12,6 +12,10 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     if isempty(transpose_flag), transpose_flag = 0; end
 
+    if nargin < 5, flip_axis_flag = []; end
+    
+    if isempty(flip_axis_flag), flip_axis_flag = 0; end
+    
     [xp_dims, xp_sort_index] = sort(size(xp), 2, 'descend');
 
     if xp_dims(1) ~= 2 || xp_dims(2) ~= 1
@@ -37,7 +41,7 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     if transpose_flag
         
-        xp.data_pr = cellfun(@(x) x', xp.data_pr, 'UniformOutput', 0);
+        xp.data = cellfun(@(x) x', xp.data, 'UniformOutput', 0);
         
         axis_labels([1 2]) = axis_labels([2 1]);
         
@@ -45,9 +49,21 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     end
     
+    if flip_axis_flag
+        
+        indices = cell(1, ndims(xp));
+        indices(:) = {':'};
+        indices(xp_dim_compared) = {[2 1]};
+        
+        xp.data = xp.data(indices{:});
+        
+        xp.axis(xp_dim_compared).values = xp.axis(xp_dim_compared).values([2 1]);
+        
+    end
+    
     for sample = 1:2
         
-        [length_sample(sample), n_sample(sample)] = size(xp.data_pr{1});
+        [length_sample(sample), n_sample(sample)] = size(xp.data_pr{sample});
         
     end
     

@@ -64,7 +64,7 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, displ
     open_figures = findall(0, 'Type', 'figure');
     
     if ~isempty(open_figures)
-        if isstruct(open_figures)
+        if isa(open_figures, 'matlab.ui.Figure')
             last_figure = max([open_figures(:).Number]);
         elseif isnumeric(open_figures)
             last_figure = max(open_figures);
