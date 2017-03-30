@@ -46,7 +46,7 @@ function obj = importLinearData(obj,X,varargin)
 
     % Set up xp.axis_pr
     for j = 1:Ndims
-        obj.axis_pr(j).values = unique(axeslinear{j});
+        obj.axis_pr(j).values = unique(axeslinear{j},'stable');
         sz(j) = length(obj.axis_pr(j).values);
 
         if isnumeric(axeslinear{j}(1))
