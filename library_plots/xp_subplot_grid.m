@@ -14,6 +14,7 @@ function hsg = xp_subplot_grid (xp, op)
     op = struct_addDef(op,'subplotzoom_enabled',1);
     op = struct_addDef(op,'legend1',[]);
     op = struct_addDef(op,'max_legend',20);
+    op = struct_addDef(op,'force_rowvect',false);
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -28,6 +29,10 @@ function hsg = xp_subplot_grid (xp, op)
         xp = xp.transpose;
     elseif transpose_on && ~ismatrix(xp.data)
         error('xp must be a matrix (e.g. ndims < 3) in order to use transpose');
+    end
+    
+    if isrow(xp.data) && op.force_rowvect
+        xp = xp.transpose;
     end
     
     % Parameters
