@@ -287,7 +287,7 @@ classdef nDDict
             
             % Give it a new axis name, reflecting the merger of all the
             % others
-            allnames = {obj.axis_pr(dims2pack).name};
+            allnames = obj.exportAxisNames; allnames = allnames(dims2pack);
             allnames = cat(1,allnames(:)',repmat({'_'},1,length(allnames)));
             obj.axis_pr(dims2pack(1)).name = strcat(allnames{1:end-1});
             
