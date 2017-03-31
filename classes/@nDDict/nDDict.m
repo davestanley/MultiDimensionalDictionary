@@ -279,17 +279,20 @@ classdef nDDict
                 end
             end
             
+            
+            
             % Finally drop this into the values entry for the new "merged"
             % axis
+            allnames = obj.exportAxisNames;
+            packednames = allnames(dims2pack);
             obj.axis_pr(dims2pack(1)).values = tempstr;
             obj.axis_pr(dims2pack(1)).astruct.premerged_values = temp;
-            obj.axis_pr(dims2pack(1)).astruct.premerged_names = {obj.axis_pr(dims2pack).name};
+            obj.axis_pr(dims2pack(1)).astruct.premerged_names = packednames;
             
             % Give it a new axis name, reflecting the merger of all the
             % others
-            allnames = obj.exportAxisNames; allnames = allnames(dims2pack);
-            allnames = cat(1,allnames(:)',repmat({'_'},1,length(allnames)));
-            obj.axis_pr(dims2pack(1)).name = strcat(allnames{1:end-1});
+            packednames2 = cat(1,packednames(:)',repmat({'_'},1,length(packednames)));
+            obj.axis_pr(dims2pack(1)).name = strcat(packednames2{1:end-1});
             
             % Clear the remaining axes names
             for i = 2:Nd2p
