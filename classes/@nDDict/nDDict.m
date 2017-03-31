@@ -748,6 +748,38 @@ classdef nDDict
             
             % All good if make it to here
         end
+        
+             
+        function obj = squeezeRegexp(obj,ax_name_regexp)
+            % Performs a squeeze operation, but only on the axes whose
+            % names match the supplied regular expression
+            
+            % Get logical indices of axes matching regexp
+            Na = length(obj.axis);
+            ind_match = false(1,Na);
+            ind_match(obj.findaxis(ax_name_regexp)) = 1;
+            
+            % Get logical indices of axes of size 1
+            ind_sz1 = cellfun(@(s) length(s),{obj.axis.values}) == 1;
+
+            % Only squeeze the intersection of both of these
+            inds_to_squeeze = (ind_match & ind_sz1);
+            
+            % Permute the axes to be squeezed to the end of the matrix.
+            % These will naturally be disregarded from obj.data
+            inds_remain = ~inds_to_squeeze;
+            inds_remain = find(inds_remain);
+            inds_to_squeeze = find(inds_to_squeeze);
+            obj = obj.permute([inds_remain,inds_to_squeeze]); % (Put dimensions to keep to be first
+            
+            % Lastly, remove them from obj.axis
+            obj.axis_pr = obj.axis_pr(1:max(length(inds_remain),2));    % (Should not ever trim down to less than 2, due rule RE keeping things as matrices)
+            
+            % Run fixAxes, just incase!
+            obj = obj.fixAxes;
+            obj.checkDims;
+
+        end
 
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % OVERLOADED FUNCTIONS % % % % % % % % % % %

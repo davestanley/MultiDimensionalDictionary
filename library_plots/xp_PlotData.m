@@ -27,9 +27,25 @@ function xp_PlotData (xp, op)
         end
     end
 
+    % Squeeze out any 1D placeholder axes ("Dim X"). These can be created
+    % by the unpacking operation above. 
+    xp = xp.squeezeRegexp('Dim');
     
     % Convert xp to DynaSim data struct
     data = xPlt2DynaSim(xp);
+    
+    % Remove NaNs introduced due to packing
+    for i = 1:length(data)
+        labels = data(i).labels;
+        labels_sans_time = labels(~strcmp(labels,'time'));
+
+        for j = 1:length(labels_sans_time)
+            d = data(i).(labels_sans_time{j});
+            ind = all(~isnan(d),1);
+            d=d(:,ind);
+            data(i).(labels_sans_time{j}) = d;
+        end
+    end
     
     % Feed into original PlotData command, making sure it doesn't generate
     % new figures (rather, should produce it in the current subplot)
