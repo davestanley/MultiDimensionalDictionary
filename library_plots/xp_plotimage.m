@@ -1,6 +1,6 @@
 
 
-function xp_plotimage (xp,op)
+function hxp = xp_plotimage (xp,op)
     % xp must be 1D
     
     if nargin < 2
@@ -23,7 +23,7 @@ function xp_plotimage (xp,op)
         rgb = imresize(rgb,op.scale);
     end
     
-    imshow(rgb);
+    hxp.hcurr = imshow(rgb);
     
 end
 
