@@ -241,6 +241,47 @@ classdef nDDict
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
+        function obj = sortAxis(obj,ax_id,sort_varargin)
+            % Sorts the entries of a specific axis. ax_id can be a regexp
+            % to identify an axis, or simply the axis number {1..ndims}
+            
+            if nargin < 3
+                sort_varargin = {};
+            end
+            
+            % If no axes specified, sort everything
+            if nargin < 2
+                ax_id = 1:ndims(obj);
+            end
+            
+            % Convert regexp to index
+            if ischar(ax_id)
+                ax_id = obj.findaxis(ax_id);
+            end
+            
+            % If more than one axis specified for sorting, sort them 1 at a
+            % time.
+            if length(ax_id) > 1;
+                for i = 1:length(ax_id);
+                    obj = obj.sortAxis(ax_id(i),sort_varargin{:});
+                end
+                return;
+            end
+            
+            % Identify I, proper ordering based on sort
+            ax_vals = obj.axis_pr(ax_id).values;
+            [~,I] = sort(ax_vals,sort_varargin{:});
+            
+            % Build a cell array of indices to use
+            inds = repmat({':'},1,ndims(obj));
+            inds{ax_id} = I;
+            
+            % Perform the sort on the desired dimension, leaving everything
+            % else alone
+            obj = obj.subset(inds{:});
+            
+        end
+        
         function obj = mergeDims(obj,dims2pack)
             
             if isempty(dims2pack); return; end
