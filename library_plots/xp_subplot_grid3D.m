@@ -1,6 +1,6 @@
 
 
-function hsg = xp_subplot_grid3D (xp, op)
+function hxp = xp_subplot_grid3D (xp, op)
 	% This handles 1D, 2D, or 3D xp data. 3D data is tiled across the
 	% screen in different figures.
     
@@ -38,7 +38,7 @@ function hsg = xp_subplot_grid3D (xp, op)
     sz = size(xp);
     
     if ndims(xp.data) <= 2
-        hsg = xp_subplot_grid (xp, display_mode, transpose_on);
+        hxp = xp_subplot_grid (xp, display_mode, transpose_on);
         
         
     elseif ndims(xp.data) == 3
@@ -48,22 +48,22 @@ function hsg = xp_subplot_grid3D (xp, op)
         
         for i = 1:N1
             figure;
-            hsg(i) = subplot_grid(N2,N3,subplot_grid_options{:});
+            hxp.hcurr(i) = subplot_grid(N2,N3,subplot_grid_options{:});
             if subplotzoom_enabled
-                hsg(i) = subplot_grid(N2,N3,subplot_grid_options{:});
+                hxp.hcurr(i) = subplot_grid(N2,N3,subplot_grid_options{:});
             else
-                hsg(i) = subplot_grid(N2,N3,'no_zoom',subplot_grid_options{:});
+                hxp.hcurr(i) = subplot_grid(N2,N3,'no_zoom',subplot_grid_options{:});
             end
             
-            if ~verLessThan('matlab','8.4'); hsg(i).figplace(N1,i); end
+            if ~verLessThan('matlab','8.4'); hxp.hcurr(i).figplace(N1,i); end
             mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(i))];
-            hsg(i).figtitle(mytitle);
+            hxp.hcurr(i).figtitle(mytitle);
             c=0;
             for j = 1:N2
                 for k = 1:N3
                     c=c+1;
-                    hsg(i).set_gca(c);
-                    xp.data{i,j,k}(); 
+                    hxp.hcurr(i).set_gca(c);
+                    hxp.hsub = xp.data{i,j,k}(); 
                     if j == 1 && k == 1 && ~isempty(legend1)
                         % Place a legend in the 1st subplot
                         legend(legend1{1:min(end,op.max_legend)});
@@ -74,13 +74,13 @@ function hsg = xp_subplot_grid3D (xp, op)
             % Do labels for rows
             if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
                 rowstr = setup_axis_labels(xp.axis(2));
-                hsg(i).rowtitles(rowstr);
+                hxp.hcurr(i).rowtitles(rowstr);
             end
             
             % Do labels for columns
             if ~strcmp(xp.axis(3).name(1:3),'Dim')          % Only display if its not an empty axis
                 colstr = setup_axis_labels(xp.axis(3));
-                hsg(i).coltitles(colstr);
+                hxp.hcurr(i).coltitles(colstr);
             end
             
         end

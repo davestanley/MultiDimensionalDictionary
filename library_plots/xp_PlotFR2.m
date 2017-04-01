@@ -1,6 +1,6 @@
 
 
-function xp_PlotFR2 (xp, op)
+function hxp = xp_PlotFR2 (xp, op)
     % xp must be 1x1 (e.g. 0 dimensional)
     if nargin < 2
         op = struct;
@@ -23,7 +23,7 @@ function xp_PlotFR2 (xp, op)
     
     % Feed into original PlotFR2 command, making sure it doesn't generate
     % new figures (rather, should produce it in the current subplot)
-    PlotFR2(data,op.args{:},'lock_gca',true);
+    hxp.hcurr = PlotFR2(data,op.args{:},'lock_gca',true);
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end

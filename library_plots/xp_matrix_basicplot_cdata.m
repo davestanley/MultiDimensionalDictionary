@@ -1,6 +1,6 @@
 
 
-function xp_matrix_basicplot_cdata (xp)
+function hxp = xp_matrix_basicplot_cdata (xp)
     % xp must be 1D
     
     h0 = gcf; ha0 = gca;
@@ -13,7 +13,7 @@ function xp_matrix_basicplot_cdata (xp)
     
     % Restore original axes and display image
     figure(h0); axes(ha0);
-    imshow(cdata);
+    hxp.hcurr = imshow(cdata);
 end
 
 

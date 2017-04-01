@@ -1,6 +1,6 @@
 
 
-function h = xp_handles_newfig (xp, op)
+function hxp = xp_handles_newfig (xp, op)
     % xp must be 1D
     
     if ~isvector(xp.data); error('For xp_handles_newfig, data must be 1D'); end
@@ -61,20 +61,20 @@ function h = xp_handles_newfig (xp, op)
             pos(3:4) = pos(3:4) * op.supersize_me_factor;
         end
         
-        h.hf(i) = figure('Units','normalized','Position',pos,'visible',op.visible); h.hsg(i) = xp.data{i}();
+        hxp.hcurr(i) = figure('Units','normalized','Position',pos,'visible',op.visible); hxp.hsub{i} = xp.data{i}();
         
         % Add a title to the current figure
-        if isa(h.hsg(i),'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
+        if isa(hxp.hsub(i),'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
             mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(i))];
-            h.hsg(i).figtitle(mytitle);
+            hxp.hsub(i).figtitle(mytitle);
         end
         
         if op.save_figures
             ext = '.png';
             filename = [op.save_figname_prefix num2str(i) ext];
             
-            set(h.hf(i),'PaperPositionMode','auto');
-            tic; print(h.hf(i),'-dpng','-r300','-opengl',fullfile(foldername,filename));toc
+            set(hxp.hcurr(i),'PaperPositionMode','auto');
+            tic; print(hxp.hcurr(i),'-dpng','-r300','-opengl',fullfile(foldername,filename));toc
         end
         
     end

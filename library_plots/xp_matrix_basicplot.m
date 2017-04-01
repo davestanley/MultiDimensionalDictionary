@@ -1,6 +1,6 @@
 
 
-function xp_matrix_basicplot (xp, options)
+function hxp = xp_matrix_basicplot (xp, options)
     % xp must be 1x1 (e.g. 0 dimensional)
     
     
@@ -21,9 +21,9 @@ function xp_matrix_basicplot (xp, options)
     
     if ~isempty(xp.meta.datainfo(1).values)
         t = xp.meta.datainfo(1).values;
-        plot(t,xp.data{1});
+        hxp.hcurr = plot(t,xp.data{1});
     else
-        plot(xp.data{1});
+        hxp.hcurr = plot(xp.data{1});
     end
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end

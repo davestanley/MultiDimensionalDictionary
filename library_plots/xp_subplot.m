@@ -1,6 +1,6 @@
 
 
-function h=xp_subplot (xp,options)
+function hxp=xp_subplot (xp,options)
     % xp must be 1D or 2D
     
     if nargin < 2
@@ -34,18 +34,18 @@ function h=xp_subplot (xp,options)
     
     if display_mode == 0
         
-        h=xp_subplot1_noimage(xp);
+        hxp=xp_subplot1_noimage(xp);
         
     elseif display_mode == 1
         
-        h=xp_subplot2_asimage(xp);
+        hxp=xp_subplot2_asimage(xp);
 
     end
 end
 
 
 
-function haxes=xp_subplot1_noimage(xp)
+function hxp=xp_subplot1_noimage(xp)
 
         do_tight_subplot = 0;
         
@@ -55,23 +55,23 @@ function haxes=xp_subplot1_noimage(xp)
         
         % Creates a new figure with a bunch of subplots
         %h = figure('Units','normalized','Position',[0,0,1,1]);
-        if do_tight_subplot; haxes = tight_subplot(N1,N2,[.03 .03],[.05 .03],[.03 .01]); end
+        if do_tight_subplot; hxp.hcurr = tight_subplot(N1,N2,[.03 .03],[.05 .03],[.03 .01]); end
         
         c=0;
         for i = 1:N1
             for j = 1:N2
                 c=c+1;
                 %figure(h);
-                if do_tight_subplot; set(gcf,'CurrentAxes',haxes(c));
-                else haxes = subplot(N1,N2,c); end
-                xp.data{i,j}(); 
+                if do_tight_subplot; set(gcf,'CurrentAxes',hxp.hcurr(c));
+                else hxp.hcurr = subplot(N1,N2,c); end
+                hxp.hsub = xp.data{i,j}(); 
                 xp2 = xp.subset(i,j);
                 title(strrep(xp2.getaxisinfo(0),'_',' '));
             end
         end
 end
 
-function haxes = xp_subplot2_asimage(xp)
+function hxp = xp_subplot2_asimage(xp)
 
     do_tight_subplot = 0;
 
@@ -83,16 +83,16 @@ function haxes = xp_subplot2_asimage(xp)
     h0 = gcf; ha0 = gca;
     %h = figure('visible','off','Position',[ 440   659   497   139]);
     h = figure('visible','off');
-    if do_tight_subplot; haxes = tight_subplot(N1,N2,[.03 .03],[.05 .03],[.03 .01]); end
+    if do_tight_subplot; hxp.hcurr = tight_subplot(N1,N2,[.03 .03],[.05 .03],[.03 .01]); end
     
     c=0;
     for i = 1:N1
         for j = 1:N2
             c=c+1;
             
-            if do_tight_subplot; set(gcf,'CurrentAxes',haxes(c));
-            else haxes = subplot(N1,N2,c); end
-            xp.data{i,j}(); 
+            if do_tight_subplot; set(gcf,'CurrentAxes',hxp.hcurr(c));
+            else hxp.hcurr = subplot(N1,N2,c); end
+            hxp.hsub = xp.data{i,j}(); 
             xp2 = xp.subset(i,j);
             title(strrep(xp2.getaxisinfo(0),'_',' '));
         end

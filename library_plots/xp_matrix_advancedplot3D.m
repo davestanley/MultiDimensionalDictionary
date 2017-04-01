@@ -1,6 +1,6 @@
 
 
-function xp_matrix_advancedplot3D (xp, op)
+function hxp = xp_matrix_advancedplot3D (xp, op)
     % xp must be 1x1 (e.g. 0 dimensional)
     
     
@@ -30,7 +30,7 @@ function xp_matrix_advancedplot3D (xp, op)
             plot(t,d);
         elseif ndims(d) == 3
             for i = 1:size(d,3)
-                hold on; plot(t,d(:,:,i));
+                hold on; hxp.hcurr = plot(t,d(:,:,i));
             end
         else
             error('Too many dimensions');

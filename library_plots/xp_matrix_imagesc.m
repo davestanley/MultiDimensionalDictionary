@@ -1,6 +1,6 @@
 
 
-function xp_matrix_imagesc (xp,options)
+function hxp = xp_matrix_imagesc (xp,options)
     % xp must be 1x1 (e.g. zero dimensional)
     
     
@@ -37,9 +37,9 @@ function xp_matrix_imagesc (xp,options)
     end
     
     if ~isempty(zlims)
-        imagesc(xdat,ydat,d,zlims);
+        hxp.hcurr = imagesc(xdat,ydat,d,zlims);
     else
-        imagesc(xdat,ydat,d);
+        hxp.hcurr = imagesc(xdat,ydat,d);
     end
     set(gca,'YDir','normal');
     

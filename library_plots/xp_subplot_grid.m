@@ -1,6 +1,6 @@
 
 
-function hsg = xp_subplot_grid (xp, op)
+function hxp = xp_subplot_grid (xp, op)
 	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
     if nargin < 2
@@ -52,22 +52,22 @@ function hsg = xp_subplot_grid (xp, op)
         
             if display_mode == 1 
                 h0 = gcf; ha0 = gca;
-                h = figure('visible','off');
+                h1 = figure('visible','off');
             else
                 %figure;
             end
             
             if subplotzoom_enabled
-                hsg = subplot_grid(N1,N2,subplot_grid_options{:});
+                hxp.hcurr = subplot_grid(N1,N2,subplot_grid_options{:});
             else
-                hsg = subplot_grid(N1,N2,'no_zoom',subplot_grid_options{:});
+                hxp.hcurr = subplot_grid(N1,N2,'no_zoom',subplot_grid_options{:});
             end
             c=0;
             for i = 1:N1
                 for j = 1:N2
                     c=c+1;
-                    hsg.set_gca(c);
-                    xp.data{i,j}();
+                    hxp.hcurr.set_gca(c);
+                    hxp.hsub{i,j} = xp.data{i,j}();
                     if i == 1 && j == 1 && ~isempty(legend1)
                         % Place a legend in the 1st subplot
                         legend(legend1{1:min(end,op.max_legend)});
@@ -83,20 +83,20 @@ function hsg = xp_subplot_grid (xp, op)
             % Do labels for rows
             if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if its not an empty axis
                 rowstr = setup_axis_labels(xp.axis(1));
-                hsg.rowtitles(rowstr);
+                hxp.hcurr.rowtitles(rowstr);
             end
             
             % Do labels for columns
             if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
                 colstr = setup_axis_labels(xp.axis(2));
-                hsg.coltitles(colstr);
+                hxp.hcurr.coltitles(colstr);
             end
             
             
             if display_mode == 1
                 
-                cdata = print(h,'-RGBImage');
-                close(h);
+                cdata = print(h1,'-RGBImage');
+                close(h1);
 
                 % Restore original axes and display image
                 figure(h0); axes(ha0);

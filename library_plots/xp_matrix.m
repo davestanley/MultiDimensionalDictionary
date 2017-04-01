@@ -1,6 +1,6 @@
 
 
-function xp_matrix (xp, legend_flag)
+function hxp = xp_matrix (xp, legend_flag)
     % xp must be 1x1 (e.g. 0 dimensional)
     
     if nargin < 2, legend_flag = []; end
@@ -20,9 +20,9 @@ function xp_matrix (xp, legend_flag)
     end
 
     if isnumeric(axis_values{1})
-        plot(axis_values{1}, xp.data{1})
+        hxp.hcurr = plot(axis_values{1}, xp.data{1})
     else
-        plot(xp.data{1})
+        hxp.hcurr = plot(xp.data{1})
     end
     
     box off
