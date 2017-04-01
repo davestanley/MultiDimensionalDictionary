@@ -15,8 +15,8 @@ function xp_matrix_imagesc (xp,options)
     if ~isfield(options,'ylims'); options.ylims = []; end
     if ~isfield(options,'xdat'); options.xdat= []; end
     if ~isfield(options,'ydat'); options.ydat = []; end
-    if ~isfield(options,'clims'); options.clims = []; end
-    if ~isfield(options,'show_colorbar'); options.show_colorbar = 0; end
+    if ~isfield(options,'zlims'); options.zlims = []; end
+    if ~isfield(options,'do_colorbar'); options.do_colorbar = false; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -26,26 +26,27 @@ function xp_matrix_imagesc (xp,options)
     ylims = options.ylims;
     xdat = options.xdat;
     ydat = options.ydat;
-    clims = options.clims;
-    show_colorbar = options.show_colorbar;
+    zlims = options.zlims;
+    do_colorbar = options.do_colorbar;
     
     
-    if transpose_on;
+    if transpose_on
         d = xp.data{1}';
     else
         d = xp.data{1}';
     end
     
-    if ~isempty(clims)
-        imagesc(xdat,ydat,d,clims);
+    if ~isempty(zlims)
+        imagesc(xdat,ydat,d,zlims);
     else
         imagesc(xdat,ydat,d);
     end
+    set(gca,'YDir','normal');
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
     
-    if show_colorbar
+    if do_colorbar
         colorbar;
     end
     

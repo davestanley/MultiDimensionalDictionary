@@ -13,8 +13,10 @@ function hsg = xp_subplot_grid (xp, op)
     op = struct_addDef(op,'display_mode',0);
     op = struct_addDef(op,'subplotzoom_enabled',1);
     op = struct_addDef(op,'legend1',[]);
+    op = struct_addDef(op,'do_colorbar',false);
     op = struct_addDef(op,'max_legend',20);
     op = struct_addDef(op,'force_rowvect',false);
+    op = struct_addDef(op,'zlims',[]);
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -23,6 +25,8 @@ function hsg = xp_subplot_grid (xp, op)
     display_mode = op.display_mode;
     subplotzoom_enabled = op.subplotzoom_enabled;
     legend1 = op.legend1;
+    do_colorbar = op.do_colorbar;
+    zlims = op.zlims;               % This might be used for setting the colorbar limits (clims), but cannot get it working with subplot_grid
     
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)
@@ -67,6 +71,11 @@ function hsg = xp_subplot_grid (xp, op)
                     if i == 1 && j == 1 && ~isempty(legend1)
                         % Place a legend in the 1st subplot
                         legend(legend1{1:min(end,op.max_legend)});
+                    end
+                    if i == 1 && j == 1 && do_colorbar
+                        colorbar;
+                        %hsg.colorbar;
+                        %hsg.colorbar([],zlims);
                     end
                 end
             end
