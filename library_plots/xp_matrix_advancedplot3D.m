@@ -27,7 +27,7 @@ function hxp = xp_matrix_advancedplot3D (xp, op)
     d = xp.data{1};
     if ~isempty(d)
         if ismatrix(d)
-            plot(t,d);
+            hxp.hcurr = plot(t,d);
         elseif ndims(d) == 3
             for i = 1:size(d,3)
                 hold on; hxp.hcurr = plot(t,d(:,:,i));
