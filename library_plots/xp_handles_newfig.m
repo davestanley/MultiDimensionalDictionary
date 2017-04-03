@@ -39,6 +39,7 @@ function hxp = xp_handles_newfig (xp, op)
     if op.supersize_me && strcmp(op.visible,'on')
         fprintf('For supersize_me mode, visible should be off. Setting to off \n');
         op.visible = 'off';
+        op.save_figures = 1;
     end
 
     if ~op.save_figures && strcmp(op.visible,'off')
