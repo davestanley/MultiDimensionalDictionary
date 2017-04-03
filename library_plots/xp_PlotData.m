@@ -1,6 +1,6 @@
 
 
-function xp_PlotData (xp, op)
+function hxp = xp_PlotData (xp, op)
     % xp must be 1x1 (e.g. 0 dimensional)
     if nargin < 2
         op = struct;
@@ -49,7 +49,7 @@ function xp_PlotData (xp, op)
     
     % Feed into original PlotData command, making sure it doesn't generate
     % new figures (rather, should produce it in the current subplot)
-    PlotData(data,op.args{:},'lock_gca',true);
+    hxp.hcurr = PlotData(data,op.args{:},'lock_gca',true);
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
