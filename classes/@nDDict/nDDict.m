@@ -368,8 +368,24 @@ classdef nDDict
             obj.data_pr = dat;
         end
         
+        function obj = packDim2Mat(obj,dim_src,dim_target)
+            obj = packDim(obj,dim_src,dim_target);
+        end
+        
+        function obj = packDim2Cell(obj,dim_src,dim_target)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        function obj = packDim2xPlt(obj,dim_src,dim_target)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        
         function obj = packDim(obj,dim_src,dim_target)
-            
+            % Warning - this command will be replaced in the future. Use
+            % packDim2Mat instead. See also packDim2Cell, packDim2xPlt.
             if isstr(dim_src)
                 dim_src_string = dim_src;
                 dim_src = obj.axis.findAxes(dim_src_string);
@@ -531,7 +547,25 @@ classdef nDDict
             obj_out = obj_out.importAxisNames(names);
         end
         
+        
+        function obj_new = unpackDim2Mat(obj, dim_src, dim_target, dim_name, dim_values)
+            % #Toimplement
+            obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values);
+        end
+        
+        function obj_new = unpackDim2Cell(obj, dim_src, dim_target, dim_name, dim_values)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        function obj_new = unpackDim2xPlt(obj, dim_src, dim_target, dim_name, dim_values)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
         function obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values)
+            % Warning - this command will be replaced in the future. Use
+            % unpackDim2Mat instead. See also unpackDim2Cell, unpackDim2xPlt.
             
             % Temporarily linearize obj.data_pr.
             sz0 = size(obj);
