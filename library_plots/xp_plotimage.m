@@ -6,6 +6,8 @@ function hxp = xp_plotimage (xp,op)
     if nargin < 2
         op = struct;
     end
+    
+    hxp = struct;
 
     if isempty(op); op = struct; end;
     

@@ -3,6 +3,8 @@
 function hxp = xp_matrix (xp, legend_flag)
     % xp must be 1x1 (e.g. 0 dimensional)
     
+    hxp = struct;
+    
     if nargin < 2, legend_flag = []; end
     if isempty(legend_flag), legend_flag = 0; end
 

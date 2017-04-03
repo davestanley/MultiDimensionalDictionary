@@ -3,6 +3,7 @@
 function hxp = xp_matrix_imagesc (xp,options)
     % xp must be 1x1 (e.g. zero dimensional)
     
+    hxp = struct;
     
     if nargin < 2
         options = struct;

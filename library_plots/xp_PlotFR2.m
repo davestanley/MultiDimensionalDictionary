@@ -6,6 +6,8 @@ function hxp = xp_PlotFR2 (xp, op)
         op = struct;
     end
     
+    hxp = struct;
+    
     if isempty(op); op = struct; end;
     
     op = struct_addDef(op,'args',{});

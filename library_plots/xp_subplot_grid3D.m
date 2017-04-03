@@ -4,6 +4,8 @@ function hxp = xp_subplot_grid3D (xp, op)
 	% This handles 1D, 2D, or 3D xp data. 3D data is tiled across the
 	% screen in different figures.
     
+    hxp = struct; 
+    
     if nargin < 2
         op = struct;
     end

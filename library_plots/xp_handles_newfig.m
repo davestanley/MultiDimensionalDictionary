@@ -3,6 +3,8 @@
 function hxp = xp_handles_newfig (xp, op)
     % xp must be 1D
     
+    hxp = struct;
+    
     if ~isvector(xp.data); error('For xp_handles_newfig, data must be 1D'); end
     
     if nargin < 2

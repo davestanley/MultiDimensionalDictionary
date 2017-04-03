@@ -3,6 +3,7 @@
 function hxp = xp_matrix_advancedplot3D (xp, op)
     % xp must be 1x1 (e.g. 0 dimensional)
     
+    hxp = struct;
     
     if nargin < 2
         op = struct;

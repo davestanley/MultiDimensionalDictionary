@@ -3,6 +3,7 @@
 function hxp = xp_matrix_basicplot (xp, options)
     % xp must be 1x1 (e.g. 0 dimensional)
     
+    hxp = struct;
     
     if nargin < 2
         options = struct;

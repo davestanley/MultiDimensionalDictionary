@@ -3,6 +3,8 @@
 function hxp=xp_subplot (xp,options)
     % xp must be 1D or 2D
     
+    hxp = struct; 
+    
     if nargin < 2
         options = struct;
     end

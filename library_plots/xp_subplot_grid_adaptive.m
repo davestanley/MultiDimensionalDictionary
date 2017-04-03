@@ -3,6 +3,8 @@
 function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, display_mode, transpose_on)
 	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
+    hxp = struct;
+    
     if nargin < 5
         transpose_on = [];
     end

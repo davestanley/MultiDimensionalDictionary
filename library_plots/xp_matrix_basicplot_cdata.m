@@ -3,6 +3,8 @@
 function hxp = xp_matrix_basicplot_cdata (xp)
     % xp must be 1D
     
+    hxp = struct;
+    
     h0 = gcf; ha0 = gca;
     h = figure('visible','off','Position',[ 440   666   218   132]);
 %     h = figure('visible','off');
