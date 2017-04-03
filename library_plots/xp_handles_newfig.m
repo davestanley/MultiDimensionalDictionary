@@ -21,6 +21,8 @@ function hxp = xp_handles_newfig (xp, op)
     op = struct_addDef(op,'supersize_me',false);
     op = struct_addDef(op,'supersize_me_factor',2);
     op = struct_addDef(op,'max_num_newfigs',5);
+    op = struct_addDef(op,'figwidth',[]);
+    op = struct_addDef(op,'figheight',[]);
     
     
     % Postpend date/time to save path
@@ -58,7 +60,7 @@ function hxp = xp_handles_newfig (xp, op)
             break
         end
         
-        pos = [0,0,1,1];
+        pos = [0,0,op.figwidth,op.figheight];
         if op.supersize_me
             pos(3:4) = pos(3:4) * op.supersize_me_factor;
         end
