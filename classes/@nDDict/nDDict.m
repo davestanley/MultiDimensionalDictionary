@@ -107,6 +107,22 @@ classdef nDDict
                 clear selection2
             end
             
+            % Trim back selection if too long. If size(obj.data_pr) is MxN,
+            % it is okay for selection to be {5,3,Y,Z} as long as Y and Z
+            % are either empty (:) or ones. If they are anything else,
+            % return error!
+            Ns = length(selection);
+            if Ns > Na
+                % Make sure extra selection entries are either "1" or []
+                selection_extra = selection(Na+1:end);
+                are_empties = cellfun(@isempty,selection_extra);
+                are_ones = cellfun(@(s) s == 1, selection_extra);
+                if any(~(are_empties | are_ones))      % If any of the extra selections are NOT either empty or one's...
+                    error('Index exceeds dimensions of nDDict.data');
+                end
+                selection = selection(1:Na);
+            end
+            
             % Replace any ':' entries in selection with []. Empty
             % entries code for taking all entries along a dimension; ':' is
             % an alias for this.
@@ -121,7 +137,7 @@ classdef nDDict
             % If Ns is still wrong dimensions, return error
             Ns = length(selection);
             if Ns ~= Na
-                error('Number of inputs must match dimensionality of nDDict.data_pr');
+                error('Number of inputs must match dimensionality of nDDict.data');
             end
             
             % Convert selection to index if using regular expressions
