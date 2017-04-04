@@ -1,4 +1,4 @@
-function xp_compare_3D(xp, test_handle, significance, flip_axis_flag)
+function xp_compare_3D(xp, test_handle, significance, flip_axis_flag, plot_function)
 
     if nargin < 2, test_handle = []; end
     
@@ -11,6 +11,10 @@ function xp_compare_3D(xp, test_handle, significance, flip_axis_flag)
     if nargin < 4, flip_axis_flag = []; end
     
     if isempty(flip_axis_flag), flip_axis_flag = 0; end
+    
+    if nargin < 5, plot_function = []; end
+    
+    if isempty(plot_function), plot_function = 'imagesc'; end
     
     [xp_dims, xp_sort_index] = sort(size(xp), 2, 'descend');
 
@@ -87,15 +91,40 @@ function xp_compare_3D(xp, test_handle, significance, flip_axis_flag)
     
     %% Plot difference of sample means.
     
-    imagesc(axis_values{2}, axis_values{1}, diff(sample_mean, [], 3))
-    
-    axis xy
-    
-    hold on
-    
-    contour(test(:, :, 2), [1 1], 'LineWidth', 2, 'Color', 'r')
-    
-    contour(test(:, :, 1), [1 1], 'LineWidth', 2, 'Color', [1 .5 0])
+    if strcmp(plot_function, 'imagesc')
+        
+        imagesc(axis_values{2}, axis_values{1}, diff(sample_mean, [], 3))
+        
+        axis xy
+        
+        hold on
+        
+        for d = 1:2
+            
+            imagesc_axis_values{d} = range(axis_values{d})*((1:length(axis_values{d})) - 1)...
+                /(length(axis_values{d}) - 1) + min(axis_values{d});
+            
+        end
+        
+        contour(imagesc_axis_values{2}, imagesc_axis_values{1}, double(test(:, :, 1)), [.5 .5], 'LineWidth', 2, 'Color', [1 0 0])
+        
+        contour(imagesc_axis_values{2}, imagesc_axis_values{1}, double(test(:, :, 2)), [.5 .5], 'LineWidth', 2, 'Color', [1 .5 0])
+        
+    elseif strcmp(plot_function, 'pcolor')
+        
+        h = pcolor(axis_values{2}, axis_values{1}, diff(sample_mean, [], 3));
+        
+        set(h, 'EdgeColor', 'none')
+        
+        axis xy
+        
+        hold on
+        
+        contour(axis_values{2}, axis_values{1}, double(test(:, :, 1)), [.5 .5], 'LineWidth', 2, 'Color', [1 0 0])
+        
+        contour(axis_values{2}, axis_values{1}, double(test(:, :, 2)), [.5 .5], 'LineWidth', 2, 'Color', [1 .5 0])
+        
+    end
     
     %% Make legend.
     
@@ -103,15 +132,15 @@ function xp_compare_3D(xp, test_handle, significance, flip_axis_flag)
     
     if isnumeric(xp.axis(xp_dim_compared).values)
         
-        mylegend{1} = sprintf('%d < %d', xp.axis(xp_dim_compared).values);
+        mylegend{1} = sprintf('%g < %g', xp.axis(xp_dim_compared).values);
         
-        mylegend{2} = sprintf('%d > %d', xp.axis(xp_dim_compared).values);
+        mylegend{2} = sprintf('%g > %g', xp.axis(xp_dim_compared).values);
         
     elseif iscellstr(xp.axis(xp_dim_compared).values)
         
-        mylegend{1} = sprintf('%s < %s', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values{:});
+        mylegend{1} = sprintf('%s < %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
         
-        mylegend{2} = sprintf('%s > %s', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values{:});
+        mylegend{2} = sprintf('%s > %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
         
     end
     
