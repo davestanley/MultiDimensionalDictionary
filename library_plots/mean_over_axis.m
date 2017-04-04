@@ -2,7 +2,7 @@ function obj_out = mean_over_axis(obj, axis_name, function_handle, varargin)
 
     if nargin < 3, function_handle = []; end
     
-    if isempty(function_handle), function_handle = @mean; end
+    if isempty(function_handle), function_handle = @nanmean; end
     
     if nargin < 4, varargin = {}; end
 
