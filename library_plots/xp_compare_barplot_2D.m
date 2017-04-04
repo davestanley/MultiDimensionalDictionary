@@ -1,4 +1,4 @@
-function xp_compare_2D(xp, test_handle, significance, transpose_flag)
+function xp_compare_barplot_2D(xp, test_handle, significance, transpose_flag, flip_axis_flag)
 
     if nargin < 2, test_handle = []; end
     
@@ -11,6 +11,10 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     if nargin < 4, transpose_flag = []; end
     
     if isempty(transpose_flag), transpose_flag = 0; end
+
+    if nargin < 5, flip_axis_flag = []; end
+    
+    if isempty(flip_axis_flag), flip_axis_flag = 0; end
 
     [xp_dims, xp_sort_index] = sort(size(xp), 2, 'descend');
 
@@ -43,6 +47,18 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
         
         axis_values([1 2]) = axis_values([2 1]);
     
+    end
+    
+    if flip_axis_flag
+        
+        indices = cell(1, ndims(xp));
+        indices(:) = {':'};
+        indices(xp_dim_compared) = {[2 1]};
+        
+        xp.data = xp.data(indices{:});
+        
+        xp.axis(xp_dim_compared).values = xp.axis(xp_dim_compared).values([2 1]);
+        
     end
     
     for sample = 1:2
@@ -87,7 +103,7 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag)
     
     barwitherr(norminv(1 - significance/2)*sample_se, sample_mean)
     
-    set(gca, 'XTickLabel', axis_values{1})
+    set(gca, 'XTick', 1:length(axis_values{1}), 'XTickLabel', axis_values{1}, 'XTickLabelRotation', 20)
     
     axis tight, box off
     
