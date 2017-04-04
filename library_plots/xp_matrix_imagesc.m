@@ -1,11 +1,17 @@
 
 
-function xp_matrix_imagesc (xp, transpose_on)
+function xp_matrix_imagesc (xp, transpose_on, colorbar_on)
     % xp must be 1x1 (e.g. zero dimensional)
     
-    if nargin < 2, transpose_on = 0; end
+    if nargin < 2, transpose_on = []; end
+    
+    if isempty(transpose_on), transpose_on = 0; end
     
     if transpose_on, xp = xp_matrix_transpose(xp); end
+    
+    if nargin < 3, colorbar_on = []; end
+    
+    if isempty(colorbar_on), colorbar_on = 0; end
     
     meta = xp.meta;
     
@@ -18,12 +24,17 @@ function xp_matrix_imagesc (xp, transpose_on)
             axis_labels{d} = '';
             axis_values{d} = 1:size(xp.data{1}, d);
         end
+        
+        if iscell(axis_values{d})
+            axis_values{d} = 1:size(xp.data{1}, d);
+        end
     end
     
-    imagesc(axis_values{1}, axis_values{2}, xp.data{1}');
+    imagesc(axis_values{1}, axis_values{2}, xp.data{1}')
     
     axis xy
-    %colorbar
+    
+    if colorbar_on, colorbar; end
     
 end
 
