@@ -1,38 +1,27 @@
 
 
-function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, display_mode, transpose_on)
+function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, transpose_on, sync_axes_flag)
 	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
-    if nargin < 5
-        transpose_on = [];
-    end
+    if nargin < 6, sync_axes_flag = []; end
     
-    if nargin < 4
-        display_mode = [];
-    end
+    if isempty(sync_axes_flag), sync_axes_flag = ''; end
+    
+    if nargin < 5, transpose_on = []; end
+    
+    if isempty(transpose_on), transpose_on = 0; end
     
     if nargin < 3, max_subplot_side = []; end
     
-    if nargin < 2, dim_order = []; end
+    if isempty(max_subplot_side), max_subplot_side = 15; end
     
-    if isempty(transpose_on), transpose_on = 0; end
+    if nargin < 2, dim_order = []; end
     
     if transpose_on && ismatrix(xp)
         xp = xp.transpose;
     elseif transpose_on && ~ismatrix(xp.data)
         error('xp must be a matrix (e.g. ndims < 3) in order to use transpose');
     end
-    
-    if isempty(display_mode), display_mode = 0; end
-            % Display_mode: 0-Just plot directly
-                          % 1-Plot as an image (cdata)
-                          % 2-Save to a figure file 
-    
-    if verLessThan('matlab','8.4') && display_mode == 1 
-        warning('display_mode==1 might not work with earlier versions of MATLAB.')
-    end
-    
-    if isempty(max_subplot_side), max_subplot_side = 15; end
     
     % Parameters
     %subplot_grid_options = {'no_zoom'};
@@ -72,33 +61,62 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, displ
     else
         last_figure = 0;
     end
+        
+    % Indices of rows/columns.
+    
+    [row_index, col_index] = deal(nan(size(dim_indices, 1), 1));
     
     for plot = 1:size(dim_indices, 1)
         
         fig_for_plot = figure_indices(plot);
+        
+        row_index(plot) = ceil(subplot_indices(plot)/no_cols);
+        col_index(plot) = mod(subplot_indices(plot) - 1, no_cols) + 1;
 
         if new_fig_indices(plot)
             
             figure(last_figure + fig_for_plot);
             
-            % if display_mode == 1
-            %     h0 = figure(figure_indices(plot)); ha0 = gca;
-            %     h = figure(figure_indices(plot), 'visible', 'off');
-            % else
-            %     h0 = figure(figure_indices(plot));
-            % end
-            
             hts{fig_for_plot} = tight_subplot(no_rows, no_cols);
+            
+            if fig_for_plot >= 2
+                
+                switch sync_axes_flag
+                    
+                    case ''
+                    
+                    case 'row'
+                        
+                        fig_row_indices = ceil(suplot_indices(figure_indices == fig_for_plot - 1)/no_cols);
+                        
+                        for r = 1:max(fig_row_indices)
+                            
+                            sync_axes(hts{fig_for_plot - 1}(fig_row_indices == r))
+                            
+                        end
+                        
+                    case 'column'
+                        
+                        fig_col_indices = mod(suplot_indices(figure_indices == fig_for_plot - 1) - 1, no_cols) + 1;
+                        
+                        for c = 1:max(fig_col_indices)
+                            
+                            sync_axes(hts{fig_for_plot - 1}(fig_col_indices == c))
+                            
+                        end
+                        
+                    case 'all'
+                        
+                        sync_axes(hts{fig_for_plot - 1})
+                        
+                end
+                
+            end
             
         end
         
         axes(hts{fig_for_plot}(subplot_indices(plot)))
         xp.data{dim_indices{plot, :}}();
-        
-        % Titles for subplots or rows/columns.
-        
-        row_index = ceil(subplot_indices(plot)/no_cols);
-        col_index = mod(subplot_indices(plot) - 1, no_cols) + 1;
         
         % Do labels for rows
         rowstr = setup_axis_labels(xp.axis(1));
@@ -112,17 +130,17 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, displ
         
         else
         
-            if col_index == 1
+            if col_index(plot) == 1
                 
-                ylabel(rowstr{row_index})
+                ylabel(rowstr{row_index(plot)})
                 
             end
             
-            if row_index == 1
+            if row_index(plot) == 1
                 
-                title(colstr{col_index})
+                title(colstr{col_index(plot)})
             
-            elseif row_index == no_rows
+            elseif row_index(plot) == no_rows
         
                 % Do labels for x-axis.
                 xaxis_name = 'matrix_dim_1';
@@ -152,17 +170,6 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, displ
         end
         
     end
-    
-    % if display_mode == 1
-    % 
-    %     cdata = print(h,'-RGBImage');
-    %     close(h);
-    % 
-    %     % Restore original axes and display image
-    %     figure(h0); axes(ha0);
-    %     imshow(cdata);
-    % 
-    % end
         
 end
 
