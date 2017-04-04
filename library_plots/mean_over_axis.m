@@ -1,4 +1,10 @@
-function obj_out = mean_over_axis(obj, axis_name)
+function obj_out = mean_over_axis(obj, axis_name, function_handle, varargin)
+
+    if nargin < 3, function_handle = []; end
+    
+    if isempty(function_handle), function_handle = @mean; end
+    
+    if nargin < 4, varargin = {}; end
 
     %% Finding first singleton dimension.
 
@@ -26,7 +32,9 @@ function obj_out = mean_over_axis(obj, axis_name)
     
     %% Taking mean.
     
-    obj_out.data = cellfun(@(x) nanmean(x, first_all_singleton), obj_out.data, 'UniformOutput', 0);
+    varargin{end + 1} = first_all_singleton;
+    
+    obj_out.data = cellfun(@(x) feval(function_handle, x, varargin{:}), obj_out.data, 'UniformOutput', 0);
     
     obj_out = squeeze(obj_out);
     
