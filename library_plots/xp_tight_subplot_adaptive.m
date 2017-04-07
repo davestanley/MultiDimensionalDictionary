@@ -3,11 +3,11 @@
 function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, transpose_on, sync_axes_flag)
 	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
-    if nargin < 6, sync_axes_flag = []; end
+    if nargin < 5, sync_axes_flag = []; end
     
     if isempty(sync_axes_flag), sync_axes_flag = ''; end
     
-    if nargin < 5, transpose_on = []; end
+    if nargin < 4, transpose_on = []; end
     
     if isempty(transpose_on), transpose_on = 0; end
     
@@ -50,6 +50,8 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, trans
     
     new_fig_indices = diff([0; figure_indices]);
     
+    last_fig_indices = diff([figure_indices; max(figure_indices) + 1]);
+    
     open_figures = findall(0, 'Type', 'figure');
     
     if ~isempty(open_figures)
@@ -78,40 +80,6 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, trans
             figure(last_figure + fig_for_plot);
             
             hts{fig_for_plot} = tight_subplot(no_rows, no_cols);
-            
-            if fig_for_plot >= 2
-                
-                switch sync_axes_flag
-                    
-                    case ''
-                    
-                    case 'row'
-                        
-                        fig_row_indices = ceil(suplot_indices(figure_indices == fig_for_plot - 1)/no_cols);
-                        
-                        for r = 1:max(fig_row_indices)
-                            
-                            sync_axes(hts{fig_for_plot - 1}(fig_row_indices == r))
-                            
-                        end
-                        
-                    case 'column'
-                        
-                        fig_col_indices = mod(suplot_indices(figure_indices == fig_for_plot - 1) - 1, no_cols) + 1;
-                        
-                        for c = 1:max(fig_col_indices)
-                            
-                            sync_axes(hts{fig_for_plot - 1}(fig_col_indices == c))
-                            
-                        end
-                        
-                    case 'all'
-                        
-                        sync_axes(hts{fig_for_plot - 1})
-                        
-                end
-                
-            end
             
         end
         
@@ -167,6 +135,34 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, trans
             
             mtit(mytitle)
         
+        end
+        
+        if last_fig_indices(plot)
+            
+            switch sync_axes_flag
+                
+                case ''
+                    
+                case 'row'
+                    
+                    fig_row_indices = ceil(subplot_indices(figure_indices == fig_for_plot)/no_cols);
+                    for r = 1:max(fig_row_indices)
+                        sync_axes(hts{fig_for_plot}(fig_row_indices == r))
+                    end
+                    
+                case 'column'
+                    
+                    fig_col_indices = mod(subplot_indices(figure_indices == fig_for_plot) - 1, no_cols) + 1;
+                    for c = 1:max(fig_col_indices)
+                        sync_axes(hts{fig_for_plot}(fig_col_indices == c))
+                    end
+                    
+                case 'all'
+                    
+                    sync_axes(hts{fig_for_plot - 1})
+                    
+            end
+            
         end
         
     end
