@@ -69,9 +69,9 @@ function hxp = xp_handles_newfig (xp, op)
         hxp.hcurr(i) = figure('Units','normalized','Position',pos,'visible',op.visible); hxp.hsub{i} = xp.data{i}();
         
         % Add a title to the current figure
-        if isa(hxp.hsub(i),'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
+        if isa(hxp.hsub{i}.hcurr,'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
             mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(i))];
-            hxp.hsub(i).figtitle(mytitle);
+            hxp.hsub{i}.hcurr.figtitle(mytitle);
         end
         
         if op.save_figures
