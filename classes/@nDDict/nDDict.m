@@ -657,6 +657,30 @@ classdef nDDict
                 
         end
         
+        function obj = alignAxes(obj, obj2)
+           
+            obj_axnames = obj.get_obj_axis_names;
+            obj2_axnames = obj2.get_obj_axis_names;
+            
+            if length(obj_axnames) == length(obj2_axnames)
+                no_axes = length(obj_axnames);
+            else
+                error('alignAxes can only be used with two nDDict objects having the same axes.')
+            end
+            
+            obj_new_axis_order = nan(1, no_axes);
+            for a = 1:no_axes
+                obj_new_axis_order(a) = find(strcmp(obj2_axnames{a}, obj_axnames));
+            end
+            
+            if any(isnan(obj_new_axis_order))
+                error('alignAxes can only be used with two nDDict objects having the same axes.')
+            else
+                obj = obj.permute(obj_new_axis_order);
+            end
+            
+        end
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
         % % % % % % % % % % % HOUSEKEEPING FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -905,19 +929,12 @@ classdef nDDict
                 error('Axis %s already exists.', new_axis_name)
             end
             
+            repmat_size = [ones(1, obj.lastNonSingletonDim) length(new_axis_values)];
+            
             obj_out = obj;
-            obj_out.axis(end + 1).name = new_axis_name;
-            obj_out.axis(end).values = new_axis_values(1);
+            obj_out.data = cellfun(@(x) repmat(x, repmat_size), obj.data, 'UniformOutput', false);
             
-            for val = 2:length(new_axis_values)
-                obj_copy = obj;
-                obj_copy.axis(end + 1).name = new_axis_name;
-                obj_copy.axis(end).values = new_axis_values(val);
-                obj_out = obj_out.merge(obj_copy);
-            end
-            
-            obj_out = permute(obj_out, [1:(new_axis_dim - 1) length(obj_out.axis)...
-                new_axis_dim:(length(obj_out.axis) - 1)]);
+            obj_out = obj_out.unpackDim(obj.lastNonSingletonDim + 1, new_axis_dim, new_axis_name, new_axis_values);
             
         end
         
@@ -997,6 +1014,15 @@ classdef nDDict
             out = cell(1,Na);
             for i = 1:Na
                 out{i} = obj.axis_pr(i).getclass_name;
+            end
+        end
+        
+        function out = get_obj_axis_names(obj)
+            % Returns class type of entries in obj.axis_pr.values            
+            Na = length(obj.axis_pr);
+            out = cell(1,Na);
+            for i = 1:Na
+                out{i} = obj.axis_pr(i).name;
             end
         end
 
