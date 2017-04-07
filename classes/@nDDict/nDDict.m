@@ -910,9 +910,28 @@ classdef nDDict
         end
         
         function obj = permute(obj,order)
+            % Like normal permute command, except order can be either an
+            % array of numerics, or a cell array of strings (regexps)
             checkDims(obj);
-            obj.data_pr = permute(obj.data_pr,order);
-            obj.axis_pr = obj.axis_pr(order);
+            
+            % If order is a cell array of regular expressions, convert to
+            % indices
+            if iscellstr(order)
+                order2 = zeros(1,length(order));
+                for i = 1:length(order)
+                    out = obj.findaxis(order{i});
+                    if length(out) < 1;
+                        error(['Axis ' order{i} ' not found']);
+                    elseif length(out) > 1; error(['Axis not found. Ambiguous regexp ' order{i} ' supplied.']);
+                    end
+                    order2(i) = out;
+                end
+            else
+                order2 = order;
+            end
+            
+            obj.data_pr = permute(obj.data_pr,order2);
+            obj.axis_pr = obj.axis_pr(order2);
         end
         
         function obj = ipermute(obj,order)
