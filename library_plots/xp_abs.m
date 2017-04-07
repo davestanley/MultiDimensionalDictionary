@@ -1,4 +1,4 @@
-        
+
 function obj = xp_abs(obj)
 
 checkDims(obj);
