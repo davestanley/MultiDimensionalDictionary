@@ -15,20 +15,6 @@ function hxp = xp_PlotData (xp, op)
     
     xlims = op.xlims;
     ylims = op.ylims;
-    
-    % If doing rastergrams or raster, re-add axis for populations
-    plot_type = [];
-    ind = find(strcmp(op.args,'plot_type'));
-    if ~isempty(ind); plot_type = op.args{ind+1}; end
-    if any(strcmp(plot_type,{'rastergram','raster'}))
-        if isfield(xp.meta,'matrix_dim_3')
-            if strcmp(xp.meta.matrix_dim_3.name,'populations')
-                %Nd = ndims(xp.data{1});
-                Nd = 3;
-                xp = xp.unpackDim(Nd);
-            end
-        end
-    end
 
     % Squeeze out any 1D placeholder axes ("Dim X"). These can be created
     % by the unpacking operation above. 
