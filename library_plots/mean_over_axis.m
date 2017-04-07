@@ -1,41 +1,39 @@
-function obj_out = mean_over_axis(obj, axis_name, function_handle, varargin)
+function obj_out = mean_over_axis(obj, axis_dim, function_handle, varargin)
 
     if nargin < 3, function_handle = []; end
     
     if isempty(function_handle), function_handle = @nanmean; end
     
     if nargin < 4, varargin = {}; end
-
-    %% Finding first singleton dimension.
-
-    data_dims = cellfun(@(x) length(size(x)), obj.data);
     
-    max_dim = max(data_dims(:));
-    
-    for d = 1:max_dim
-        
-        internal_sz_d = cellfun(@(x) size(x, d), obj.data);
-        
-        internal_sz(:, d) = internal_sz_d(:);
-    
+    if ischar(axis_dim)
+        dim_string = axis_dim;
+        axis_dim = obj.findaxis(dim_string);
+        if ~isscalar(axis_dim) || isempty(axis_dim)
+            error('Multiple or zero dimensions matching %s.', dim_string)
+        end
     end
     
-    number_non_singleton_cells = sum(internal_sz > 1);
-    
-    number_non_singleton_cells(end + 1) = 0;
-    
-    first_all_singleton = find(number_non_singleton_cells == 0, 1, 'first');
+    if ~isscalar(axis_dim) || isempty(axis_dim) || axis_dim == 0
+        error('Dimension to normalize must be a nonempty, nonzero scalar.')
+    end
    
     %% Packing axis to take mean over.
     
-    obj_out = obj.packDim(axis_name, first_all_singleton);
+    mean_dim = obj.lastNonSingletonDim + 1;
+    
+    obj_out = obj.packDim(axis_dim, mean_dim);
     
     %% Taking mean.
     
-    varargin{end + 1} = first_all_singleton;
+    varargin{end + 1} = mean_dim;
     
     obj_out.data = cellfun(@(x) feval(function_handle, x, varargin{:}), obj_out.data, 'UniformOutput', 0);
     
-    obj_out = squeeze(obj_out);
+    obj_out.meta = rmfield(obj_out.meta, ['matrix_dim_', num2str(mean_dim)]);
+    
+    obj_out = obj_out.permute([1:(axis_dim - 1) (axis_dim + 1):ndims(obj_out) axis_dim]);
+    
+    obj_out.axis(end) = [];
     
 end
