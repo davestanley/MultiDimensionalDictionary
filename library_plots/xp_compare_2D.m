@@ -103,6 +103,8 @@ function xp_compare_2D(xp, test_handle, significance, transpose_flag, flip_axis_
     
     boundedline(axis_values{1}, sample_mean, prep_for_boundedline(norminv(significance/2)*sample_se))
     
+    set(gca, 'XTickLabelMode', 'auto', 'YTickLabelMode', 'auto')
+    
     axis tight, box off
     
     add_stars(gca, axis_values{1}(1:no_tests), test, [1 0], [1 0 0; 1 .5 0])
