@@ -128,19 +128,23 @@ function xp_compare_3D(xp, test_handle, significance, flip_axis_flag, plot_funct
     
     %% Make legend.
     
-    mylegend = cell(1, 2);
+    mylegend = cell(1, 3);
     
     if isnumeric(xp.axis(xp_dim_compared).values)
         
-        mylegend{1} = sprintf('%g < %g', xp.axis(xp_dim_compared).values);
+        mylegend{1} = sprintf('%g - %g', xp.axis(xp_dim_compared).values);
         
-        mylegend{2} = sprintf('%g > %g', xp.axis(xp_dim_compared).values);
+        mylegend{2} = sprintf('%g < %g', xp.axis(xp_dim_compared).values);
+        
+        mylegend{3} = sprintf('%g > %g', xp.axis(xp_dim_compared).values);
         
     elseif iscellstr(xp.axis(xp_dim_compared).values)
         
-        mylegend{1} = sprintf('%s < %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
+        mylegend{1} = sprintf('%s - %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
+       
+        mylegend{2} = sprintf('%s < %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
         
-        mylegend{2} = sprintf('%s > %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
+        mylegend{3} = sprintf('%s > %s', xp.axis(xp_dim_compared).values{1}, xp.axis(xp_dim_compared).values{2});
         
     end
     
