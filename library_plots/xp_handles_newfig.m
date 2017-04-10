@@ -42,9 +42,9 @@ function hxp = xp_handles_newfig (xp, op)
         op.save_figures = 1;
     end
 
-    if ~op.save_figures && strcmp(op.visible,'off')
-            %fprintf('For supersize_me mode or visible off, should save figures. Autosaving figures... \n');
-            %op.save_figures = 1;
+    if ~op.save_figures && strcmp(op.visible,'off') && op.supersize_me
+            fprintf('For supersize_me mode or visible off, should save figures. Autosaving figures... \n');
+            op.save_figures = 1;
     end
     
     if op.save_figures
