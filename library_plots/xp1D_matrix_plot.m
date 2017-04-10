@@ -1,7 +1,7 @@
 
 
 function hxp = xp1D_matrix_plot (xp, op)
-    % xp must be 1xN (e.g. 0 dimensional)
+    % xp must be 1xN (e.g. 1 dimensional)
     
     hxp = struct;
     
