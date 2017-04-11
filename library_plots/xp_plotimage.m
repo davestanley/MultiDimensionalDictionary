@@ -16,16 +16,21 @@ function hxp = xp_plotimage (xp,op)
     
     if ~isempty(xp.data{1})
         if iscellstr(xp.data{1})
-            rgb = imread(xp.data{1}{op.saved_fignum});
+            currfile = xp.data{1}{op.saved_fignum};
         elseif ischar(xp.data{1})
-            rgb = imread(xp.data{1});
+            currfile = xp.data{1};
         end
+        
+        if exist(currfile,'file')
+            rgb = imread(currfile);
+        
+            if ~isempty(op.scale)
+                rgb = imresize(rgb,op.scale);
+            end
 
-        if ~isempty(op.scale)
-            rgb = imresize(rgb,op.scale);
+            hxp.hcurr = imshow(rgb);
         end
-
-        hxp.hcurr = imshow(rgb);
+        
     end
     
 end
