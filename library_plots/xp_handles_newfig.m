@@ -13,17 +13,18 @@ function hxp = xp_handles_newfig (xp, op)
     
     if isempty(op); op = struct; end;
     
+    save_res_default = 150;
+    
     op = struct_addDef(op,'visible','on');
     op = struct_addDef(op,'save_figures',false);
+    op = struct_addDef(op,'save_res',save_res_default);
     op = struct_addDef(op,'save_figname_prefix','fig_');
     op = struct_addDef(op,'save_figname_path','Figs');
     op = struct_addDef(op,'postpend_date_time',true);
     op = struct_addDef(op,'supersize_me',false);
-    op = struct_addDef(op,'supersize_me_factor',2);
     op = struct_addDef(op,'max_num_newfigs',5);
     op = struct_addDef(op,'figwidth',[]);
     op = struct_addDef(op,'figheight',[]);
-    
     
     % Postpend date/time to save path
     if op.postpend_date_time
@@ -35,7 +36,7 @@ function hxp = xp_handles_newfig (xp, op)
         foldername = op.save_figname_path;
     end
     
-    
+    % Update some of the setting defaults based on supersize_me flag
     if op.supersize_me && strcmp(op.visible,'on')
         fprintf('For supersize_me mode, visible should be off. Setting to off \n');
         op.visible = 'off';
@@ -43,13 +44,22 @@ function hxp = xp_handles_newfig (xp, op)
     end
 
     if ~op.save_figures && strcmp(op.visible,'off') && op.supersize_me
-            fprintf('For supersize_me mode or visible off, should save figures. Autosaving figures... \n');
+            fprintf('For supersize_me mode, should save figures. Autosaving figures... \n');
             op.save_figures = 1;
+    end
+    
+    if op.supersize_me && abs(op.save_res - 150) < 1e-3
+            fprintf('For supersize_me mode, should increase figure resolution. Setting to 300. Modify option save_res to increase further... \n');
+            op.save_res = 300;
     end
     
     if op.save_figures
         mkdir(foldername);
     end
+    
+    % Scale down default font size if increased save_res
+    org_fs = get(0,'DefaultAxesFontSize');
+    set(0,'DefaultAxesFontSize', org_fs * ceil(save_res_default/op.save_res));
     
 
     % Open one figure for each data point along this dimension
@@ -62,9 +72,6 @@ function hxp = xp_handles_newfig (xp, op)
         end
         
         pos = [0,0,op.figwidth,op.figheight];
-        if op.supersize_me
-            pos(3:4) = pos(3:4) * op.supersize_me_factor;
-        end
         
         hxp.hcurr(i) = figure('Units','normalized','Position',pos,'visible',op.visible); hxp.hsub{i} = xp.data{i}();
         
@@ -79,10 +86,13 @@ function hxp = xp_handles_newfig (xp, op)
             filename = [op.save_figname_prefix num2str(i) ext];
             
             set(hxp.hcurr(i),'PaperPositionMode','auto');
-            tic; print(hxp.hcurr(i),'-dpng','-r300','-opengl',fullfile(foldername,filename));toc
+            tic; print(hxp.hcurr(i),'-dpng',['-r' num2str(op.save_res)],'-opengl',fullfile(foldername,filename));toc
         end
         
     end
+    
+    % Restore original default font size
+    set(0,'DefaultAxesFontSize',org_fs)
 end
 
 
