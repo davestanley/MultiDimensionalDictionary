@@ -11,7 +11,7 @@ function hxp = xp_handles_newfig (xp, op)
         op = struct;
     end
     
-    if isempty(op); op = struct; end;
+    if isempty(op); op = struct; end
     
     save_res_default = 150;
     
@@ -20,21 +20,18 @@ function hxp = xp_handles_newfig (xp, op)
     op = struct_addDef(op,'save_res',save_res_default);
     op = struct_addDef(op,'save_figname_prefix','fig_');
     op = struct_addDef(op,'save_figname_path','Figs');
-    op = struct_addDef(op,'postpend_date_time',true);
+    op = struct_addDef(op,'prepend_date_time',true);
     op = struct_addDef(op,'supersize_me',false);
     op = struct_addDef(op,'max_num_newfigs',5);
     op = struct_addDef(op,'figwidth',[]);
     op = struct_addDef(op,'figheight',[]);
     
     % Postpend date/time to save path
-    if op.postpend_date_time
-        mydate = datestr(datenum(date),'yy/mm/dd'); mydate = strrep(mydate,'/','');
-        c=clock;
-        sp = ['date' mydate '_time' num2str(c(4),'%10.2d') '' num2str(c(5),'%10.2d') '' num2str(round(c(6)),'%10.2d')];
-        foldername = [op.save_figname_path '_' sp];
-    else
-        foldername = op.save_figname_path;
-    end
+    mydate = datestr(datenum(date),'yy/mm/dd'); mydate = strrep(mydate,'/','');
+    c=clock;
+    sp = ['date' mydate '_time' num2str(c(4),'%10.2d') '' num2str(c(5),'%10.2d') '' num2str(round(c(6)),'%10.2d')];
+    foldername = op.save_figname_path;
+    
     
     % Update some of the setting defaults based on supersize_me flag
     if op.supersize_me && strcmp(op.visible,'on')
@@ -84,9 +81,13 @@ function hxp = xp_handles_newfig (xp, op)
         if op.save_figures
             ext = '.png';
             filename = [op.save_figname_prefix num2str(i) ext];
+            if op.prepend_date_time
+                filename = [sp '_' op.save_figname_prefix num2str(i) ext];
+            end
             
             set(hxp.hcurr(i),'PaperPositionMode','auto');
             tic; print(hxp.hcurr(i),'-dpng',['-r' num2str(op.save_res)],'-opengl',fullfile(foldername,filename));toc
+            close(hxp.hcurr(i));
         end
         
     end
