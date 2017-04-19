@@ -79,6 +79,14 @@ function hxp = xp_subplot_grid (xp, op)
                         %hsg.colorbar;
                         %hsg.colorbar([],zlims);
                     end
+                    if j ~= 1
+                        set(gca,'YTickLabel','');
+                        ylabel('');
+                    end
+                    if i ~= N1
+                        set(gca,'XTickLabel','');
+                        xlabel('');
+                    end
                 end
             end
             
