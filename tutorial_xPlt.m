@@ -38,6 +38,7 @@ disp(axis_vals);
 % 3) Population name (excitatory or inhibitory cells - E or I); and 
 disp(axis_names)
 
+
 %% Import into xPlt object
 
 % Create xPlt object
@@ -53,7 +54,6 @@ xp = xp.importData(data,axis_vals,axis_names);
 % dictionaries (nDDict), which xPlt inherits, and to which xPlt adds
 % plotting functionality.)
 disp(xp);
-
 
 % At its core, xPlt has 3 fields. xp.data stores the actual data (either a 
 % matrix or a cell array). 
@@ -111,7 +111,7 @@ xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp
                                     % of pulling data subsets. Note that [] and : are equivalent.
 xp4.getaxisinfo
 
-% Similarly, can index axis values using regular expressions
+% Similarly, can index axis values using regular expression strings
 % Pull out sodium mechs only
 xp5 = xp(:,:,1,'iNa*');
 xp5.getaxisinfo
@@ -167,6 +167,7 @@ figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}}; 
 figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 
+
 %% Plot 3D data 
 
 % Pull out a 3D subset of data (parameter sweeps and the 2 cell
@@ -183,15 +184,13 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dim
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
 
+
 %% Plot 3D data re-ordered
 
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dimensions);
-
-
-
 
 
 %% Plot 4D data
@@ -227,8 +226,6 @@ dimensions = {[1,2],0};
 figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 
-
-
 %% % % % % % % % % % % % % % % ADVANCED xPlt / nDDict USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -252,14 +249,13 @@ xp2.data{5} = randn(100);       % Ok
 % xp2.data = mydata;              % Not ok.
 
 
-
 %% Method packDims
 % Analogous to cell2mat.
 clear xp2 xp3 xp4 xp5
 
 % Start by taking a smaller subset of the original xp object.
 % xp2 = xp.subset(2,2,[],[1,3,5:8]);      % Selection based on index locations
-xp2 = xp.subset(2,2,:,'(v|^i||ISYN$)');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp.subset(2,2,:,'(v|^i||ISYN$)');  % Using regular expression that effectively selects everything except the _s terms ("^" - beginning with; "$" - ending with)
 xp2 = xp2.squeeze;
 xp2.getaxisinfo;
 
@@ -296,6 +292,7 @@ ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
+
 %% Method unPackDims (undoing packDims)
 % However, the information in the missing axis is stored in the nDDictAxis matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.getaxisinfo
@@ -314,11 +311,10 @@ xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', {'One','Two','Three','Four','Fi
 xp4.getaxisinfo;
 
 
-
 %% Use packDim to average across cells
 
 xp2 = xp;
-xp2 = xp(:,:,:,'v');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp(:,:,:,'v');  % Using regular expression string
 xp2 = xp2.squeeze;
 %
 % Average across all cells
@@ -336,7 +332,6 @@ src=3;
 dest=2;
 xp3 = xp2.packDim(src,dest);
 
-
 % Plot 
 figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
@@ -346,7 +341,7 @@ figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{
 % See also plotting material by Hadley Wickham
 
 % First, pull out synaptic current variables
-xp2 = xp(:,:,:,'(ISYN$)');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp(:,:,:,'(ISYN$)');  % Using regular expression ("$" - ending with)
 xp2.getaxisinfo;
 
 % Second, put this into matrix form, so we can average over them
@@ -360,6 +355,7 @@ xp3.data = cellfun(@(x) nanmean(x,3), xp3.data,'UniformOutput',0);
 
 % Plot 
 recursivePlot(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
+
 
 %% Test mergeDims
 % Analogous to Reshape.
