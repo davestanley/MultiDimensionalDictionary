@@ -176,8 +176,7 @@ classdef nDDict
             
             % Make sure that size of selection doesnt exceed size of data
             Na = length(obj.axis_pr);
-            selection = cell(1, Na);
-            selection(:) = [];
+            selection = cell(1, Na); % selection(:) = [];
             selection{axis} = values;
             
             [obj2, ro] = obj.subset(selection{:});
