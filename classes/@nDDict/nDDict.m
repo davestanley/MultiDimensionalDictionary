@@ -194,6 +194,9 @@ classdef nDDict
             number_non_singleton_cells = sum(data_sz > 1);
             number_non_singleton_cells(end + 1) = 0;
             last_non_singleton = find(number_non_singleton_cells > 0, 1, 'last');
+            if isempty(last_non_singleton)
+                last_non_singleton = 1;
+            end
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -925,7 +928,7 @@ classdef nDDict
             if isempty(new_axis_name), new_axis_name = sprintf('Dim %d', length(obj.axis) + 1); end
             
             if ~isempty(obj.findaxis(new_axis_name))
-                error('Axis %s already exists.', new_axis_name)
+                warning('Axis %s already exists.', new_axis_name)
             end
             
             repmat_size = [ones(1, obj.lastNonSingletonDim) length(new_axis_values)];
