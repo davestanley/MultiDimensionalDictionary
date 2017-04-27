@@ -1,6 +1,4 @@
-
-
-function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, transpose_on, sync_axes_flag)
+function [hts, titles] = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, transpose_on, sync_axes_flag)
 	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
     if nargin < 5, sync_axes_flag = []; end
@@ -133,8 +131,10 @@ function hts = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, trans
                     figformat_str(title_axis(a).getvaluestring(dim_indices{plot, start_title_axes + a - 1})), ' '];
             end
             
-            mtit(mytitle)
-        
+            mtit(mytitle, 'fontsize', 20, 'color', [0 0 1], 'yoff', .05)
+            
+            titles{fig_for_plot} = mytitle;
+            
         end
         
         if last_fig_indices(plot)
