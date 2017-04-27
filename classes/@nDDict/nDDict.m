@@ -254,22 +254,6 @@ classdef nDDict
             end
         end
 
-        % function obj = importAxisValues(obj,axis_names,ax_values)
-        %     sz = size(obj);
-        %     if ischar(axis_names)
-        %         axes_indices = obj.findAxes(axis_names);
-        %     end
-        %
-        %     for ax = 1:length(axes_indices)
-        %
-        %         if length(ax_values) ~= sz(axes_indices(ax))
-        %             error('Mismatch between number of axis names supplied and number of axes in object.');
-        %         end
-        %
-        %         obj.axis_pr(axes_indices(ax)).values = ax_values;
-        %     end
-        % end
-
         function obj = importMeta(obj,meta_struct)
             obj.meta = meta_struct;
         end
