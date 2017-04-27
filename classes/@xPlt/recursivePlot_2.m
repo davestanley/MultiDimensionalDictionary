@@ -128,7 +128,7 @@ function varargout = recursivePlot_2(xp,function_handles,dimensions,function_arg
             xp_indices(dimensions{1}) = xp2_indices(call, :);
             
             mydata{xp2_indices{call, :}} = @() recursivePlot_2(xp.subset(xp_indices{:}),...
-                function_handles(2:end),dimensions(2:end),function_arguments(2:end));
+                function_handles(2:end), dimensions(2:end), function_arguments(2:end));
             
         end
         
@@ -140,16 +140,20 @@ function varargout = recursivePlot_2(xp,function_handles,dimensions,function_arg
         end
         
         xp2 = xp2.importData(mydata,myvalues,mynames);
+        xp2 = xp2.fixAxes;
+        
+        xp2 = xp2.importMeta(xp.meta);
         
         [varargout{1:nargout}] = function_handles{1}(xp2,function_arguments{1}{:});
         
     else
+        
         [varargout{1:nargout}] = function_handles{1}(xp,function_arguments{1}{:});
+    
     end
+    
 end
     
-
-
 function dimensions = dimensions_regex_2_index(xp,dimensions)
     for i = 1:length(dimensions)
         dim_curr = dimensions{i};
