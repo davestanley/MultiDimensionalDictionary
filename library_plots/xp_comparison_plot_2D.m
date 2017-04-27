@@ -1,4 +1,4 @@
-function [p_values, test] = xp_compare_2D(xp, test_handle, significance, transpose_flag, flip_axis_flag)
+function xp_comparison_plot_2D(xp, test_handle, significance, transpose_flag, flip_axis_flag)
 
     if nargin < 2, test_handle = []; end
     
@@ -28,7 +28,7 @@ function [p_values, test] = xp_compare_2D(xp, test_handle, significance, transpo
 
     meta = xp.meta;
     
-    for d = 1:length(xp_dims)
+    for d = 1:2
         dim_name = ['matrix_dim_' num2str(d)];
         if isfield(meta, dim_name)
             axis_labels{d} = meta.(dim_name).name;
@@ -82,5 +82,51 @@ function [p_values, test] = xp_compare_2D(xp, test_handle, significance, transpo
     end
 
     test = p_values < significance/2;
+
+    %% Find mean and s.e.
+    
+    plot_length = max(length_sample);
+    
+    [sample_mean, sample_se] = deal(nan(plot_length, 2));
+    
+    for sample = 1:2
+       
+        sample_mean(1:length_sample(sample), sample) = nanmean(xp.data_pr{sample}, 2);
+        
+        sample_se(1:length_sample(sample), sample) = nanstd(xp.data_pr{sample}, [], 2)/sqrt(n_sample(sample));
+        
+    end
+    
+    %% Plot w/ stars for signifcance.
+    
+    if length(axis_values{1}) < plot_length, axis_values{1}((end + 1):plot_length) = nan; end
+    
+    boundedline(axis_values{1}, sample_mean, prep_for_boundedline(norminv(significance/2)*sample_se))
+    
+    set(gca, 'XTickLabelMode', 'auto', 'YTickLabelMode', 'auto')
+    
+    axis tight, box off
+    
+    add_stars(gca, axis_values{1}(1:no_tests), test, [1 0], [1 0 0; 1 .5 0])
+    
+    %% Make legend.
+    
+    mylegend = cell(1, 2);
+    
+    for sample = 1:2
+        
+        if isnumeric(xp.axis(xp_dim_compared).values)
+            
+            mylegend{sample} = sprintf('%s = %g', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values(sample));
+            
+        elseif iscellstr(xp.axis(xp_dim_compared).values)
+            
+            mylegend{sample} = sprintf('%s = %s', xp.axis(xp_dim_compared).name, xp.axis(xp_dim_compared).values{sample});
+            
+        end
+        
+    end
+    
+    legend(mylegend)
     
 end
