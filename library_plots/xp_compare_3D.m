@@ -67,12 +67,26 @@ function xp_compare_3D(xp, test_handle, significance, flip_axis_flag, plot_funct
     
     p_values = nan(no_tests, 2);
     
-    for t = 1:no_tests
+    if strcmp(func2str(test_handle), 'ranksum')
         
-        [~, p_values(t, 1)] = feval(test_handle, xp_linear{1}(t, :)', xp_linear{2}(t, :)', 'tail', 'left');
+        for t = 1:no_tests
+            
+            p_values(t, 1) = feval(test_handle, xp_linear{1}(t, :)', xp_linear{2}(t, :)', 'tail', 'left');
+            
+            p_values(t, 2) = feval(test_handle, xp_linear{1}(t, :)', xp_linear{2}(t, :)', 'tail', 'right');
+            
+        end
         
-        [~, p_values(t, 2)] = feval(test_handle, xp_linear{1}(t, :)', xp_linear{2}(t, :)', 'tail', 'right');
-       
+    else
+        
+        for t = 1:no_tests
+            
+            [~, p_values(t, 1)] = feval(test_handle, xp_linear{1}(t, :)', xp_linear{2}(t, :)', 'tail', 'left');
+            
+            [~, p_values(t, 2)] = feval(test_handle, xp_linear{1}(t, :)', xp_linear{2}(t, :)', 'tail', 'right');
+            
+        end
+        
     end
 
     test = p_values < significance/2;
@@ -83,9 +97,21 @@ function xp_compare_3D(xp, test_handle, significance, flip_axis_flag, plot_funct
     
     sample_mean = nan(max(length_sample), max(width_sample), 2);
     
-    for sample = 1:2
-       
-        sample_mean(1:length_sample(sample), 1:width_sample(sample), sample) = nanmean(xp.data{sample}, 3);
+    if strcmp(func2str(test_handle), 'ranksum')
+        
+        for sample = 1:2
+            
+            sample_mean(1:length_sample(sample), 1:width_sample(sample), sample) = nanmedian(xp.data{sample}, 3);
+            
+        end
+        
+    else
+        
+        for sample = 1:2
+            
+            sample_mean(1:length_sample(sample), 1:width_sample(sample), sample) = nanmean(xp.data{sample}, 3);
+            
+        end
         
     end
     
