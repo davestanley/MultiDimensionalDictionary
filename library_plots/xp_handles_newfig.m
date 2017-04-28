@@ -23,8 +23,9 @@ function hxp = xp_handles_newfig (xp, op)
     op = struct_addDef(op,'prepend_date_time',true);
     op = struct_addDef(op,'supersize_me',false);
     op = struct_addDef(op,'max_num_newfigs',5);
-    op = struct_addDef(op,'figwidth',[]);
-    op = struct_addDef(op,'figheight',[]);
+    op = struct_addDef(op,'figwidth',1);
+    op = struct_addDef(op,'figheight',1);
+    
     
     % Postpend date/time to save path
     mydate = datestr(datenum(date),'yy/mm/dd'); mydate = strrep(mydate,'/','');
