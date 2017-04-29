@@ -22,9 +22,9 @@ function hxp = xp_matrix_basicplot (xp, options)
     
     if ~isempty(xp.meta.datainfo(1).values)
         t = xp.meta.datainfo(1).values;
-        hxp.hcurr = plot(t,xp.data{1});
+        if ~isempty(xp.data{1}); hxp.hcurr = plot(t,xp.data{1}); end
     else
-        hxp.hcurr = plot(xp.data{1});
+        if ~isempty(xp.data{1}); hxp.hcurr = plot(xp.data{1}); end
     end
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
