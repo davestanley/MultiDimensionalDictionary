@@ -650,6 +650,7 @@ classdef nDDict
         end
 
         function obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values)
+            % Author: Ben Pittman-Polletta.
             % Warning - this command will be replaced in the future. Use
             % unpackDim2Mat instead. See also unpackDim2Cell, unpackDim2xPlt.
 
@@ -777,6 +778,7 @@ classdef nDDict
         end
 
         function obj = alignAxes(obj, obj2)
+            % Author: Ben Pittman-Polletta.
 
             obj_axnames = obj.get_obj_axis_names;
             obj2_axnames = obj2.get_obj_axis_names;
@@ -1085,6 +1087,9 @@ classdef nDDict
         end
 
         function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
+            % Author: Ben Pittman-Polletta.
+            % Creates new axis with specified values, and an identical copy 
+            % of the existing xPlt object at each value.
             checkDims(obj);
 
             if nargin < 4, new_axis_dim = []; end
@@ -1187,15 +1192,6 @@ classdef nDDict
             end
         end
 
-        function out = get_obj_axis_names(obj)
-            % Returns class type of entries in obj.axis_pr.values
-            Na = length(obj.axis_pr);
-            out = cell(1,Na);
-            for i = 1:Na
-                out{i} = obj.axis_pr(i).name;
-            end
-        end
-
     end
 end
 
@@ -1255,7 +1251,7 @@ function obj = setAxisDefaults(obj,dim)
         % If too long
         if N > sz_dim
             %ax_curr.values = ax_curr.values(1:sz(dim));
-            ax_curr.values = 1:sz_dim;                                                   % Populate with genetic numerics
+            ax_curr.values = 1:sz_dim;                                                   % Populate with generic numerics
         end
     end
 
