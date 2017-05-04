@@ -404,11 +404,11 @@ classdef nDDict
             mergednames = allnames(dims2merge);
             obj.axis_pr(dims2merge(1)).values = tempstr;
             obj.axis_pr(dims2merge(1)).astruct.premerged_values = temp;
-            obj.axis_pr(dims2merge(1)).astruct.premerged_names = packednames;
+            obj.axis_pr(dims2merge(1)).astruct.premerged_names = mergednames;
 
             % Give it a new axis name, reflecting the merger of all the
             % others
-            packednames2 = cat(1,packednames(:)',repmat({'_'},1,length(packednames)));
+            mergednames2 = cat(1,mergednames(:)',repmat({'_'},1,length(mergednames)));
             obj.axis_pr(dims2merge(1)).name = strcat(mergednames2{1:end-1});
 
             % Clear the remaining axes names
@@ -780,8 +780,8 @@ classdef nDDict
         function obj = alignAxes(obj, obj2)
             % Author: Ben Pittman-Polletta.
 
-            obj_axnames = obj.get_obj_axis_names;
-            obj2_axnames = obj2.get_obj_axis_names;
+            obj_axnames = obj.exportAxisNames;
+            obj2_axnames = obj2.exportAxisNames;
 
             if length(obj_axnames) == length(obj2_axnames)
                 no_axes = length(obj_axnames);
