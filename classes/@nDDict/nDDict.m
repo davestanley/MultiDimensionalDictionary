@@ -9,7 +9,7 @@ classdef nDDict
         meta = struct;     % Metadata about stuff that's stored in data
     end
 
-    properties (Access = private)
+    properties (Access = protected) % same as private, but allows access from subclasses
         data_pr               % Storing the actual data (multi-dimensional matrix or cell array)
         axis_pr = nDDictAxis  % 1xNdims - array of nDDictAxis classes for each axis. Ndims = ndims(data)
     end
@@ -345,6 +345,7 @@ classdef nDDict
 
         end
 
+        
         function obj = mergeDims(obj,dims2merge)
 
             if iscellstr(dims2merge)
@@ -445,15 +446,18 @@ classdef nDDict
 
         end
 
+        
         function obj = packDim2Mat(obj,dim_src,dim_target)
             obj = packDim(obj,dim_src,dim_target);
         end
 
+        
         function obj = packDim2Cell(obj,dim_src,dim_target)
             % #Toimplement
             warning('Not yet implemented');
         end
 
+        
         function obj = packDim2xPlt(obj,dim_src,dim_target)
             % #Toimplement
             warning('Not yet implemented');
@@ -604,6 +608,7 @@ classdef nDDict
 
         end
 
+        
         function obj_out = merge(obj1,obj2)
             % This might be slow when working with huge matrices. Perhaps do
             % alternate approach for them.
@@ -777,6 +782,7 @@ classdef nDDict
 
         end
 
+        
         function obj = alignAxes(obj, obj2)
             % Author: Ben Pittman-Polletta.
 
@@ -818,9 +824,10 @@ classdef nDDict
             if nargout > 0
                 out = '';
             end
+            
+            fprintf(['Axis Size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
 
             for i = 1:length(obj.axis_pr)
-
                 out1 = obj.axis_pr(i).getaxisinfo(showclass);
                 spacer = '';
 
@@ -833,8 +840,10 @@ classdef nDDict
             end
 
             if isempty(obj.data_pr)
-                if nargout > 0; out = 'obj.data_pr is empty';
-                else fprintf('obj.data_pr is empty \n');
+                if nargout > 0
+                  out = 'obj.data is empty';
+                else
+                  fprintf('obj.data is empty\n');
                 end
                 return;
             end
@@ -842,12 +851,13 @@ classdef nDDict
             % Lastly output a summary of dimensionality comparing nDDict.axis_pr
             % and nDDict.data_pr. These should match up.
             if nargout == 0
-                fprintf(['nDDict.axis_pr dimensionality ' num2str(cellfun(@length,{obj.axis_pr.values})) '\n']);
-                fprintf(['nDDict.data_pr dimensionality ' num2str(size(obj.data_pr)) '\n']);
+                fprintf('For Dev:\n')
+                fprintf(['  nDDict.axis_pr size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
+                fprintf(['  nDDict.data_pr size: [' num2str(size(obj.data_pr)) ']\n']);
             end
         end
 
-        function obj = fixAxes(obj)
+        function obj = fixAxes(obj, optionalFixesFlag)
             % This function forces the nDDict axis data to be updated to
             % match the dimensions of the data structure.
             % The convention of nDDict is to follow MATLAB
@@ -864,13 +874,17 @@ classdef nDDict
             % singleton dimensions (e.g. dimensions of greater number than
             % ndims(obj.data_pr) would return).
 
+            if ~exist('optionalFixesFlag', 'var')
+                optionalFixesFlag = false;
+            end
+            
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
 
             % Make sure obj.data_pr, obj.axis_pr.name, and obj.axis_pr.values have the right data types
-            if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data_pr must be either numeric or cell array'); end
-            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis_pr.values must be of type numeric or cell array of character vectors.'); end
-            if any(strcmp(getclass_obj_axis_name(obj),'unknown')); error('Obj.axis_pr.name must be of type char.'); end
+            if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data must be either a numeric or cell array'); end
+            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis.values must be a mat, cell array of numerics, or cell array of character vectors.'); end % FIXME
+            if any(strcmp(getclass_obj_axis_name(obj),'unknown')); error('Obj.axis.name must be of type char.'); end
 
             % Sweep through all axes and make sure dimensions are correct.
             % Add new axes if needed, up to Nd.
@@ -888,13 +902,23 @@ classdef nDDict
                 end
 
             end
-
+            
+            if optionalFixesFlag
+              % convert any cellnum axis_values to numeric
+              axValClasses = getclass_obj_axis_values(obj);
+              cellNumInds = find(strcmp(axValClasses, 'cellnum'));
+              if any(cellNumInds)
+                for iInd = cellNumInds(:)'
+                  obj.axis(iInd).values = [obj.exportAxisVals{iInd}{:}];
+                end
+              end
+            end
         end
 
-        function checkDims(obj)
+        function checkDims(obj, optionalChecksFlag)
             % We enforce that size(obj.data_pr) must always match up to
             % length(obj.axis_pr(i).values) for all i. We allow there to be
-            % more axis than ndims(obj.data_pr), but only if these axes have
+            % more axes than ndims(obj.data_pr), but only if these axes have
             % lengths of 1.
 
             % Note, fixAxes fixes everything automatically.
@@ -902,12 +926,16 @@ classdef nDDict
             % be alerted to mismatches, but not to correct them. Use fixAxes to
             % automatically correct everything.
 
+            if ~exist('optionalChecksFlag', 'var')
+                optionalChecksFlag = false;
+            end
+            
             %if isempty(obj); error('Object is empty. Input some data first!'); return; end
 
             % Make sure obj.data_pr, obj.axis_pr.name, and obj.axis_pr.values have the right data types
-            if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data_pr must be either numeric or cell array'); end
-            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis_pr.values must be of type numeric or cell array of character vectors.'); end
-            if any(strcmp(getclass_obj_axis_name(obj),'unknown')); error('Obj.axis_pr.name must be of type char.'); end
+            if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data must be either a numeric or cell array'); end
+            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis.values must be a mat, cell array of numerics, or cell array of character vectors.'); end % FIXME
+            if any(strcmp(getclass_obj_axis_name(obj),'unknown')); error('Obj.axis.name must be of type char.'); end
 
             sza = arrayfun(@(x) length(x.values),obj.axis_pr);
             szd = size(obj.data_pr);
@@ -916,7 +944,7 @@ classdef nDDict
             Na = length(obj.axis_pr);
 
             if Nd > Na
-                error('checkDims: Error found! Number of dimensions in nDDict.data_pr does not equal number of axes. Try using method importData or importLinearData if you want to alter objects dimensions.');
+                error('Number of dimensions in nDDict.data does not equal number of axes. Try using method importData or importLinearData if you want to alter objects dimensions.');
             end
 
             % For all dimensions in obj.data_pr
@@ -932,8 +960,17 @@ classdef nDDict
             if any(ind(Nd+1:Na))
                 ind2 = find(ind);
                 ind2 = ind2(ind2 > Nd);
-                fprintf(['checkDims: Error found! ndims(obj.data_pr)=' num2str(Nd) ' but axis obj.axis_pr(' num2str(ind2) ').values has ' num2str(sza(ind2)) ' entries. Try using method importData or importLinearData if you want to alter objects dimensions.\n']);
+                fprintf(['checkDims: Error found! ndims(obj.data)=' num2str(Nd) ' but axis obj.axis(' num2str(ind2) ').values has ' num2str(sza(ind2)) ' entries. Try using method importData or importLinearData if you want to alter objects dimensions.\n']);
                 error(' ');
+            end
+            
+            if optionalChecksFlag % optional/performance checks
+              % check for cellnum axis_values
+              axValClasses = getclass_obj_axis_values(obj);
+              cellNumInds = find(strcmp(axValClasses, 'cellnum'));
+              if any(cellNumInds)
+                fprintf('Axes [%s] have cell array of numerics values. Consider conversion to numeric array using ''obj.fixAxes(true)''\n', num2str(cellNumInds))
+              end
             end
 
             % All good if make it to here
@@ -1159,35 +1196,30 @@ classdef nDDict
     %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
     % % % % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-    methods (Access = private)
+    methods %(Access = protected) % same as private, but allows access from subclasses
         [out, outsimple] = calcClasses(xp,input,field_type)     % Used by importLinearData and other importData functions
-    end
 
-    %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-    % % % % % % % % % % % HELPER FUNCTIONS % % % % % % % % % % %
-    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-    methods
-        % These functions should only be called by other nDDict methods.
-        % Make these public for now for testing, but set to private
-        % eventually.
+        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        % % % % % % % % % % % HELPER FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function [out, outsimple] = getclass_obj_data(obj)
             [out, outsimple] = obj.calcClasses(obj.data_pr,'data');
         end
 
         function out = getclass_obj_axis_values(obj)
             % Returns class type of entries in obj.axis_pr.values
-            Na = length(obj.axis_pr);
-            out = cell(1,Na);
-            for i = 1:Na
+            nAx = length(obj.axis_pr);
+            out = cell(1,nAx);
+            for i = 1:nAx
                 out{i} = obj.axis_pr(i).getclass_values;
             end
         end
 
         function out = getclass_obj_axis_name(obj)
             % Returns class type of entries in obj.axis_pr.values
-            Na = length(obj.axis_pr);
-            out = cell(1,Na);
-            for i = 1:Na
+            nAx = length(obj.axis_pr);
+            out = cell(1,nAx);
+            for i = 1:nAx
                 out{i} = obj.axis_pr(i).getclass_name;
             end
         end
@@ -1260,7 +1292,7 @@ function obj = setAxisDefaults(obj,dim)
 end
 
 function [selection_out, startIndex] = regex_lookup(vals, selection)
-    if ~iscellstr(vals); error('nDDict.axis_pr.values must be strings when using regular expressions');
+    if ~iscellstr(vals); error('nDDict.axis.values must be strings when using regular expressions');
     end
     if ~ischar(selection); error('Selection must be string when using regexp');
     end

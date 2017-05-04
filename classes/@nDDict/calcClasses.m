@@ -1,12 +1,14 @@
-
-
-
 function [out, outsimple] = calcClasses(obj,input,field_type)
     % For internal use in importing data in to nDDict.
-
+    if nargin==1
+      warning('Must specifify input and field_type')
+      out = [];
+      outsimple = [];
+      return
+    end
+    
     switch field_type
         case 'data'
-            
             % Returns class type of entries in field.
             if isnumeric(input)
                 out = 'numeric';
@@ -22,35 +24,50 @@ function [out, outsimple] = calcClasses(obj,input,field_type)
                 out = 'unknown';
             end
 
-
         case 'axis_values'
-            % Validate input
-            if ~iscell(input); error('Input must be cell array'); end
-            
-            % Create dummy axis handle to get access to its functions
-            nda = nDDictAxis;
-            
-            Na = length(input);
-            out = cell(1,Na);
-            
-            % Returns class type of entries in obj.axis.values
-            for i = 1:Na
-                out{i} = nda.calcClasses(input{i},'values');
+          
+            if isnumeric(input) % if mat, convert to cell array of numerics
+                out = 'numeric';
+            elseif iscell(input)
+                if iscellstr(input)
+                    out = 'cellstr';
+                elseif iscellnum(input)
+                    out = 'cellnum';
+                else % input not consistent type so return output for each cell
+                    % Create dummy axis handle to get access to its functions
+                    nda = nDDictAxis;
+
+                    axLen = length(input);
+                    out = cell(1,axLen);
+
+                    % Returns class type of entries in obj.axis.values
+                    for i = 1:axLen
+                        out{i} = nda.calcAxClasses(input{i},'values');
+                    end
+                end
+
+            else
+                out = 'unknown';
+                warning('axis_values input must be cell array or numeric');
             end
             
         case 'axis_name'
             % Validate input
             if ~iscell(input); error('Input must be cell array'); end
-            
-            % Create dummy axis handle to get access to its functions
-            nda = nDDictAxis;
-            
-            Na = length(input);
-            out = cell(1,Na);
-            
-            % Returns class type of entries in obj.axis.values
-            for i = 1:Na
-                out{i} = nda.calcClasses(input{i},'name');
+          
+            if iscellstr(input)
+                out = 'cellstr';
+            else
+                % Create dummy axis handle to get access to its functions
+                nda = nDDictAxis;
+
+                axLen = length(input);
+                out = cell(1,axLen);
+
+                % Returns class type of entries in obj.axis.name
+                for i = 1:axLen
+                    out{i} = nda.calcAxClasses(input{i},'name');
+                end
             end
             
         otherwise
@@ -63,16 +80,4 @@ function [out, outsimple] = calcClasses(obj,input,field_type)
     outsimple = strrep(outsimple,'cellnum','cell');
     outsimple = strrep(outsimple,'cellnDDict','cell');
 
-
 end
-
-
-function OUT = iscellnum(IN)
-% ISCELLNUM(S) returns 1 if IN is a cell array of numerics and 0
-%   otherwise.
-
-    OUT = all(cellfun(@isnumeric,IN(:)));
-
-end
-
-

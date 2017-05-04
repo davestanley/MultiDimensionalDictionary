@@ -6,15 +6,15 @@
 
 % Format
 format compact
-clear all
-restoredefaultpath
 
-% Check if in right folder
+% Check if in MDD folder
 [parentfolder,currfolder] = fileparts(pwd);
 if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
-% add DynaSim toolbox to Matlab path
-addpath(genpath(pwd)); % comment this out if already in path
+% Add MDD toolbox to Matlab path if needed
+if ~exist('nDDict','class')
+  addpath(genpath(pwd));
+end
 
 
 %% Load some sample data

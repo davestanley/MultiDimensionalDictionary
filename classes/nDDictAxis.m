@@ -22,7 +22,7 @@ classdef nDDictAxis
             values_class = obj.getclass_values;
 
             if show_class
-                temp = [obj.name, ' (' values_class ')  -> '];
+                temp = [obj.name, ' (' values_class ') -> '];
             else
                 temp = [obj.name, ' -> '];
             end
@@ -50,6 +50,13 @@ classdef nDDictAxis
         function out = getvaluenoncell(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
             % numeric, regardless of whether it is actually cell array.
+            
+            if ~exist('i','var')
+              warning('Need to specify an index (eg ''obj.getvaluenoncell(#)'')')
+              out = [];
+              return
+            end
+            
             if length(i) > 1; error('i must be singleton'); end
             if iscell(obj.values)
                 out = obj.values{i};
@@ -62,6 +69,13 @@ classdef nDDictAxis
             % Looks at entry obj.value(i) and returns its output as a
             % string, regardless of what data type it actually is (string,
             % cell, numeric, etc).
+            
+            if ~exist('i','var')
+              warning('Need to specify an index (eg ''obj.getvaluestring(#)'')')
+              out = [];
+              return
+            end
+            
             if length(i) > 1; error('i must be singleton'); end
             out = obj.getvaluenoncell(i);
             if isnumeric(out)
@@ -79,21 +93,25 @@ classdef nDDictAxis
         end
 
         function out = getclass_values(obj)
-            out = obj.calcClasses(obj.values,'values');
+            out = obj.calcAxClasses(obj.values,'values');
         end
 
         function out = getclass_name(obj)
-            out = obj.calcClasses(obj.name,'name');
+            out = obj.calcAxClasses(obj.name,'name');
         end
 
-        function out = calcClasses(obj,input,field)
+        function out = calcAxClasses(obj,input,field)
             switch field
                 case 'values'
                     % Returns class type of obj.values.
                     if isnumeric(input)
                         out = 'numeric';
-                    elseif iscellstr(input)
-                        out = 'cellstr';
+                    elseif iscell(input)
+                        if iscellstr(input)
+                            out = 'cellstr';
+                        elseif iscellnum(input)
+                            out = 'cellnum';
+                        end
                     else
                         out = 'unknown';
                     end

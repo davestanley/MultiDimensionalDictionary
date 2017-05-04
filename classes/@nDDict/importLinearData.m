@@ -1,23 +1,26 @@
 function obj = importLinearData(obj,X,varargin)
-%% obj = importLinearData(obj,X,varargin)
+%% obj = importLinearData(data,varargin)
 %     Purpose:
 %     Imports a linear array of data, converts it into a matrix
-%     based on the supplied axislabels, and stores it in xp.data_pr.
-%     Also populates the xp.axis_pr.values appropriately.
+%     based on the supplied axislabels, and stores it in xp.data.
+%     Also populates the xp.axis.values appropriately.
 % 
 %     Forms:
-%     xp = importLinearData(X,axislabels1,...,axislabelsN)
+%     xp = importLinearData(data,axislabels1,...,axislabelsN)
 % 
 %     Inputs:
-%     X - vector containing input data. Can be numeric or cell array.
-%     axislabels1 - vector containing data labels for dimension1 in X
+%     data - vector containing input data. Can be numeric or cell array.
+%     axis_values1 - vector containing axis values/labels for dimension1 in data
 %     ...
-%     axislabelsN - vector containing containing data labels for dimensionN in X
-%     NOTE: axislabels1...N must be either numeric or cell arrays of character vectors
+%     axis_valuesN - vector containing containing axis values/labels for dimensionN in data
+%
+%     NOTE: axis_values 1:N must be either numeric array, cell arrays of numerics,
+%           or cell arrays of character vectors
 
     % Initialize
-    axeslinear = varargin;
-
+    axlinear = varargin;
+    lenX = length(X);
+    Ndims = length(axlinear);
 
 % %     Don't need this option for now.
 %     % Check if final argument in varargin is a name/value pair
@@ -29,28 +32,34 @@ function obj = importLinearData(obj,X,varargin)
 %     end
 
     % Error checking - X must be linear
-    if ~isvector(X); error('X must be linear'); end
+    if ~isvector(X); error('data must be linear'); end
 
     % Error checking - X must be cell or numeric
     obj2 = obj.reset;
-    [temp1,Xformat] = obj2.calcClasses(X,'data');
-    if strcmp(Xformat,'unknown'); error('X must be numeric or cell array'); end
+    [~, XsimpleFormat] = obj2.calcClasses(X,'data');
+    if strcmp(XsimpleFormat,'unknown'); error('data must be a numeric or cell array'); end
 
     % Error checking - each entry in axislinear must be either numeric or
     % cell. If it's a cell, all entries must char.
-    temp = obj2.calcClasses(axeslinear, 'axis_values');
-    if any(strcmp(temp,'unknown')); error('Axislabels must be numeric or cell array of all chars'); end
-
-    N = length(X);
-    Ndims = length(axeslinear);
+    axLinearFormat = cell(1, Ndims);
+    for k = 1:Ndims
+        axLinearFormat{k} = obj2.calcClasses(axlinear{k}, 'axis_values');
+    end
+    if any(strcmp(axLinearFormat,'unknown')); error('axis_values must be a numeric array, cell array of numerics, or cell array of chars'); end
 
     % Set up xp.axis_pr
-    for j = 1:Ndims
-        obj.axis_pr(j).values = unique(axeslinear{j},'stable');
-        sz(j) = length(obj.axis_pr(j).values);
+    sz = zeros(1, Ndims);
+    for iDim = 1:Ndims
+        if strcmp(axLinearFormat{iDim}, 'cellnum')
+            axlinear{iDim} = [axlinear{iDim}{:}]; % convert cellnum to numeric array
+            fprintf('  Note: Converting dim %i axis_values to numeric array from cell array of numerics\n', iDim)
+        end
+        
+        obj.axis_pr(iDim).values = unique(axlinear{iDim},'stable');
+        sz(iDim) = length(obj.axis_pr(iDim).values);
 
-        if isnumeric(axeslinear{j}(1))
-            if any(isnan(axeslinear{j})) || any(isinf(axeslinear{j}))
+        if isnumeric(axlinear{iDim}(1))
+            if any(isnan(axlinear{iDim})) || any(isinf(axlinear{iDim}))
                 error('Axis cannot contain NaNs or Infs');
             end
         end
@@ -59,9 +68,9 @@ function obj = importLinearData(obj,X,varargin)
     if length(sz) == 1; sz(2) = 1; end
 
     % Set up target matrix
-    switch Xformat
+    switch XsimpleFormat
         case 'cell'
-            obj.data_pr=cell(sz);
+            obj.data_pr = cell(sz);
 %         case 'string'
 %             xp.data_pr = repmat(string(''),sz);
         case 'numeric'
@@ -71,21 +80,21 @@ function obj = importLinearData(obj,X,varargin)
     end
 
     % Set up xp.data_pr -> Convert linear data into a multi dimensional matrix
-    for i = 1:N
+    for indLinear = 1:lenX
         % Get subscripts
         subs = cell(1,Ndims);
-        for j = 1:Ndims
-            if iscellstr(axeslinear{j})
-                subs{j} = find(strcmp(axeslinear{j}{i},obj.axis_pr(j).values));
+        for iDim = 1:Ndims
+            if iscellstr(axlinear{iDim})
+                subs{iDim} = find(strcmp(axlinear{iDim}{indLinear},obj.axis_pr(iDim).values));
             else
-                subs{j} = find(axeslinear{j}(i) == obj.axis_pr(j).values);
+                subs{iDim} = find(axlinear{iDim}(indLinear) == obj.axis_pr(iDim).values);
             end
         end
 
         % Add data to sparse cell array or matrix based on subscripts
             % Note: Need to find a good way for dealing with duplicate
             % rows. Right now, default behavior is to overwrite
-        obj.data_pr(subs{:}) = X(i);
+        obj.data_pr(subs{:}) = X(indLinear);
 
     end
     

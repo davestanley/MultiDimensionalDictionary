@@ -1,5 +1,3 @@
-
-
 classdef xPlt < nDDict
     
     % xPlt class inherets from the nDDict class (AKA multidimensional
