@@ -83,9 +83,7 @@ classdef nDDict
         end
 
         function [obj] = reset(obj)
-            obj.data_pr = [];
-            obj.axis_pr = obj.axisClass;
-            obj.meta = struct;
+            obj = feval(str2func(class(obj)));
         end
 
         % TO DO: Fix this.
