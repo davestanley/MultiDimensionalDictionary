@@ -6,12 +6,13 @@
 classdef nDDict
 
     properties
-        meta = struct;     % Metadata about stuff that's stored in data
+        meta = struct; % Metadata about stuff that's stored in data
     end
 
-    properties (Access = protected) % same as private, but allows access from subclasses
-        data_pr               % Storing the actual data (multi-dimensional matrix or cell array)
-        axis_pr = nDDictAxis  % 1xNdims - array of nDDictAxis classes for each axis. Ndims = ndims(data)
+    properties (Access = private) % private so that subclass can override
+        data_pr        % Storing the actual data (multi-dimensional matrix or cell array)
+        axis_pr        % 1xNdims - array of nDDictAxis classes for each axis. Ndims = ndims(data)
+        axisClass = nDDictAxis
     end
 
     properties (Dependent)
@@ -44,17 +45,46 @@ classdef nDDict
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % CLASS SETUP % % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function obj = nDDict
-
-            obj.axis_pr = repmat(nDDictAxis,1,ndims(obj.data_pr));     % For a 2D matrix
+        function obj = nDDict(varargin)
+            % Possible inputs:
+            %   1) nargin==0
+            %   2) data for call to importData
+            %   3) data for call to importLinearData, with final argument 'linear'
+            %   4) one of the above, with additional first argument specifying 
+            %      the 'axisClass' from a subclass.
+          
+            varargs = varargin;
+            nargs = nargin;
+            
+            % (4) Check if axisClass overwritten by first arg
+            if nargs && (isobject(varargs{1}) && strcmp(superclasses(varargs{1}), 'nDDictAxis'))
+              obj.axisClass = varargs{1};
+              varargs(1) = [];
+              nargs = nargs-1;
+            end
+            
+            % (1) default constructor
+            obj.axis_pr = repmat(obj.axisClass,1,ndims(obj.data_pr));     % For a 2D matrix
             obj = obj.fixAxes;
-            obj.meta.datainfo = nDDictAxis;
+            obj.meta.datainfo = obj.axisClass;
+            
+            if nargs % (2) or (3) import data
+              % Determine if linear or not
+              linStrInd = strcmp(varargs, 'linear');
+              if ~any(linStrInd)
+                obj = obj.fixAxes;
+                obj = obj.importData(varargs{:});
+              else
+                varargs(linStrInd) = []; % remove 'linear' string from args
+                obj = obj.importLinearData(varargs{:});
+              end
+            end
 
         end
 
         function [obj] = reset(obj)
             obj.data_pr = [];
-            obj.axis_pr = nDDictAxis;
+            obj.axis_pr = obj.axisClass;
             obj.meta = struct;
         end
 
@@ -496,17 +526,17 @@ classdef nDDict
             checkDims(obj);
 
             % Make sure that obj.data_pr is a cell array
-            if ~iscell(obj.data_pr); error('nDDict.data_pr must be a cell array.'); end
+            if ~iscell(obj.data_pr); error('nDDict.data must be a cell array.'); end
 
             % Make sure that obj.data_pr is a numeric
             temp = cellfun(@isnumeric,obj.data_pr);
-            if any(temp(:) ~= 1); error('nDDict.data_pr must contain only numerics'); end      % Can redo this in the future to work with nDDicts containing matrices
+            if any(temp(:) ~= 1); error('nDDict.data must contain only numerics'); end      % Can redo this in the future to work with nDDicts containing matrices
             % % To do: implement this so it works with cell arrays and nDDict
             % classes in the future too
 
             % Make sure target dimension in nDDict.data_pr is a singleton
             temp = cellfun(@(x) size(x,dim_target),obj.data_pr);
-            if any(temp(:) > 1); error('Target dimension in nDDict.data_pr needs to be size 1. Try reshaping contents of nDDict.data_pr or choosing a different target dimension.'); end
+            if any(temp(:) > 1); error('Target dimension in nDDict.data needs to be size 1. Try reshaping contents of nDDict.data or choosing a different target dimension.'); end
             clear sz_targets
 
             % Bring chosen dimension to the front. Thus, we will be
@@ -544,7 +574,7 @@ classdef nDDict
             % Check that sizes and dimensionalities are compatible
             data_ndims = cellfun(@ndims,obj.data_pr,'UniformOutput',true);
             if any(any(data_ndims ~= repmat(data_ndims(1,:),sz(1),1),1),2)
-                error('Dimensions of nDDict.data_pr not uniform along packing dimensions.');
+                error('Dimensions of nDDict.data not uniform along packing dimensions.');
             end
 
             data_sz = cellfun(@size,obj.data_pr,'UniformOutput',false);
@@ -759,7 +789,7 @@ classdef nDDict
             end
 
             % Creating unpacked axis.
-            unpacked_axis = nDDictAxis;
+            unpacked_axis = obj.axisClass;
             unpacked_axis.name = dim_name;
             unpacked_axis.values = dim_values;
 
@@ -883,7 +913,7 @@ classdef nDDict
 
             % Make sure obj.data_pr, obj.axis_pr.name, and obj.axis_pr.values have the right data types
             if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data must be either a numeric or cell array'); end
-            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis.values must be a mat, cell array of numerics, or cell array of character vectors.'); end % FIXME
+            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis.values must be a mat, cell array of numerics, or cell array of character vectors.'); end
             if any(strcmp(getclass_obj_axis_name(obj),'unknown')); error('Obj.axis.name must be of type char.'); end
 
             % Sweep through all axes and make sure dimensions are correct.
@@ -934,7 +964,7 @@ classdef nDDict
 
             % Make sure obj.data_pr, obj.axis_pr.name, and obj.axis_pr.values have the right data types
             if strcmp(getclass_obj_data(obj),'unknown'); error('Obj.data must be either a numeric or cell array'); end
-            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis.values must be a mat, cell array of numerics, or cell array of character vectors.'); end % FIXME
+            if any(strcmp(getclass_obj_axis_values(obj),'unknown')); error('Obj.axis.values must be a mat, cell array of numerics, or cell array of character vectors.'); end
             if any(strcmp(getclass_obj_axis_name(obj),'unknown')); error('Obj.axis.name must be of type char.'); end
 
             sza = arrayfun(@(x) length(x.values),obj.axis_pr);
@@ -1196,7 +1226,7 @@ classdef nDDict
     %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
     % % % % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-    methods %(Access = protected) % same as private, but allows access from subclasses
+    methods (Access = protected) % same as private, but allows access from subclasses
         [out, outsimple] = calcClasses(xp,input,field_type)     % Used by importLinearData and other importData functions
 
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -1250,7 +1280,7 @@ function obj = setAxisDefaults(obj,dim)
 
     % If axis doesn't already exist, create it. Otherwise, copy existing.
     if length(obj.axis_pr) < dim
-        ax_curr = nDDictAxis;
+        ax_curr = obj.axisClass;
     else
         ax_curr = obj.axis_pr(dim);
     end
