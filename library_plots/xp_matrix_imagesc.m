@@ -35,7 +35,7 @@ function hxp = xp_matrix_imagesc (xp, options)
 
 
     if transpose_on
-        xp = xp_matrix_transpose(x);
+        xp = xp_matrix_transpose(xp);
     end
 
     d = xp.data{1};
