@@ -6,7 +6,7 @@ function obj = importLinearData(obj,X,varargin)
 %     Also populates the xp.axis.values appropriately.
 % 
 %     Forms:
-%     xp = importLinearData(data,axislabels1,...,axislabelsN)
+%     xp = importLinearData(data,axis_values1,...,axis_valuesN)
 % 
 %     Inputs:
 %     data - vector containing input data. Can be numeric or cell array.
@@ -45,7 +45,7 @@ function obj = importLinearData(obj,X,varargin)
     for k = 1:Ndims
         axLinearFormat{k} = obj2.calcClasses(axlinear{k}, 'axis_values');
     end
-    if any(strcmp(axLinearFormat,'unknown')); error('axis_values must be a numeric array, cell array of numerics, or cell array of chars'); end
+    if any(strcmp(axLinearFormat,'unknown')) || isempty(axlinear); error('axis_values must be a numeric array, cell array of numerics, or cell array of chars'); end
 
     % Set up xp.axis_pr
     sz = zeros(1, Ndims);
