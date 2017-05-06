@@ -271,12 +271,11 @@ classdef nDDict
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
         function obj = importAxisNames(obj,varargin)
-            % ax_names can be a single cellstr, or an argument list of strings
+            % varargin can be a single cell containing a cellstr, or an argument list of strings
             ax_names = varargin;
             
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
-            
 
             if nargin < 2
                 ax_names = cellfun(@num2str,num2cell(1:Nd),'UniformOutput',0);
@@ -294,8 +293,43 @@ classdef nDDict
             end
 
             for i = 1:length(ax_names)
-                obj.axis_pr(i).name = ax_names{i};
+                if ~isempty(ax_names{i})
+                    obj.axis_pr(i).name = ax_names{i};
+                end
             end
+            
+            obj = obj.fixAxes;
+        end
+        
+        
+        function obj = importAxisValues(obj,varargin)
+            % varargin can be a single cell containing cells for each axis, or an argument list for the axes
+
+            if nargin < 2 % use default values
+                obj = obj.fixAxes;
+                return
+            end
+            
+            axis_vals = varargin;
+            
+            Nd = ndims(obj.data_pr);
+            Na = length(obj.axis_pr);
+
+            if nargin == 2 && iscell(axis_vals{1})
+              axis_vals = axis_vals{1};
+            end
+            
+            if length(axis_vals) > Na
+                error('Mismatch between number of axis_values supplied and number of axes in object.')
+            end
+            
+            for i = 1:length(axis_vals)
+                if ~isempty(axis_vals{i})
+                    obj.axis_pr(i).values = axis_vals{i};
+                end
+            end
+            
+            obj = obj.fixAxes;
         end
 
         
