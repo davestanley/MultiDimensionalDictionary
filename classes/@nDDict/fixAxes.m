@@ -46,6 +46,7 @@ end
 
 if optionalFixesFlag
     % convert any cellnum axis_values to numeric
+    % Author: Erik Roberts
     axValClasses = getclass_obj_axis_values(obj);
     cellNumInds = find(strcmp(axValClasses, 'cellnum'));
     if any(cellNumInds)

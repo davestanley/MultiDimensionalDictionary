@@ -1,7 +1,18 @@
 %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % MAIN CLASS DEF % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
+% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % Developer notes:
+% I am adding the following hash tags to the code as a way of marking
+% things that need to be done / investigated.
+% #whowrotethis - Requested author information
+% #makeprivate - Perhaps make the function private
+% #isitoutdated - This might be outdated - if so, remove
+% #Toimplement
+% #requestexample - requests an example of implementation of this code in demos_xPlt
+% #needsattention - Requires some updating in the future
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef nDDict
     
     properties
@@ -46,13 +57,22 @@ classdef nDDict
         % % % % % % % % % % % CLASS SETUP % % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function obj = nDDict(varargin)
-            % Possible inputs:
+            % Default constructor
+            % Usage:
+            % obj = nDDict(data,axis_vals,axis_names)
+            % obj = nDDict(axis_class,data,axis_vals,axis_names)
+            % obj = nDDict(data,axis_vals,axis_names,'linear')
+            % obj = nDDict(axis_class,data,axis_vals,axis_names,'linear')
+            % 
+            % Possible input configurations:
             %   1) nargin==0
             %   2) data for call to importData
             %   3) data for call to importLinearData, with final argument 'linear'
             %   4) one of the above, with additional first argument specifying
             %      the 'axisClass' from a subclass.
-            
+            % Author v2.0: Erik Roberts (iss 24)
+            % Author v1.0: Dave Stanley
+
             varargs = varargin;
             nargs = nargin;
             
@@ -79,7 +99,6 @@ classdef nDDict
                     obj = obj.importLinearData(varargs{:});
                 end
             end
-            
         end
         
         
@@ -91,6 +110,9 @@ classdef nDDict
         
         % TO DO: Fix this.
         function obj_xp = xPlt(obj)
+            % Who wrote this ? 
+            % Can we use inheritObj instead?
+            % Tags: (#whowrotethis, #isitoutdated)
             % Converter nDDict -> xPlt.
             obj_xp = xPlt;
             obj_xp = importData(obj_xp, obj.data);
@@ -121,7 +143,7 @@ classdef nDDict
             % Define variables and check that all dimensions are consistent
             % ro - if regular expressions are used, returns the index
             % values discovered by the regular expression.
-            
+            % Who wrote this? (#whowrotethis)
             % Verify that size of obj is correct
             checkDims(obj);
             
@@ -149,7 +171,11 @@ classdef nDDict
         
         
         function last_non_singleton = lastNonSingletonDim(obj)
+            % #whowrotethis
+            % What does this do?
+            % #makeprivate?
             % Should pack dimension as dimesion after last non-singleton dimension of obj.data.
+            % Returns index of last dim in obj.data that is non-singleton.
             data_dims = cellfun(@(x) length(size(x)), obj.data);
             max_dim = max(data_dims(:));
             for d = 1:max_dim
@@ -168,19 +194,22 @@ classdef nDDict
         % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        function obj = importAxisNames(obj,varargin)
-            % varargin can be a single cell containing a cellstr, or an argument list of strings
-            ax_names = varargin;
+        function obj = importAxisNames(obj,ax_names)
+            % varargin can be a single cell containing a cellstr, or a
+            % cellstr.
+            % #makeprivate
             
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
             
+            % Define defualt if unspecified
             if nargin < 2
                 ax_names = cellfun(@num2str,num2cell(1:Nd),'UniformOutput',0);
                 ax_names = cellfun(@(s) ['Dim ' s],ax_names,'UniformOutput',0);
             end
             
-            if iscellstr(ax_names{1})
+            % If its a single cell of cellstrs, expand it out 
+            if iscellstr(ax_names{1}) && length(ax_names) == 1
                 ax_names = ax_names{1};
             end
             
@@ -202,6 +231,7 @@ classdef nDDict
         
         function obj = importAxisValues(obj,varargin)
             % varargin can be a single cell containing cells for each axis, or an argument list for the axes
+            % #makeprivate
             
             if nargin < 2 % use default values
                 obj = obj.fixAxes;
@@ -288,6 +318,8 @@ classdef nDDict
         function obj = sortAxis(obj,ax_id,sort_varargin)
             % Sorts the entries of a specific axis. ax_id can be a regexp
             % to identify an axis, or simply the axis number {1..ndims}
+            % #needsattention: This function updates axis.values, but it
+            % doesn't update any metadata sorted in axis.astruct
             
             if nargin < 3
                 sort_varargin = {};
@@ -351,7 +383,10 @@ classdef nDDict
         
         function obj_out = merge(obj1,obj2)
             % This might be slow when working with huge matrices. Perhaps do
-            % alternate approach for them.
+            % alternate approach for them. This works by linearizing the
+            % data in both objects into 1 huge table. Then, it imports the
+            % new linear data. If have huge sparse matrices this will be
+            % slow.
             names = {obj1.axis_pr.name};
             
             % Merge two objects together
@@ -398,6 +433,7 @@ classdef nDDict
         
         function obj = alignAxes(obj, obj2)
             % Author: Ben Pittman-Polletta.
+            % #requestexample
             
             obj_axnames = obj.exportAxisNames;
             obj2_axnames = obj2.exportAxisNames;
@@ -634,6 +670,7 @@ classdef nDDict
             % Author: Ben Pittman-Polletta.
             % Creates new axis with specified values, and an identical copy
             % of the existing xPlt object at each value.
+            % #requestexample
             checkDims(obj);
             
             if nargin < 4, new_axis_dim = []; end
