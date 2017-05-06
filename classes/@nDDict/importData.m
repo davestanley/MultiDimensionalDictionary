@@ -19,4 +19,6 @@ if nargin > 3
     end
 end
 
+obj.fixAxes(1);     % Convert any axis vallues that are cellnums to numeric matrices
+
 end

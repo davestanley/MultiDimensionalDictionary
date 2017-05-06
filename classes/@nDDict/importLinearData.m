@@ -98,7 +98,7 @@ function obj = importLinearData(obj,X,varargin)
 
     end
     
-    obj = obj.fixAxes;
+    obj = obj.fixAxes(1);
 
 end
 

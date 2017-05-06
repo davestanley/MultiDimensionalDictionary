@@ -11,7 +11,6 @@
 % #isitoutdated - This might be outdated - if so, remove
 % #Toimplement
 % #requestexample - requests an example of implementation of this code in demos_xPlt
-% #needsattention - Requires some updating in the future
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 classdef nDDict
     
@@ -99,6 +98,7 @@ classdef nDDict
                     obj = obj.importLinearData(varargs{:});
                 end
             end
+            obj.fixAxes(1);     % Convert any axis vallues that are cellnums to numeric matrices
         end
         
         
@@ -225,7 +225,7 @@ classdef nDDict
                 end
             end
             
-            obj = obj.fixAxes;
+            obj = obj.fixAxes(1);
         end
         
         
@@ -257,7 +257,7 @@ classdef nDDict
                 end
             end
             
-            obj = obj.fixAxes;
+            obj = obj.fixAxes(1);
         end
         
         
@@ -268,10 +268,7 @@ classdef nDDict
         
         obj = importLinearData(obj,X,varargin)            % Function for importing data in a linear format
         
-        
         obj = importData(obj,data,axis_vals,axis_names)
-
-        
         
         function out = exportAxisVals(obj)
             Na = length(obj.axis);
