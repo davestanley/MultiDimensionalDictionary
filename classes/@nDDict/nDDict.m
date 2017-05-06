@@ -83,6 +83,7 @@ classdef nDDict
         end
 
         function [obj] = reset(obj)
+            % call object specific-constructor
             obj = feval(str2func(class(obj)));
         end
 
@@ -263,19 +264,28 @@ classdef nDDict
         % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-        function obj = importAxisNames(obj,ax_names)
+        function obj = importAxisNames(obj,varargin)
+            % ax_names can be a single cellstr, or an argument list of strings
+            ax_names = varargin;
+            
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
+            
 
             if nargin < 2
                 ax_names = cellfun(@num2str,num2cell(1:Nd),'UniformOutput',0);
                 ax_names = cellfun(@(s) ['Dim ' s],ax_names,'UniformOutput',0);
             end
 
-            if ~iscellstr(ax_names); error('ax_names must be a cell array of chars'); end
+            if iscellstr(ax_names{1})
+              ax_names = ax_names{1};
+            end
+            
+            if ~iscellstr(ax_names); error('ax_names must be a cell array of chars, or argument list of chars'); end
 
             if length(ax_names) > Na
-                error('Mismatch between number of axis names supplied and number of axes in object.'); end
+                error('Mismatch between number of axis names supplied and number of axes in object.')
+            end
 
             for i = 1:length(ax_names)
                 obj.axis_pr(i).name = ax_names{i};
