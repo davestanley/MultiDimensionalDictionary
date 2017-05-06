@@ -179,5 +179,7 @@ function [selection_out, startIndex] = regex_lookup(vals, selection)
     startIndex = regexp(vals,selection);
     selection_out = logical(~cellfun(@isempty,startIndex));
     selection_out = find(selection_out);
-
+    if isempty(selection_out)
+        error('Supplied regex did not match the name of any axis or value');
+    end
 end
