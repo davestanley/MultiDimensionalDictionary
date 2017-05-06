@@ -29,6 +29,7 @@ classdef nDDict
             obj.data_pr = value;
             obj.checkDims;
         end
+        
         function value = get.data(obj)
             value = obj.data_pr;
         end
@@ -82,11 +83,13 @@ classdef nDDict
 
         end
 
+        
         function [obj] = reset(obj)
             % call object specific-constructor
             obj = feval(str2func(class(obj)));
         end
 
+        
         % TO DO: Fix this.
         function obj_xp = xPlt(obj)
             % Converter nDDict -> xPlt.
@@ -111,6 +114,7 @@ classdef nDDict
             end
         end
 
+        
         function [obj2, ro] = subset(obj,varargin)
             % Define variables and check that all dimensions are consistent
             % ro - if regular expressions are used, returns the index
@@ -214,6 +218,7 @@ classdef nDDict
 
         end
 
+        
         function [obj2, ro] = axissubset(obj, axis, values)
             % Define variables and check that all dimensions are consistent
             % ro - if regular expressions are used, returns the index
@@ -244,6 +249,7 @@ classdef nDDict
 
         end
 
+        
         function last_non_singleton = lastNonSingletonDim(obj)
             % Should pack dimension as dimesion after last non-singleton dimension of obj.data.
             data_dims = cellfun(@(x) length(size(x)), obj.data);
@@ -292,12 +298,15 @@ classdef nDDict
             end
         end
 
+        
         function obj = importMeta(obj,meta_struct)
             obj.meta = meta_struct;
         end
 
+        
         obj = importLinearData(obj,X,varargin)            % Function for importing data in a linear format
 
+        
         function obj = importData(obj,data,axis_vals,axis_names)
 
             obj.data_pr = data;
@@ -306,7 +315,7 @@ classdef nDDict
             if nargin > 2
                 if ~isempty(axis_vals)
                     if ~iscell(axis_vals); error('axis_vals must be a cell array.'); end
-                    for i = 1:length(axis_vals);
+                    for i = 1:length(axis_vals)
                         obj.axis_pr(i).values = axis_vals{i};
                     end
                     obj.checkDims;
@@ -321,6 +330,7 @@ classdef nDDict
 
         end
 
+        
         function out = exportAxisVals(obj)
             Na = length(obj.axis);
             out = cell(1,Na);
@@ -329,6 +339,7 @@ classdef nDDict
             end
         end
 
+        
         function out = exportAxisNames(obj)
             Na = length(obj.axis);
             out = cell(1,Na);
@@ -895,6 +906,7 @@ classdef nDDict
             end
         end
 
+        
         function obj = fixAxes(obj, optionalFixesFlag)
             % This function forces the nDDict axis data to be updated to
             % match the dimensions of the data structure.
@@ -953,6 +965,7 @@ classdef nDDict
             end
         end
 
+        
         function checkDims(obj, optionalChecksFlag)
             % We enforce that size(obj.data_pr) must always match up to
             % length(obj.axis_pr(i).values) for all i. We allow there to be
@@ -1053,6 +1066,7 @@ classdef nDDict
             A = isempty(obj.data_pr);
         end
 
+        
         function varargout = size(obj,varargin)
             % Returns size of obj. This function is basically the same as
             % running size(obj.data_pr) except we base it off of the dimensions
@@ -1075,11 +1089,13 @@ classdef nDDict
             end
         end
 
+        
         function Nd = ndims(obj)
             checkDims(obj);
             Nd = length(obj.axis_pr);
         end
 
+        
         function obj = permute(obj,order)
             % Like normal permute command, except order can be either an
             % array of numerics, or a cell array of strings (regexps)
@@ -1105,6 +1121,7 @@ classdef nDDict
             obj.axis_pr = obj.axis_pr(order2);
         end
 
+        
         function obj = ipermute(obj,order)
             checkDims(obj);
             inverseorder(order) = 1:numel(order);
@@ -1112,6 +1129,7 @@ classdef nDDict
             obj.axis_pr = obj.axis_pr(inverseorder);
         end
 
+        
         function obj = transpose(obj)
             checkDims(obj);
             Nd = ndims(obj.data_pr);
@@ -1123,6 +1141,7 @@ classdef nDDict
             obj.axis_pr([1,2]) = obj.axis_pr([2,1]);        % Axis should always be at least length=2.
         end
 
+        
         function obj = squeeze(obj)
             % This is just like MATLAB's normal squeeze command. However,
             % there is one key difference:
@@ -1161,6 +1180,7 @@ classdef nDDict
             checkDims(obj);
         end
 
+        
         function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
             % Author: Ben Pittman-Polletta.
             % Creates new axis with specified values, and an identical copy 
@@ -1244,6 +1264,7 @@ classdef nDDict
             [out, outsimple] = obj.calcClasses(obj.data_pr,'data');
         end
 
+        
         function out = getclass_obj_axis_values(obj)
             % Returns class type of entries in obj.axis_pr.values
             nAx = length(obj.axis_pr);
@@ -1253,6 +1274,7 @@ classdef nDDict
             end
         end
 
+        
         function out = getclass_obj_axis_name(obj)
             % Returns class type of entries in obj.axis_pr.values
             nAx = length(obj.axis_pr);
@@ -1279,6 +1301,7 @@ function output = inheritObj(output,input)
         end
     end
 end
+
 
 function obj = setAxisDefaults(obj,dim)
     % Sets obj.axis_pr(i) to default values
@@ -1328,6 +1351,7 @@ function obj = setAxisDefaults(obj,dim)
     % Assign our new axis to the current dimension
     obj.axis_pr(dim) = ax_curr;
 end
+
 
 function [selection_out, startIndex] = regex_lookup(vals, selection)
     if ~iscellstr(vals); error('nDDict.axis.values must be strings when using regular expressions');
