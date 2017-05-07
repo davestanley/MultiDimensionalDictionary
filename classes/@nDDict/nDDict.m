@@ -130,7 +130,7 @@ classdef nDDict
             % Returns the index of the axis with name matching str
             allnames = {obj.axis_pr.name};
             try
-                [selection_out, startIndex] = obj.regex_lookup(allnames, str);
+                [selection_out, startIndex] = nDDict.regex_lookup(allnames, str);
             catch
                 selection_out = [];         % Return empty if no result found.
             end
