@@ -109,7 +109,7 @@ function varargout = recursivePlot_2(xp,function_handles,dimensions,function_arg
         
         % Set up a new xPlt object with dimensions matching current
         % function handle
-        xp2 = xp.reset;                         % Create a new xPlt object        
+        xp2 = xp.reset;                         % Create a new xPlt object
         sz2 = sz(dimensions{1});
         ndims2 = length(dimensions{1});
         total_calls = prod(sz2);

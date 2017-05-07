@@ -746,13 +746,12 @@ classdef nDDict
     % % % % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
     methods (Access = protected) % same as private, but allows access from subclasses
-        [out, outsimple] = calcClasses(xp,input,field_type)     % Used by importLinearData and other importData functions
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % HELPER FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function [out, outsimple] = getclass_obj_data(obj)
-            [out, outsimple] = obj.calcClasses(obj.data_pr,'data');
+            [out, outsimple] = nDDict.calcClasses(obj.data_pr,'data');
         end
         
         
@@ -831,6 +830,8 @@ classdef nDDict
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % LOCAL FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
+        [out, outsimple] = calcClasses(input,field_type)     % Used by importLinearData and other importData functions
         
         function output = inheritObj(output,input)
             % Merges contents of input into output.

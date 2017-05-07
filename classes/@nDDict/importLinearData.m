@@ -35,15 +35,14 @@ function obj = importLinearData(obj,X,varargin)
     if ~isvector(X); error('data must be linear'); end
 
     % Error checking - X must be cell or numeric
-    obj2 = obj.reset;
-    [~, XsimpleFormat] = obj2.calcClasses(X,'data');
+    [~, XsimpleFormat] = nDDict.calcClasses(X,'data');
     if strcmp(XsimpleFormat,'unknown'); error('data must be a numeric or cell array'); end
 
     % Error checking - each entry in axislinear must be either numeric or
     % cell. If it's a cell, all entries must char.
     axLinearFormat = cell(1, Ndims);
     for k = 1:Ndims
-        axLinearFormat{k} = obj2.calcClasses(axlinear{k}, 'axis_values');
+        axLinearFormat{k} = nDDict.calcClasses(axlinear{k}, 'axis_values');
     end
     if any(strcmp(axLinearFormat,'unknown')) || isempty(axlinear); error('axis_values must be a numeric array, cell array of numerics, or cell array of chars'); end
 
@@ -101,5 +100,3 @@ function obj = importLinearData(obj,X,varargin)
     obj = obj.fixAxes(1);
 
 end
-
-

@@ -1,4 +1,4 @@
-function [out, outsimple] = calcClasses(obj,input,field_type)
+function [out, outsimple] = calcClasses(input,field_type)
     % For internal use in importing data in to nDDict.
     if nargin==1
       warning('Must specifify input and field_type')
