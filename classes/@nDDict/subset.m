@@ -9,6 +9,7 @@ function [obj2, ro] = subset(obj,varargin)
 %       2) regular expression string for cellstring axis values
 %       3) numeric array or cellnum of indicies for numeric or cellnum axis
 %          values
+%   Optional: 'numericsAsValuesFlag' - see nDDict.valSubset
 %
 % Outputs:
 %   obj2: object with subset of data

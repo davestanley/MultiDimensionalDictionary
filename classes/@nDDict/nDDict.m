@@ -160,6 +160,7 @@ classdef nDDict
             %   3) regular expression for strings
             %
             % Outputs: see subset method
+            % Tags: #requestexample
             
             varargin{end+1} = 'numericsAsValuesFlag'; % tells subset to use numerics as values
             
