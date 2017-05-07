@@ -1,5 +1,9 @@
-%% % % % % % % % xPlt Tutorial - Independent of DynaSim % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % xPlt Tutorial % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+%% % % % % % % % % % % % % % % xPlt Setup % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Set up paths 
 % Get ready...
@@ -22,29 +26,50 @@ end
 % Load some sample simulated data
 load('sample_data.mat');
 
-% We loaded 3 variables: data, axis_values, and axis_names. Data contains a
+% We loaded 3 variables: dat, axis_values, and axis_names. dat contains a
 % 4D cell array containing time series data. It represents several
 % simulations of a network of coupled excitatory (E) and
-% inhibitory (I) cells. For example:
-figure; plot(data{1,1,2,8}); title('Inhibitory cell voltage'); ylabel('Vm'); xlabel('Time (ms)');
+% inhibitory (I) cells.
 
-% Axis_values contains the labels for each axis. Note: there is one value
-% for each entry in data.
-disp(size(data));
-disp(axis_vals);
-
-% Axis_names gives the names of what is varied along each axis. These are:
-% 1) Applied current to E cells; 2) Inhibitory synapse decay constant Tau;
-% 3) Population name (excitatory or inhibitory cells - E or I); and 
+% Axis_names gives the names of what is varied along each axis of dat.
+% These are:
+% 1) Applied current to E cells (E_Iapp);
+% 2) Inhibitory synapse decay constant Tau (I_E_tauD);
+% 3) Population name (excitatory or inhibitory cells - E or I);
+% 4) Name of state variable
+% These are stored in axis_names:
 disp(axis_names)
 
+% The possile values that each of these axes can take on are listed in
+% axis_vals. For example, the population axis, axis 3, can be either E or
+%  I for excitatory or inhibitory cells respectively.
+disp(axis_vals{3}')
+
+% Note that the number of entries in axis_vals must 1:1 match up with the 
+% size of dat.
+disp(axis_vals);
+disp(size(dat));
+
+
+% Thus, dat is of the form (E_Iapp, I_E_tauD, population, variable).
+% For example:
+figure; plot(dat{1,1,2,1}); title('Inhibitory (I) cell voltage'); ylabel('Vm'); xlabel('Time (ms)');
+disp(axis_vals{1}(1))       % E_Iapp parameter value
+disp(axis_vals{2}(1))       % I_E_tauD parameter value
+disp(axis_vals{3}{2})       % Inhibitory cells
+disp(axis_vals{4}{1})       % Voltage, v
+
+
 %% Import into xPlt object
+
+% All of this information can be imported into an xPlt object.
 
 % Create xPlt object
 xp = xPlt;
 
 % Import the data
-xp = xp.importData(data,axis_vals,axis_names);
+xp = xp.importData(dat,axis_vals,axis_names);
+
 
 % xPlt objects are essentially cell arrays (or matricies), but with the
 % option to index using strings instead of just integers. 
@@ -56,7 +81,7 @@ disp(xp);
 
 
 % At its core, xPlt has 3 fields. xp.data stores the actual data (either a 
-% matrix or a cell array). 
+% matrix or a cell array). Note: it is okay that there are some empties.
 disp(xp.data);
 size(xp.data)
 
@@ -72,8 +97,7 @@ disp(xp.axis(1).values);
 disp(xp.axis(4).values);
 
 % Axis.name field stores the name of the dimension. In this case, it is
-% named after the parameter in the model that was varied - namely
-% excitatory cell injected current.
+% named after the parameter in the model that was varied.
 disp(xp.axis(1).name)
 
 % Axis.astruct is for internal use and is currently empty.
@@ -100,6 +124,36 @@ clear meta
 
 %% % % % % % % % % % % % % % % xPlt BASICS % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+%% Importing data
+
+% xPlt objects are just matrices or cell arrays with extra functionality to
+% keep track of what each dimension is storing. 
+
+% Above, we imported data linearized data into an xPlt object. But
+% it is also possible to import a high dimensional matrix directly.
+
+% For example let's say we have a random cell array.
+mydata = xp.data;
+
+% We can import the data as follows.
+xp2 = xPlt;
+xp2 = xp2.importData(mydata);
+
+% We didn't supply any axis names/values, so default values were assgined
+xp2.getaxisinfo;
+
+% We can instead import axis values along with the data
+ax_vals = xp.exportAxisVals;
+clear xp2
+xp2 = xPlt;
+xp2 = xp2.importData(mydata,ax_vals);
+xp2.getaxisinfo
+
+% Axis names can be assigned in this way as well
+ax_names = xp.exportAxisNames;
+xp2 = xp2.importData(mydata,ax_vals,ax_names);
+xp2.getaxisinfo
 
 
 %% xPlt Indexing
@@ -134,7 +188,6 @@ disp(isequal(mydata,mydata2));
 clear mydata mydata2 xp4 xp5
 
 
-
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -142,6 +195,7 @@ clear mydata mydata2 xp4 xp5
 % Tip: don't try to understand what recursivePlot is doing - instead, try
 % putting break points in the various function handles to see how this
 % command works.
+close all;
 
 % Pull out a 2D subset of the data
 clc
@@ -150,10 +204,10 @@ xp4.getaxisinfo
 
 % Set up plotting arguments
 function_handles = {@xp_subplot_grid,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
-dimensions = {[1,2],0};                                       % Specifies which dimensions of xp each function handle
-                                                                % will operate on. Note that dimension "0" refers to the 
+dimensions = {{'E_Iapp','I_E_tauD'},{'data'}};                % Specifies which axes of xp each function handle
+                                                                % will operate on. Note that dimension 'data' refers to the 
                                                                 % the contents of each element in xp.data (e.g. the matrix of
-                                                                % time series data). If specified, it must come last.
+                                                                % time series data). It must come last.
 function_arguments = {{},{}};	% This allows you to supply input arguments to each of the 
                                 % functions in function handles. For
                                 % now we'll leave this empty.
@@ -161,13 +215,9 @@ function_arguments = {{},{}};	% This allows you to supply input arguments to eac
 % Run the plot. Note the "+" icons next to each plot allow zooming. 
 figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
 
-% Alternatively, dimensions can be specified as axis names instead of
-% indices. The last entry, data, refers to the contents of xp.data (e.g.
-% dimension 0 above).
-dimensions = {{'E_Iapp','I_E_tauD'},{'data'}}; 
-figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
-
 %% Plot 3D data 
+
+close all;
 
 % Pull out a 3D subset of data (parameter sweeps and the 2 cell
 % types)
@@ -176,9 +226,9 @@ xp4 = xp(:,1:2,:,'v');
 xp4.getaxisinfo
 
 % This will plot E cells and I cells (axis 3) each in separate figures and
-% the parameter sweeps (axes 1 and 2) in as subplots.
+% the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dimensions);
+recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -188,32 +238,40 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dim
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},dimensions);
-
-
-
-
+recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 %% Plot 4D data
+
+close all;
 
 % Pull out sodium channel state variables for E and I cells.
 clc
 xp4 = xp(1:2,1:2,:,6:7);
 xp4.getaxisinfo
 
-
-dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note - we can also use a mixture of strings and index locations to specify dimensions
+dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note - we can also use a mixture of strings and index locations to specify dimensions. Dimension "0" corresponds to data.
 
 % Note that here we will supply a function argument. This tells the second
 % subplot command to write its output to the axis as an RGB image, rather than
 % as subplots. This "hack" enables nested subplots.
-function_arguments = {{},{},{1},{}};
+xp_subplot_grid_options.display_mode = 1;
+function_arguments = {{},{},{xp_subplot_grid_options},{}};
 
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
 recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
 
+%% Plot multiple dimensions adaptively.
+
+close all;
+
+% Another option is to use @xp_subplot_grid_adaptive, which will plot the data using axes in
+% descending order of the size of the axis values, and plot remaining
+% combinations of axis values across figures.
+
+recursivePlot(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
 %% Plot two xPlt objects combined
+close all;
 clc
 xp3 = xp(2,:,'E','v');
 xp3.getaxisinfo
@@ -225,8 +283,6 @@ xp5 = merge(xp3,xp4);
 
 dimensions = {[1,2],0};
 figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
-
-
 
 
 %% % % % % % % % % % % % % % % ADVANCED xPlt / nDDict USAGE % % % % % % % 
@@ -251,9 +307,7 @@ xp2.data{5} = randn(100);       % Ok
 % mydata = reshape(xp2.data,[3,3,16]);
 % xp2.data = mydata;              % Not ok.
 
-
-
-%% Method packDims
+%% Method packDim
 % Analogous to cell2mat.
 clear xp2 xp3 xp4 xp5
 
@@ -271,7 +325,6 @@ src = 2;                    % Take 2nd dimension in xp2
 dest = 3;                   % Pack into 3rd dimension in xp2.data matrix
 xp3 = xp2.packDim(src,dest);
 
-
 % Check dimensionality of xp3.data
 disp(xp3.data)             % The dimension "variables", which was dimension 2
                            % in xp2, is now dimension 3 in xp3.data.
@@ -279,6 +332,13 @@ disp(xp3.data)             % The dimension "variables", which was dimension 2
 
 % View axis of xp3
 xp3.getaxisinfo;            % The dimension "variables" is now missing
+
+% Alternatively, you can use a regular expression to select the dimension
+% you want to pack; if the destination dimension is left empty, the first
+% dimension which is not occupied in any of the matrix entries of xp.data
+% will be used.
+xp3 = xp2.packDim('var');
+xp3.getaxisinfo;
 
 % Note some of this data is sparse! We can see this sparseness by plotting
 % as follows (note the NaNs)
@@ -290,17 +350,18 @@ ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-
 subplot(212); imagesc(temp2);
 ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-%% Method unPackDims (undoing packDims)
-% However, the information in the missing axis is stored in the nDDictAxis matrix_dim_3, a field of xp3.meta.
+%% Method unpackDim (undoing packDims)
+% When packDim is applied to an xPlt object, say to pack dimension 3, the
+% information from the packed axis is stored in the nDDictAxis
+% matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.getaxisinfo
 
-% And if dimension 3 of each cell in xp3.data is unpacked using unpackDim,
+% If dimension 3 of each cell in xp3.data is unpacked using unpackDim,
 % xp3.meta.matrix_dim_3 will be used to provide axis info for the new
 % xPlt object.
 xp4 = xp3.unpackDim(dest, src);
@@ -312,8 +373,6 @@ xp4.getaxisinfo;
 
 xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', {'One','Two','Three','Four','Five','Six'});
 xp4.getaxisinfo;
-
-
 
 %% Use packDim to average across cells
 
@@ -339,7 +398,6 @@ xp3 = xp2.packDim(src,dest);
 
 % Plot 
 figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
-
 
 %% Use packDim to average over synaptic currents
 % Analogous to cell2mat
@@ -367,4 +425,22 @@ recursivePlot(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3
 % This command combines two (or more) dimensions into a single dimension.
 xp2 = xp.mergeDims([3,4]);
 xp2.getaxisinfo;
+
+
+%% Advanced testing
+clear xp2 xp3 xp4 xp5 xp6
+% Test squeezeRegexp
+xp2 = xp(:,1,:,end); xp2.getaxisinfo
+
+xp2b = xp2.squeezeRegexp('var'); xp2b.getaxisinfo
+xp2b = xp2.squeezeRegexp('I_E_tauD'); xp2b.getaxisinfo
+xp2b = xp2.squeezeRegexp('populations'); xp2b.getaxisinfo
+
+%% To implement
+% 
+% 
+% Implement the following:
+% + Make DynaSimPlotExtract more general
+% + Starting work on dsPlot2 - any new requests?
+
 
