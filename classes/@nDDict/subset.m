@@ -1,12 +1,33 @@
 function [obj2, ro] = subset(obj,varargin)
-% Define variables and check that all dimensions are consistent
-% ro - if regular expressions are used, returns the index
-% values discovered by the regular expression.
+% Purpose: get subset of data based on indicies for numeric or regular
+%          expression for cellstring. also gets used by valSubset to index numerics 
+%          based on values instead of indicies.
+%
+% Inputs:
+%   varargin: each argument corresponds to each axis.
+%       1) [] or ':' for all indicies
+%       2) regular expression string for cellstring axis values
+%       3) numeric array or cellnum of indicies for numeric or cellnum axis
+%          values
+%
+% Outputs:
+%   obj2: object with subset of data
+%   ro:  if regular expressions are used, contains regular expressions and 
+%        results of regexp 'start' indicies.
 
 % Verify that size of obj is correct
 checkDims(obj);
 
-% Validate that "selection" is the right size
+% Check for numericsAsValuesFlag
+if ischar(varargin{end}) && strcmp(varargin{end}, 'numericsAsValuesFlag')
+    numericsAsValuesFlag = true; % tells subset to use numerics as values
+    varargin(end) = []; % remove string
+%     nargin = nargin - 1; % reduce num input arguments
+else
+    numericsAsValuesFlag = false;
+end
+
+% Get params to validate that "selection" is the right size
 selection = varargin(:);
 Na = length(obj.axis_pr);
 Nd = ndims(obj.data_pr);
@@ -56,13 +77,61 @@ if Ns ~= Na
     error('Number of inputs must match dimensionality of nDDict.data');
 end
 
-% Convert selection to index if using regular expressions
+axClasses = getclass_obj_axis_values(obj);
+
+% Convert selection to index if using numeric values
+if numericsAsValuesFlag
+    for i = 1:Ns
+        if isnumeric(selection{i})
+            thisAxVals = obj.axis_pr(i).values;
+            if strcmp('cellnum', axClasses{i})
+                thisAxVals = [thisAxVals{:}]; % convert to numeric array
+            end
+            [~, selection{i}] = intersect(thisAxVals, selection{i});
+        end
+    end
+end
+
 ro = {};
+re = '([\d.]*\s*[<>=]{0,2})\s*[a-z_A-Z]?\s*([<>=]{0,2}\s*[\d.]*)';
 for i = 1:Ns
     if ischar(selection{i})
-        ro{i}(1,:) = obj.axis_pr(i).values;
-        [selection{i} ro{i}(2,:)] = nDDict.regex_lookup(obj.axis_pr(i).values, selection{i});
-        
+        if strcmp(axClasses{i}, 'cellstr')
+            % Convert selection to index if using regular expressions
+            ro{i}(1,:) = obj.axis_pr(i).values;
+            [selection{i} ro{i}(2,:)] = nDDict.regex_lookup(obj.axis_pr(i).values, selection{i});
+        elseif numericsAsValuesFlag
+            % Convert expression on vals for numerics to indicies
+            
+            thisAxVals = obj.axis_pr(i).values;
+            if strcmp('cellnum', axClasses{i})
+                thisAxVals = [thisAxVals{:}]; % convert to numeric array
+            end
+            
+            % Parse expression
+            expr = selection{i};
+            tokens = regexpi(expr, re, 'tokens');
+            tokens = tokens{1}; % enter outer cell
+            tokens = regexprep(tokens, '\s',''); % remove whitespace
+            tokens = tokens(~cellfun(@isempty, tokens)); % remove empty tokens
+            if ~all(cellfun(@isempty, cellfunu(@str2num, tokens)))
+                tokens = {[tokens{:}]}; % cat since single expression got split up
+            end
+            lhsBool = isstrprop(cellfun(@(x) x(1), tokens, 'uniform', false), 'digit');
+            lhsBool = [lhsBool{:}];
+            
+            % check LHS and RHS for up to 2 tokens
+            parsedSelection = true(size(thisAxVals));
+            for k=1:length(tokens)
+                thisExpr = tokens{k};
+                if lhsBool(k)
+                    parsedSelection = parsedSelection & eval(['(' thisExpr 'thisAxVals)']);
+                else
+                    parsedSelection = parsedSelection & eval(['(thisAxVals' thisExpr ')']);
+                end
+            end
+            [~, selection{i}] = intersect(thisAxVals, thisAxVals(parsedSelection));
+        end
     end
 end
 

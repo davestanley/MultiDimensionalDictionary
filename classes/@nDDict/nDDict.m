@@ -1,5 +1,5 @@
 %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % MAIN CLASS DEF % % % % % % % % % % %
+% % % % % % % % % % % MAIN CLASS DEF % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -12,6 +12,7 @@
 % #Toimplement
 % #requestexample - requests an example of implementation of this code in demos_xPlt
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 classdef nDDict
     
     properties
@@ -139,6 +140,33 @@ classdef nDDict
         [obj2, ro] = subset(obj,varargin);
         
         
+        function [obj2, ro] = valSubset(obj,varargin)
+            % Author: Erik Roberts (iss 18)
+            %
+            % Purpose: get subset based on axis values
+            %
+            % Similar to subset, but for numerics or cellnum, uses actual axis  
+            % values, instead of indicies. re on strings behaves as with subset.
+            % also have new notation for expressions.
+            %
+            % Inputs:
+            %   Types of input for each axis (each comma-separated argument):
+            %   1) numeric or cellnum containing the values
+            %   2) logical expression in string using comparators: <, >, <=, >=, ==
+            %       a) comparator with number, eg '<3' or '== 2.2'
+            %       b) comparator with letter, eg 'x <= 2' or '3.2 > Y'
+            %       c) 2 comparators with letter, space, or _ separator
+            %          eg '1 < x <= 2.2' or '5 >= Z > 1' or '<2 >=4.1' or '> 1_<= 5'
+            %   3) regular expression for strings
+            %
+            % Outputs: see subset method
+            
+            varargin{end+1} = 'numericsAsValuesFlag'; % tells subset to use numerics as values
+            
+            [obj2, ro] = subset(obj,varargin{:});
+        end
+        
+        
         function [obj2, ro] = axissubset(obj, axis, values)
             % Define variables and check that all dimensions are consistent
             % ro - if regular expressions are used, returns the index
@@ -202,7 +230,7 @@ classdef nDDict
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
             
-            % Define defualt if unspecified
+            % Define default if unspecified
             if nargin < 2
                 ax_names = cellfun(@num2str,num2cell(1:Nd),'UniformOutput',0);
                 ax_names = cellfun(@(s) ['Dim ' s],ax_names,'UniformOutput',0);
