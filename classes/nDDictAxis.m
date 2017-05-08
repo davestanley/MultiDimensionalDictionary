@@ -170,12 +170,23 @@ end
 
 
 function [selection_out, startIndex] = regex_lookup(vals, selection)
-    if ~iscellstr(vals); error('nDDictAxis.values must be strings when using regular expressions');
+    % uses regexp when selection is of the form '/selection/' with
+    % enclosing forward slashes. else uses strfind for substring
+    % matching.
+            
+    if ~iscellstr(vals); error('Axis values must be strings when using regular expressions');
     end
     if ~ischar(selection); error('Selection must be string when using regexp');
     end
 
-    startIndex = regexp(vals,selection);
+    if strcmp([selection(1) selection(end)],  '//') % use re
+        selection = selection(2:end-1);% remove slashes
+
+        startIndex = regexp(vals,selection);
+    else % use strfind
+        startIndex = strfind(vals,selection);
+    end
+    
     selection_out = logical(~cellfun(@isempty,startIndex));
     selection_out = find(selection_out);
     if isempty(selection_out)

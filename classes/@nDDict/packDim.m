@@ -34,13 +34,13 @@ if ~iscell(obj.data_pr); error('nDDict.data must be a cell array.'); end
 
 % Make sure that obj.data_pr is a numeric
 temp = cellfun(@isnumeric,obj.data_pr);
-if any(temp(:) ~= 1); error('nDDict.data must contain only numerics'); end      % Can redo this in the future to work with nDDicts containing matrices
+if any(temp(:) ~= 1); error([class(obj) '.data must contain only numerics']); end      % Can redo this in the future to work with nDDicts containing matrices
 % % To do: implement this so it works with cell arrays and nDDict
 % classes in the future too
 
 % Make sure target dimension in nDDict.data_pr is a singleton
 temp = cellfun(@(x) size(x,dim_target),obj.data_pr);
-if any(temp(:) > 1); error('Target dimension in nDDict.data needs to be size 1. Try reshaping contents of nDDict.data or choosing a different target dimension.'); end
+if any(temp(:) > 1); error(['Target dimension in ' class(obj) '.data needs to be size 1. Try reshaping contents of ' class(obj) '.data or choosing a different target dimension.']); end
 clear sz_targets
 
 % Bring chosen dimension to the front. Thus, we will be
@@ -78,7 +78,7 @@ end
 % Check that sizes and dimensionalities are compatible
 data_ndims = cellfun(@ndims,obj.data_pr,'UniformOutput',true);
 if any(any(data_ndims ~= repmat(data_ndims(1,:),sz(1),1),1),2)
-    error('Dimensions of nDDict.data not uniform along packing dimensions.');
+    error(['Dimensions of ' class(obj) '.data not uniform along packing dimensions.']);
 end
 
 data_sz = cellfun(@size,obj.data_pr,'UniformOutput',false);

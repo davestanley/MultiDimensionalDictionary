@@ -27,7 +27,7 @@ Nd = ndims(obj.data_pr);
 Na = length(obj.axis_pr);
 
 if Nd > Na
-    error('Number of dimensions in nDDict.data does not equal number of axes. Try using method importData or importDataTable if you want to alter objects dimensions.');
+    error(['Number of dimensions in ' class(obj) '.data does not equal number of axes. Try using method importData or importDataTable if you want to alter objects dimensions.']);
 end
 
 % For all dimensions in obj.data_pr
