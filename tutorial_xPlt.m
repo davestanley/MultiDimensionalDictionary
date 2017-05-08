@@ -165,13 +165,18 @@ xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp
                                     % of pulling data subsets. Note that [] and : are equivalent.
 xp4.getaxisinfo
 
-% Similarly, can index axis values using regular expressions
+% Similarly, can index axis values using substring matching (via strfind internally)
 % Pull out sodium mechs only
-xp5 = xp(:,:,1,'iNa*');
+xp5 = xp(:,:,1,'iNa');
 xp5.getaxisinfo
 
 % Pull out synaptic state variables
 xp5 = xp(:,:,1,'_s');
+xp5.getaxisinfo
+
+% Same as before, but using regular expression syntax:
+%   '/regularExpressionString/' will get passed to regexp as 'regularExpressionString' (ie without the enclosing forward slashes)
+xp5 = xp(:,:,1,'/_s$/');
 xp5.getaxisinfo
 
 % Can also reference a given axis based on its index number or based on its
@@ -313,7 +318,7 @@ clear xp2 xp3 xp4 xp5
 
 % Start by taking a smaller subset of the original xp object.
 % xp2 = xp.subset(2,2,[],[1,3,5:8]);      % Selection based on index locations
-xp2 = xp.subset(2,2,:,'(v|^i||ISYN$)');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp.subset(2,2,:,'/(v|^i||ISYN$)/');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
 xp2 = xp2.squeeze;
 xp2.getaxisinfo;
 
@@ -404,7 +409,7 @@ figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{
 % See also plotting material by Hadley Wickham
 
 % First, pull out synaptic current variables
-xp2 = xp(:,:,:,'(ISYN$)');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp(:,:,:,'/(ISYN$)/');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
 xp2.getaxisinfo;
 
 % Second, put this into matrix form, so we can average over them

@@ -56,7 +56,7 @@ if Ns > Na
     are_empties = cellfun(@isempty,selection_extra);
     are_ones = cellfun(@(s) s == 1, selection_extra);
     if any(~(are_empties | are_ones))      % If any of the extra selections are NOT either empty or one's...
-        error('Index exceeds dimensions of nDDict.data');
+        error(['Index exceeds dimensions of ' class(obj) '.data']);
     end
     selection = selection(1:Na);
 end
@@ -75,7 +75,7 @@ end
 % If Ns is still wrong dimensions, return error
 Ns = length(selection);
 if Ns ~= Na
-    error('Number of inputs must match dimensionality of nDDict.data');
+    error(['Number of inputs must match dimensionality of ' class(obj) '.data']);
 end
 
 axClasses = getclass_obj_axis_values(obj);
