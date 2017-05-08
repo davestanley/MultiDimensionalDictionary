@@ -299,6 +299,8 @@ classdef nDDict
         
         obj = importData(obj,data,axis_vals,axis_names)
         
+        obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import linear data from data file (using importDataTable method)
+        
         function out = exportAxisVals(obj)
             Na = length(obj.axis);
             out = cell(1,Na);
@@ -598,7 +600,7 @@ classdef nDDict
                 order2 = zeros(1,length(order));
                 for i = 1:length(order)
                     out = obj.findaxis(order{i});
-                    if length(out) < 1;
+                    if length(out) < 1
                         error(['Axis ' order{i} ' not found']);
                     elseif length(out) > 1; error(['Axis not found. Ambiguous regexp ' order{i} ' supplied.']);
                     end
@@ -829,7 +831,7 @@ classdef nDDict
     
     methods(Static)
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % LOCAL FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % STATIC FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         [out, outsimple] = calcClasses(input,field_type)     % Used by importDataTable and other importData functions

@@ -1,4 +1,3 @@
-
 classdef nDDictAxis
     % Helper class for handling axis in nDDict class
 
