@@ -63,7 +63,7 @@ cd ..
 
 % Import into an xPlt class
 xp = xPlt;
-xp = xp.importLinearData(data_linear,ax{:});
+xp = xp.importDataTable(data_linear,ax);
 xp = xp.importAxisNames(ax_names);
 meta = struct;
 meta.datainfo(1:2) = xPltAxis;      % Use xPltAxis here, because why not?
@@ -205,7 +205,7 @@ cd ..
 [data_linear,ax,ax_names] = DynaSimPlotExtract (data);
 
 xp = xPlt;
-xp = xp.importLinearData(data_linear,ax{:});
+xp = xp.importDataTable(data_linear,ax);
 xp = xp.importAxisNames(ax_names);
 
 

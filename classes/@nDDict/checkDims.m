@@ -27,7 +27,7 @@ Nd = ndims(obj.data_pr);
 Na = length(obj.axis_pr);
 
 if Nd > Na
-    error('Number of dimensions in nDDict.data does not equal number of axes. Try using method importData or importLinearData if you want to alter objects dimensions.');
+    error('Number of dimensions in nDDict.data does not equal number of axes. Try using method importData or importDataTable if you want to alter objects dimensions.');
 end
 
 % For all dimensions in obj.data_pr
@@ -43,7 +43,7 @@ ind = sza > 1;
 if any(ind(Nd+1:Na))
     ind2 = find(ind);
     ind2 = ind2(ind2 > Nd);
-    fprintf(['checkDims: Error found! ndims(obj.data)=' num2str(Nd) ' but axis obj.axis(' num2str(ind2) ').values has ' num2str(sza(ind2)) ' entries. Try using method importData or importLinearData if you want to alter objects dimensions.\n']);
+    fprintf(['checkDims: Error found! ndims(obj.data)=' num2str(Nd) ' but axis obj.axis(' num2str(ind2) ').values has ' num2str(sza(ind2)) ' entries. Try using method importData or importDataTable if you want to alter objects dimensions.\n']);
     error(' ');
 end
 

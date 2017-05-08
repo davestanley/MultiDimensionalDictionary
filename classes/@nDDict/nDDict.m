@@ -67,7 +67,7 @@ classdef nDDict
             % Possible input configurations:
             %   1) nargin==0
             %   2) data for call to importData
-            %   3) data for call to importLinearData, with final argument 'linear'
+            %   3) data for call to importDataTable, with final argument 'table'
             %   4) one of the above, with additional first argument specifying
             %      the 'axisClass' from a subclass.
             % Author v2.0: Erik Roberts (iss 24)
@@ -90,13 +90,13 @@ classdef nDDict
             
             if nargs % (2) or (3) import data
                 % Determine if linear or not
-                linStrInd = strcmp(varargs, 'linear');
+                linStrInd = strcmp(varargs, 'table');
                 if ~any(linStrInd)
                     obj = obj.fixAxes;
                     obj = obj.importData(varargs{:});
                 else
-                    varargs(linStrInd) = []; % remove 'linear' string from args
-                    obj = obj.importLinearData(varargs{:});
+                    varargs(linStrInd) = []; % remove 'table' string from args
+                    obj = obj.importDataTable(varargs{:});
                 end
             end
             obj.fixAxes(1);     % Convert any axis vallues that are cellnums to numeric matrices
@@ -295,7 +295,7 @@ classdef nDDict
         end
         
         
-        obj = importLinearData(obj,X,varargin)            % Function for importing data in a linear format
+        obj = importDataTable(obj,data_column,axis_val_columns,axis_names)    % Function for importing data in a 2D table format
         
         obj = importData(obj,data,axis_vals,axis_names)
         
@@ -412,7 +412,7 @@ classdef nDDict
             end
             
             obj_out = obj1.reset;
-            obj_out = importLinearData(obj_out,X,axl{:});
+            obj_out = importDataTable(obj_out,X,axl);
             
             obj_out = obj_out.importAxisNames(names);
             
@@ -832,7 +832,7 @@ classdef nDDict
         % % % % % % % % % % % LOCAL FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        [out, outsimple] = calcClasses(input,field_type)     % Used by importLinearData and other importData functions
+        [out, outsimple] = calcClasses(input,field_type)     % Used by importDataTable and other importData functions
         
         function output = inheritObj(output,input)
             % Merges contents of input into output.
