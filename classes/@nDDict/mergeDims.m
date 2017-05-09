@@ -56,8 +56,8 @@ end
 allnames = obj.exportAxisNames;
 mergednames = allnames(dims2merge);
 obj.axis_pr(dims2merge(1)).values = tempstr;
-obj.axis_pr(dims2merge(1)).astruct.premerged_values = temp;
-obj.axis_pr(dims2merge(1)).astruct.premerged_names = mergednames;
+obj.axis_pr(dims2merge(1)).axismeta.premerged_values = temp;
+obj.axis_pr(dims2merge(1)).axismeta.premerged_names = mergednames;
 
 % Give it a new axis name, reflecting the merger of all the
 % others
