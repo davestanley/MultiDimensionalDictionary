@@ -33,7 +33,7 @@ classdef nDDict
     
     methods
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % Getter and Setters % % % % % % % % % % % % %
+        % % % % % % % % % % % Getter and Setters % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function obj = set.data(obj,value)
             obj.data_pr = value;
@@ -77,7 +77,7 @@ classdef nDDict
             nargs = nargin;
             
             % (4) Check if axisClass overwritten by first arg
-            if nargs && (isobject(varargs{1}) && strcmp(superclasses(varargs{1}), 'nDDictAxis'))
+            if nargs && (isobject(varargs{1}) && any(strcmp(superclasses(varargs{1}), 'nDDictAxis')))
                 obj.axisClass = varargs{1};
                 varargs(1) = [];
                 nargs = nargs-1;
@@ -294,13 +294,6 @@ classdef nDDict
             obj.meta = meta_struct;
         end
         
-        
-        obj = importDataTable(obj,data_column,axis_val_columns,axis_names)    % Function for importing data in a 2D table format
-        
-        obj = importData(obj,data,axis_vals,axis_names)
-        
-        obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import linear data from data file (using importDataTable method)
-        
         function out = exportAxisVals(obj)
             Na = length(obj.axis);
             out = cell(1,Na);
@@ -466,7 +459,7 @@ classdef nDDict
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % HOUSEKEEPING FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % HOUSEKEEPING METHODS % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function out = getaxisinfo(obj,showclass)
@@ -553,7 +546,7 @@ classdef nDDict
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % OVERLOADED FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % OVERLOADED METHODS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function A = isempty(obj)
             A = isempty(obj.data_pr);
@@ -746,12 +739,12 @@ classdef nDDict
     end
     
     %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-    % % % % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
+    % % % % % % % % % % % PRIVATE METHODS % % % % % % % % % % % %
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
     methods (Access = protected) % same as private, but allows access from subclasses
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % HELPER FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % HELPER METHODS % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function [out, outsimple] = getclass_obj_data(obj)
             [out, outsimple] = nDDict.calcClasses(obj.data_pr,'data');
@@ -829,10 +822,20 @@ classdef nDDict
     end
     
     
-    methods(Static)
+    methods (Static)
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % STATIC FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % STATIC METHODS % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
+        % ** start Import Methods **
+        %   Note: these can be called as static (ie class) or object methods
+        obj = importDataTable(varargin)    % Function for importing data in a 2D table format
+        
+        obj = importData(varargin)
+        
+        obj = importFile(varargin) % import linear data from data file (using importDataTable method)
+        % ** end Import Methods **
+        
         
         [out, outsimple] = calcClasses(input,field_type)     % Used by importDataTable and other importData functions
         
@@ -885,5 +888,19 @@ classdef nDDict
         %         varargout{1} = sz;
         %     end
         % end
+    end
+    
+    methods (Static, Access = protected)
+        
+        function [args, objClass] = nonObjArgs(varargin)
+            if nargin>1 && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'nDDict')))
+                args = varargin(2:end);
+                objClass = class(varargin{1});
+            else
+                args = varargin(1:end);
+                objClass = '';
+            end
+        end
+        
     end
 end

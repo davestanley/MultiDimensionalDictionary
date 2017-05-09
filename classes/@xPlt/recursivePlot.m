@@ -1,4 +1,3 @@
-
 function varargout = recursivePlot(xp,function_handles,dimensions,function_arguments)
     % function_arguments - cell array of argument cell arrays to pass to
     % function_handles. Must have one cell array for each function_handle
