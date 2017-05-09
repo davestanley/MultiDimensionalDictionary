@@ -226,7 +226,6 @@ classdef nDDict
         function obj = importAxisNames(obj,ax_names)
             % varargin can be a single cell containing a cellstr, or a
             % cellstr.
-            % #makeprivate
             
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
@@ -260,7 +259,6 @@ classdef nDDict
         
         function obj = importAxisValues(obj,varargin)
             % varargin can be a single cell containing cells for each axis, or an argument list for the axes
-            % #makeprivate
             
             if nargin < 2 % use default values
                 obj = obj.fixAxes;
