@@ -469,7 +469,7 @@ classdef nDDict
         % % % % % % % % % % % HOUSEKEEPING FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        function out = getaxisinfo(obj,showclass)
+        function out = printAxisInfo(obj,showclass)
             % If no output arguments, prints axis info to the screen. If
             % output arguments are supplied, returns this information as a
             % string
@@ -485,7 +485,7 @@ classdef nDDict
             fprintf(['Axis Size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
             
             for i = 1:length(obj.axis_pr)
-                out1 = obj.axis_pr(i).getaxisinfo(showclass);
+                out1 = obj.axis_pr(i).printAxisInfo(showclass);
                 spacer = '';
                 
                 if nargout > 0

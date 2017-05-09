@@ -8,7 +8,7 @@ classdef nDDictAxis
     end
 
     methods
-        function out = getaxisinfo(obj,show_class)
+        function out = printAxisInfo(obj,show_class)
             if nargin < 2
                 show_class = 1;
             end

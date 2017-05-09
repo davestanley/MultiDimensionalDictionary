@@ -104,8 +104,8 @@ disp(xp.axis(1).name)
 xp.axis(1).astruct
 
 % All of this information can be obtained in summary form by running
-% getaxisinfo
-xp.getaxisinfo
+% printAxisInfo
+xp.printAxisInfo
 
 % xp.meta stores meta data for use by the user as they see fit.
 % Here we will add some custom info to xp.metadata. This can be whatever
@@ -141,19 +141,19 @@ xp2 = xPlt;
 xp2 = xp2.importData(mydata);
 
 % We didn't supply any axis names/values, so default values were assgined
-xp2.getaxisinfo;
+xp2.printAxisInfo;
 
 % We can instead import axis values along with the data
 ax_vals = xp.exportAxisVals;
 clear xp2
 xp2 = xPlt;
 xp2 = xp2.importData(mydata,ax_vals);
-xp2.getaxisinfo
+xp2.printAxisInfo
 
 % Axis names can be assigned in this way as well
 ax_names = xp.exportAxisNames;
 xp2 = xp2.importData(mydata,ax_vals,ax_names);
-xp2.getaxisinfo
+xp2.printAxisInfo
 
 
 %% xPlt Indexing
@@ -163,21 +163,21 @@ xp2.getaxisinfo
 clc
 xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp.subset([],[],1,8), which was the old way
                                     % of pulling data subsets. Note that [] and : are equivalent.
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % Similarly, can index axis values using substring matching (via strfind internally)
 % Pull out sodium mechs only
 xp5 = xp(:,:,1,'iNa');
-xp5.getaxisinfo
+xp5.printAxisInfo
 
 % Pull out synaptic state variables
 xp5 = xp(:,:,1,'_s');
-xp5.getaxisinfo
+xp5.printAxisInfo
 
 % Same as before, but using regular expression syntax:
 %   '/regularExpressionString/' will get passed to regexp as 'regularExpressionString' (ie without the enclosing forward slashes)
 xp5 = xp(:,:,1,'/_s$/');
-xp5.getaxisinfo
+xp5.printAxisInfo
 
 % Can also reference a given axis based on its index number or based on its
 % name
@@ -205,7 +205,7 @@ close all;
 % Pull out a 2D subset of the data
 clc
 xp4 = xp(:,:,'E','v');
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % Set up plotting arguments
 function_handles = {@xp_subplot_grid,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
@@ -228,7 +228,7 @@ close all;
 % types)
 clc
 xp4 = xp(:,1:2,:,'v');
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) as subplots.
@@ -252,7 +252,7 @@ close all;
 % Pull out sodium channel state variables for E and I cells.
 clc
 xp4 = xp(1:2,1:2,:,6:7);
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note - we can also use a mixture of strings and index locations to specify dimensions. Dimension "0" corresponds to data.
 
@@ -279,10 +279,10 @@ recursivePlot(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 close all;
 clc
 xp3 = xp(2,:,'E','v');
-xp3.getaxisinfo
+xp3.printAxisInfo
 
 xp4 = xp(:,3,'E','v');
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 xp5 = merge(xp3,xp4);
 
@@ -320,7 +320,7 @@ clear xp2 xp3 xp4 xp5
 % xp2 = xp.subset(2,2,[],[1,3,5:8]);      % Selection based on index locations
 xp2 = xp.subset(2,2,:,'/(v|^i||ISYN$)/');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
 xp2 = xp2.squeeze;
-xp2.getaxisinfo;
+xp2.printAxisInfo;
 
 % Note that xp2 is sparse (there are some empty cells)
 disp(xp2.data);         % (E cells don't receive AMPA synapses, and I cells don't receive GABAA synapses)
@@ -336,14 +336,14 @@ disp(xp3.data)             % The dimension "variables", which was dimension 2
                            % Now xp3.data is time x cells x variables
 
 % View axis of xp3
-xp3.getaxisinfo;            % The dimension "variables" is now missing
+xp3.printAxisInfo;            % The dimension "variables" is now missing
 
 % Alternatively, you can use a regular expression to select the dimension
 % you want to pack; if the destination dimension is left empty, the first
 % dimension which is not occupied in any of the matrix entries of xp.data
 % will be used.
 xp3 = xp2.packDim('var');
-xp3.getaxisinfo;
+xp3.printAxisInfo;
 
 % Note some of this data is sparse! We can see this sparseness by plotting
 % as follows (note the NaNs)
@@ -364,20 +364,20 @@ set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.a
 % When packDim is applied to an xPlt object, say to pack dimension 3, the
 % information from the packed axis is stored in the nDDictAxis
 % matrix_dim_3, a field of xp3.meta.
-xp3.meta.matrix_dim_3.getaxisinfo
+xp3.meta.matrix_dim_3.printAxisInfo
 
 % If dimension 3 of each cell in xp3.data is unpacked using unpackDim,
 % xp3.meta.matrix_dim_3 will be used to provide axis info for the new
 % xPlt object.
 xp4 = xp3.unpackDim(dest, src);
-xp4.getaxisinfo;
+xp4.printAxisInfo;
 
 % Unless new axis info is provided, that is.
 xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names'); % The values can also be left empty, as in xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', []);
-xp4.getaxisinfo;
+xp4.printAxisInfo;
 
 xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', {'One','Two','Three','Four','Five','Six'});
-xp4.getaxisinfo;
+xp4.printAxisInfo;
 
 %% Use packDim to average across cells
 
@@ -410,13 +410,13 @@ figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{
 
 % First, pull out synaptic current variables
 xp2 = xp(:,:,:,'/(ISYN$)/');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
-xp2.getaxisinfo;
+xp2.printAxisInfo;
 
 % Second, put this into matrix form, so we can average over them
 xp3 = xp2.packDim(4,3);
 disp(xp3.data)              % xp3.data is now 3D, with the 3rd dim denoting synaptic current
 xp3 = xp3.squeeze;
-xp3.getaxisinfo;
+xp3.printAxisInfo;
 
 % Average across membrane currents
 xp3.data = cellfun(@(x) nanmean(x,3), xp3.data,'UniformOutput',0);
@@ -429,17 +429,17 @@ recursivePlot(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3
 
 % This command combines two (or more) dimensions into a single dimension.
 xp2 = xp.mergeDims([3,4]);
-xp2.getaxisinfo;
+xp2.printAxisInfo;
 
 
 %% Advanced testing
 clear xp2 xp3 xp4 xp5 xp6
 % Test squeezeRegexp
-xp2 = xp(:,1,:,end); xp2.getaxisinfo
+xp2 = xp(:,1,:,end); xp2.printAxisInfo
 
-xp2b = xp2.squeezeRegexp('var'); xp2b.getaxisinfo
-xp2b = xp2.squeezeRegexp('I_E_tauD'); xp2b.getaxisinfo
-xp2b = xp2.squeezeRegexp('populations'); xp2b.getaxisinfo
+xp2b = xp2.squeezeRegexp('var'); xp2b.printAxisInfo
+xp2b = xp2.squeezeRegexp('I_E_tauD'); xp2b.printAxisInfo
+xp2b = xp2.squeezeRegexp('populations'); xp2b.printAxisInfo
 
 %% To implement
 % 

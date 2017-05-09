@@ -68,7 +68,7 @@ function hxp=xp_subplot1_noimage(xp)
                 else hxp.hcurr = subplot(N1,N2,c); end
                 hxp.hsub = xp.data{i,j}(); 
                 xp2 = xp.subset(i,j);
-                title(strrep(xp2.getaxisinfo(0),'_',' '));
+                title(strrep(xp2.printAxisInfo(0),'_',' '));
             end
         end
 end
@@ -96,7 +96,7 @@ function hxp = xp_subplot2_asimage(xp)
             else hxp.hcurr = subplot(N1,N2,c); end
             hxp.hsub = xp.data{i,j}(); 
             xp2 = xp.subset(i,j);
-            title(strrep(xp2.getaxisinfo(0),'_',' '));
+            title(strrep(xp2.printAxisInfo(0),'_',' '));
         end
     end
     cdata = print(h,'-RGBImage');
