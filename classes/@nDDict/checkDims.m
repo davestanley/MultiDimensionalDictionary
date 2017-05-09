@@ -33,7 +33,7 @@ end
 % For all dimensions in obj.data_pr
 for i = 1:Nd
     if sza(i) ~= szd(i)
-        obj.getaxisinfo
+        obj.printAxisInfo
         error('Mismatch between obj.data and obj.axis dimensionality. Use importData to make modifications like this.');
     end
 end

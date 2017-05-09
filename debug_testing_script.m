@@ -77,41 +77,41 @@ xp = xp.importMeta(meta);
 % This should catch most bugs that crop up.
 xp2 = xp.subset(2,2,[],7:8);    % 1x1x2x2
     xp2.checkDims;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2 = xp2.squeeze;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2.checkDims
     %%
 clc
 xp2 = xp.subset(2,2,[],8);      % 1x1x2x1
     xp2.checkDims;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2 = xp2.squeeze;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2.checkDims
     %%
 clc
 xp2 = xp.subset(2,2,2,[]);      % 1x1x1x8
     xp2.checkDims;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2 = xp2.squeeze;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2.checkDims
     %%
 clc
 xp2 = xp.subset(1,[],2,1);      % 1x2x1x1
     xp2.checkDims;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2 = xp2.squeeze;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2.checkDims
     %%
 clc
 xp2 = xp.subset([],1,2,1);      % 2x1x1x1
     xp2.checkDims;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2 = xp2.squeeze;
-    xp2.getaxisinfo
+    xp2.printAxisInfo
     xp2.checkDims
  
     %%
@@ -121,11 +121,11 @@ xp3.data = xp.data(:,:,:,5:8);      % Brute force selection of the xp.data.
                                     % Should produce an error when run
                                     % xp3.squeeze since axes dimensions
                                     % mismatch.
-xp3.getaxisinfo;
+xp3.printAxisInfo;
 % xp3.checkDims;      % Should produce an error
 xp3 = xp3.fixAxes;
 xp3.checkDims;
-xp3.getaxisinfo;
+xp3.printAxisInfo;
                                     
 xp6 = xp.subset(1,[],2,1);
 
@@ -134,7 +134,7 @@ xp6 = xp.subset(1,[],2,1);
 
 clear xp2 xp3
 xp4 = (xp.subset([],[],[],8));
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % recursivePlot(xp4,{@xp_subplot,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{[],1},{1,1},{}});
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{},{0,1},{}});
@@ -145,7 +145,7 @@ recursivePlot(xp4,{@xp_subplot_grid3D,@xp_subplot_grid3D,@xp_matrix_basicplot},{
 %% Run another recursive plot
 clear xp2 xp3
 xp4 = (xp.subset([],[],[],8));
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % recursivePlot(xp4,{@xp_subplot,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{[],1},{1,1},{}});
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{},{0,1},{}});
@@ -156,7 +156,7 @@ recursivePlot(xp4,{@xp_subplot_grid3D,@xp_matrix_basicplot},{[3,1,2]},{{},{}});
 %% Run another recursive plot
 clear xp2 xp3
 xp4 = (xp.subset([],[],1,8));
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % recursivePlot(xp4,{@xp_subplot,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{[],1},{1,1},{}});
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{},{0,1},{}});
@@ -167,7 +167,7 @@ recursivePlot(xp4,{@xp_subplot,@xp_matrix_basicplot},{[1,2]},{{0,0},{}});
 
 xp4 = xp(1:2,1:2,1,:);
 xp4 = xp4.squeeze;
-xp4.getaxisinfo
+xp4.printAxisInfo
 
 % recursivePlot(xp4,{@xp_subplot,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{[],1},{1,1},{}});
 % recursivePlot(xp4,{@xp_subplot_grid3D,@xp_subplot,@xp_matrix_basicplot},{1:2,3},{{},{0,1},{}});
@@ -176,20 +176,20 @@ recursivePlot(xp4,{@xp_subplot_grid3D,@xp_matrix_basicplot},{[3,1,2],0},{{},{}})
 
 %% Test subset selection using regular expressions
 xp5 = xp.subset([],[],[1],'iNa*');
-xp5.getaxisinfo
+xp5.printAxisInfo
 
     %%
     xp5 = xp.subset([],[],[1],'_s');
-    xp5.getaxisinfo
+    xp5.printAxisInfo
 
 %% Test packDims
 clear xp2 xp3 xp4 xp5
 % xp2 = xp.subset(2,2,[],[1,3,5:8]);      % Selection based on index locations
 xp2 = xp.subset(2,2,[],'(v|^i||ISYN$)');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
 xp2 = xp2.squeeze;
-xp2.getaxisinfo;
+xp2.printAxisInfo;
 xp2 = xp2.packDim(2,3);
-xp2.getaxisinfo;
+xp2.printAxisInfo;
 
 %% Test mergeDims
 xp2 = xp.mergeDims([3,4]);
