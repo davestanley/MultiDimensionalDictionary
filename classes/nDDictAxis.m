@@ -30,13 +30,13 @@ classdef nDDictAxis
             Nvals = min(Nvals,max_values_to_display);          % Limit to displaying 10 values
 
             for i = 1:Nvals-1
-                temp = [temp,obj.getvaluestring(i),', '];
+                temp = [temp,obj.getvalue_char(i),', '];
             end
 
             if length(obj.values) > max_values_to_display
-                temp = [temp,obj.getvaluestring(Nvals),', ...'];
+                temp = [temp,obj.getvalue_char(Nvals),', ...'];
             else
-                temp = [temp,obj.getvaluestring(Nvals)];
+                temp = [temp,obj.getvalue_char(Nvals)];
             end
 
             if nargout > 0
@@ -46,12 +46,12 @@ classdef nDDictAxis
             end
         end
 
-        function out = getvaluenoncell(obj,i)
+        function out = getvalue_noncell(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
             % numeric, regardless of whether it is actually cell array.
             
             if ~exist('i','var')
-              warning('Need to specify an index (eg ''obj.getvaluenoncell(#)'')')
+              warning('Need to specify an index (eg ''obj.getvalue_noncell(#)'')')
               out = [];
               return
             end
@@ -64,30 +64,30 @@ classdef nDDictAxis
             end
         end
 
-        function out = getvaluestring(obj,i)
+        function out = getvalue_char(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
-            % string, regardless of what data type it actually is (string,
+            % char array, regardless of what data type it actually is (char array,
             % cell, numeric, etc).
             
             if ~exist('i','var')
-              warning('Need to specify an index (eg ''obj.getvaluestring(#)'')')
+              warning('Need to specify an index (eg ''obj.getvalue_char(#)'')')
               out = [];
               return
             end
             
             if length(i) > 1; error('i must be singleton'); end
-            out = obj.getvaluenoncell(i);
+            out = obj.getvalue_noncell(i);
             if isnumeric(out)
                 out = num2str(out);
             end
         end
 
-        function out = getvaluescellstring(obj)
+        function out = getvalues_cellstr(obj)
             % Looks at entry obj.value(i) and returns its output as a
             % cell array of strings
             out = cell(1,length(obj.values));
             for i = 1:length(obj.values)
-                out{i} = num2str(obj.getvaluenoncell(i));
+                out{i} = num2str(obj.getvalue_noncell(i));
             end
         end
 
