@@ -61,8 +61,8 @@ classdef nDDict
             % Usage:
             % obj = nDDict(data,axis_vals,axis_names)
             % obj = nDDict(axis_class,data,axis_vals,axis_names)
-            % obj = nDDict(data,axis_vals,axis_names,'linear')
-            % obj = nDDict(axis_class,data,axis_vals,axis_names,'linear')
+            % obj = nDDict(data,axis_vals,axis_names,'table')
+            % obj = nDDict(axis_class,data,axis_vals,axis_names,'table')
             % 
             % Possible input configurations:
             %   1) nargin==0
@@ -89,7 +89,7 @@ classdef nDDict
             obj.meta.datainfo = obj.axisClass;
             
             if nargs % (2) or (3) import data
-                % Determine if linear or not
+                % Determine if table or not
                 linStrInd = strcmp(varargs, 'table');
                 if ~any(linStrInd)
                     obj = obj.fixAxes;
@@ -299,7 +299,7 @@ classdef nDDict
         
         obj = importData(obj,data,axis_vals,axis_names)
         
-        obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import linear data from data file (using importDataTable method)
+        obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import table data from data file (using importDataTable method)
         
         function out = exportAxisVals(obj)
             Na = length(obj.axis);
@@ -393,7 +393,7 @@ classdef nDDict
             % This might be slow when working with huge matrices. Perhaps do
             % alternate approach for them. This works by linearizing the
             % data in both objects into 1 huge table. Then, it imports the
-            % new linear data. If have huge sparse matrices this will be
+            % new table data. If have huge sparse matrices this will be
             % slow.
             names = {obj1.axis_pr.name};
             
