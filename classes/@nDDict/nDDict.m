@@ -316,6 +316,10 @@ classdef nDDict
             end
         end
         
+        function out = exportData(obj)
+            out = obj.data;
+        end
+        
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
