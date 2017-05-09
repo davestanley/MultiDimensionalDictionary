@@ -731,6 +731,10 @@ classdef nDDict
                     otherwise
                         error('Unknown indexing method. Should never reach this.');
                 end
+            elseif strcmp(S(1).subs(1:6), 'import')
+                S(2).subs = [{obj}, S(2).subs];
+                varargin{2} = S;
+                [varargout{1:nargout}] = builtin('subsref',varargin{:});
             else
                 [varargout{1:nargout}] = builtin('subsref',varargin{:});
             end
