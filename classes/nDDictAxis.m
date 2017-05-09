@@ -46,6 +46,88 @@ classdef nDDictAxis
             end
         end
 
+
+        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        function varargout = subsref(varargin)
+
+%             % Default settings for everything
+%             [varargout{1:nargout}] = builtin('subsref',varargin{:});
+
+            obj = varargin{1};
+            S = varargin{2};
+
+            switch S(1).type
+
+                case '()'
+%                     % Default
+%                     [varargout{1:nargout}] = builtin('subsref',varargin{:});
+
+                    allnames = {obj.name};
+                    if iscellstr(S(1).subs)
+                        [selection_out, startIndex] = regex_lookup(allnames, S(1).subs{1});
+                        S(1).subs{1} = selection_out;
+                        [varargout{1:nargout}] = builtin('subsref',obj,S,varargin{3:end});
+                    else
+                        % Default
+                        [varargout{1:nargout}] = builtin('subsref',varargin{:});
+                    end
+
+                case '{}'
+                    % Default
+                    [varargout{1:nargout}] = builtin('subsref',varargin{:});
+                case '.'
+                    % Default
+                    [varargout{1:nargout}] = builtin('subsref',varargin{:});
+                otherwise
+                    error('Unknown indexing method. Should never reach this');
+            end
+
+        end
+
+    end
+    
+    methods (Access = protected)
+        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        % % % % % % % % PROTECTED FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
+        function out = getclass_values(obj)
+            out = obj.calcAxClasses(obj.values,'values');
+        end
+
+        function out = getclass_name(obj)
+            out = obj.calcAxClasses(obj.name,'name');
+        end
+        
+        function out = calcAxClasses(obj,input,field)
+            switch field
+                case 'values'
+                    % Returns class type of obj.values.
+                    if isnumeric(input)
+                        out = 'numeric';
+                    elseif iscell(input)
+                        if iscellstr(input)
+                            out = 'cellstr';
+                        elseif iscellnum(input)
+                            out = 'cellnum';
+                        end
+                    else
+                        out = 'unknown';
+                    end
+                case 'name'
+                    % Returns class type of obj.name.
+                    if ischar(input)
+                        out = 'char';
+                    else
+                        out = 'unknown';
+                    end
+                otherwise
+                    error('Unrecognized input foramt');
+            end
+        end
+        
         function out = getvalue_noncell(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
             % numeric, regardless of whether it is actually cell array.
@@ -90,83 +172,20 @@ classdef nDDictAxis
                 out{i} = num2str(obj.getvalue_noncell(i));
             end
         end
-
-        function out = getclass_values(obj)
-            out = obj.calcAxClasses(obj.values,'values');
-        end
-
-        function out = getclass_name(obj)
-            out = obj.calcAxClasses(obj.name,'name');
-        end
-
-        function out = calcAxClasses(obj,input,field)
-            switch field
-                case 'values'
-                    % Returns class type of obj.values.
-                    if isnumeric(input)
-                        out = 'numeric';
-                    elseif iscell(input)
-                        if iscellstr(input)
-                            out = 'cellstr';
-                        elseif iscellnum(input)
-                            out = 'cellnum';
-                        end
-                    else
-                        out = 'unknown';
-                    end
-                case 'name'
-                    % Returns class type of obj.name.
-                    if ischar(input)
-                        out = 'char';
-                    else
-                        out = 'unknown';
-                    end
-                otherwise
-                    error('Unrecognized input foramt');
-            end
-        end
-
-        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
-        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function varargout = subsref(varargin)
-
-%             % Default settings for everything
-%             [varargout{1:nargout}] = builtin('subsref',varargin{:});
-
-            obj = varargin{1};
-            S = varargin{2};
-
-            switch S(1).type
-
-                case '()'
-%                     % Default
-%                     [varargout{1:nargout}] = builtin('subsref',varargin{:});
-
-                    allnames = {obj.name};
-                    if iscellstr(S(1).subs)
-                        [selection_out, startIndex] = regex_lookup(allnames, S(1).subs{1});
-                        S(1).subs{1} = selection_out;
-                        [varargout{1:nargout}] = builtin('subsref',obj,S,varargin{3:end});
-                    else
-                        % Default
-                        [varargout{1:nargout}] = builtin('subsref',varargin{:});
-                    end
-
-                case '{}'
-                    % Default
-                    [varargout{1:nargout}] = builtin('subsref',varargin{:});
-                case '.'
-                    % Default
-                    [varargout{1:nargout}] = builtin('subsref',varargin{:});
-                otherwise
-                    error('Unknown indexing method. Should never reach this');
-            end
-
-        end
-
+        
     end
+    
+    methods (Access = private)
+        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
+
+        
+    end
+
 end
+
 
 
 function [selection_out, startIndex] = regex_lookup(vals, selection)

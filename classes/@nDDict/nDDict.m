@@ -746,7 +746,7 @@ classdef nDDict
     end
     
     %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-    % % % % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
+    % % % % % % % % % % % PROTECTED FUNCTIONS % % % % % % % % % % %
     % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
     methods (Access = protected) % same as private, but allows access from subclasses
         
