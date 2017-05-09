@@ -829,7 +829,7 @@ classdef nDDict
     end
     
     
-    methods(Static)
+    methods (Static, Access = protected)
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % STATIC FUNCTIONS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
