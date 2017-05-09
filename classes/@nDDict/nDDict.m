@@ -917,18 +917,5 @@ classdef nDDict
         %     end
         % end
     end
-    
-    % methods (Static, Access = protected)
-    %     
-    %     function [args, objClass] = nonObjArgs(varargin)
-    %         if nargin>1 && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'nDDict')))
-    %             args = varargin(2:end);
-    %             objClass = class(varargin{1});
-    %         else
-    %             args = varargin(1:end);
-    %             objClass = '';
-    %         end
-    %     end
-    %     
-    % end
+
 end

@@ -151,7 +151,7 @@ if ~iscell(fileInput)
     end
 else
     % implicity choose delimiter if not explicitly given as argument
-    if isempty(delimiter)
+    if ~exist('delimiter', 'var') || isempty(delimiter)
         [~,~,ext] = fileparts(filePath);
         switch lower(ext) % lowercase
             case '.csv'
