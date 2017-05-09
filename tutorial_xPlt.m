@@ -100,8 +100,8 @@ disp(xp.axis(4).values);
 % named after the parameter in the model that was varied.
 disp(xp.axis(1).name)
 
-% Axis.astruct is for internal use and is currently empty.
-xp.axis(1).astruct
+% Axis.axismeta is for internal use and is currently empty.
+xp.axis(1).axismeta
 
 % All of this information can be obtained in summary form by running
 % printAxisInfo

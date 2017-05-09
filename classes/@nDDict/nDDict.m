@@ -325,7 +325,7 @@ classdef nDDict
             % Sorts the entries of a specific axis. ax_id can be a regexp
             % to identify an axis, or simply the axis number {1..ndims}
             % #needsattention: This function updates axis.values, but it
-            % doesn't update any metadata sorted in axis.astruct
+            % doesn't update any metadata sorted in axis.axismeta
             
             if nargin < 3
                 sort_varargin = {};
@@ -399,12 +399,12 @@ classdef nDDict
             Nd1 = ndims(obj1);
             obj1 = squeeze(obj1.mergeDims(1:Nd1));
             X1 = obj1.data_pr;
-            axislabels1 = obj1.axis_pr(1).astruct.premerged_values;
+            axislabels1 = obj1.axis_pr(1).axismeta.premerged_values;
             
             Nd2 = ndims(obj2);
             obj2 = squeeze(obj2.mergeDims(1:Nd2));
             X2 = obj2.data_pr;
-            axislabels2 = obj2.axis_pr(1).astruct.premerged_values;
+            axislabels2 = obj2.axis_pr(1).axismeta.premerged_values;
             
             X = vertcat(X1(:),X2(:));
             for i = 1:length(axislabels1)
