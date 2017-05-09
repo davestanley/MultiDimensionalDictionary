@@ -1,4 +1,4 @@
-function obj = importDataTable(varargin)
+function obj = importDataTable(obj, data_column, axis_val_columns, axis_names)
 %% obj = importDataTable(obj,data_column,axis_val_columns,axis_names)
 %   Purpose:
 %     Imports a 2D table of data and converts it into a high dimensional
@@ -8,15 +8,15 @@ function obj = importDataTable(varargin)
 %     obj.data. The remainder populate obj.axis.values.
 
 %   Usage:
+%       Note: functionality can be called from a static (ie class) or object method
 %     As class static method:
-%       obj = nDDict.importDataTable(data_column,axis_val_columns)
-%       obj = nDDict.importDataTable(data_column,axis_val_columns,axis_names)
+%       obj = nDDict.ImportDataTable(data_column,axis_val_columns) % uppercase method
+%       obj = nDDict.ImportDataTable(data_column,axis_val_columns,axis_names) % uppercase method
 %
 %     As object method:
 %       obj = nDDict();
-%       obj = obj.importDataTable(data_column,axis_val_columns)
-%       obj = obj.importDataTable(data_column,axis_val_columns,axis_names)
-%
+%       obj = obj.importDataTable(data_column,axis_val_columns) % lowercase method
+%       obj = obj.importDataTable(data_column,axis_val_columns,axis_names) % lowercase method
 %
 %   Inputs:
 %     data_column - A cell array or matrix specifying the first column of
@@ -43,23 +43,6 @@ function obj = importDataTable(varargin)
 %               - cell arrays of character vectors.
 %         They do not need to be all the same (e.g. one column can be
 %         numerics, the other can be a cell array of chars).
-
-%% parse arguments
-[varargin, objClass] = nDDict.nonObjArgs(varargin{:}); % remove possible object arg
-nargin = length(varargin); % redefine nargin in case first arg was object
-if nargin < 3
-    varargin{3} = []; % fill in missing args with []
-end
-[data_column, axis_val_columns, axis_names] = deal(varargin{:});
-
-%% instantiate object
-if isempty(objClass) % didn't use object.method syntax
-    obj = nDDict();
-else % used object.method syntax
-    obj = feval(str2func(objClass)); % support subclass
-end
-
-%% import data
 
 % Initialize
 X = data_column;
@@ -133,7 +116,7 @@ for indLinear = 1:lenX
     
 end
 
-if nargin > 2 && ~isempty(axis_names)
+if nargin > 3 && ~isempty(axis_names)
     obj = obj.importAxisNames(axis_names);
 end
 

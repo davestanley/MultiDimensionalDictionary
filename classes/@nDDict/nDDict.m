@@ -739,10 +739,6 @@ classdef nDDict
                     otherwise
                         error('Unknown indexing method. Should never reach this.');
                 end
-            elseif strcmp(S(1).subs(1:6), 'import')
-                S(2).subs = [{obj}, S(2).subs];
-                varargin{2} = S;
-                [varargout{1:nargout}] = builtin('subsref',varargin{:});
             else
                 [varargout{1:nargout}] = builtin('subsref',varargin{:});
             end
@@ -834,22 +830,44 @@ classdef nDDict
     end
     
     
+    methods (Static)
+        % ** start Import Methods **
+        %   Note: these can be called as static (ie class) methods using
+        %   uppercase version or as object methods using lowercsae version
+        function obj = ImportDataTable(varargin)    % Function for importing data in a 2D table format
+            % instantiate object
+            obj = nDDict();
+            
+            % call object method
+            obj = importDataTable(obj, varargin{:});
+        end
+        
+        function obj = ImportData(varargin)
+            % instantiate object
+            obj = nDDict();
+            
+            % call object method
+            obj = importData(obj, varargin{:});
+        end
+        
+        function obj = ImportFile(varargin) % import linear data from data file (using importDataTable method)
+            % instantiate object
+            obj = nDDict();
+            
+            % call object method
+            obj = importFile(obj, varargin{:});
+        end
+        % ** end Import Methods **
+    end
+    
+    
     methods (Static, Access = protected)
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % STATIC METHODS % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        % ** start Import Methods **
-        %   Note: these can be called as static (ie class) or object methods
-        obj = importDataTable(varargin)    % Function for importing data in a 2D table format
-        
-        obj = importData(varargin)
-        
-        obj = importFile(varargin) % import linear data from data file (using importDataTable method)
-        % ** end Import Methods **
-        
-        
         [out, outsimple] = calcClasses(input,field_type)     % Used by importDataTable and other importData functions
+        
         
         function output = inheritObj(output,input)
             % Merges contents of input into output.
@@ -902,17 +920,17 @@ classdef nDDict
         % end
     end
     
-    methods (Static, Access = protected)
-        
-        function [args, objClass] = nonObjArgs(varargin)
-            if nargin>1 && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'nDDict')))
-                args = varargin(2:end);
-                objClass = class(varargin{1});
-            else
-                args = varargin(1:end);
-                objClass = '';
-            end
-        end
-        
-    end
+    % methods (Static, Access = protected)
+    %     
+    %     function [args, objClass] = nonObjArgs(varargin)
+    %         if nargin>1 && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'nDDict')))
+    %             args = varargin(2:end);
+    %             objClass = class(varargin{1});
+    %         else
+    %             args = varargin(1:end);
+    %             objClass = '';
+    %         end
+    %     end
+    %     
+    % end
 end

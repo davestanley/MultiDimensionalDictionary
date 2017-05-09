@@ -140,8 +140,9 @@ mydata = xp.data;
 xp2 = xPlt;
 xp2 = xp2.importData(mydata);
 
-% or one can use a class method without having to make the object first.
-xp2 = xPlt.importData(mydata);
+% or one can use a class method without having to make the object first by using
+% an uppercase method name.
+xp2 = xPlt.ImportData(mydata);
 
 % We didn't supply any axis names/values, so default values were assgined
 xp2.getaxisinfo;
@@ -163,8 +164,10 @@ xp2.getaxisinfo
 % Multi-dimensional data is often represented in 2D table form, with 1 column
 % representing the data, and other columns representing parameters associated
 % with the data.
-
-% xp3 = xPlt.importDataTable(data_columns, axis_val_columns, axis_names);
+% xp3 = xPlt;
+% xp3 = xp3.importDataTable(data_columns, axis_val_columns, axis_names); % lowercase object method
+%   or
+% xp3 = xPlt.ImportDataTable(data_columns, axis_val_columns, axis_names); % uppercase class method
 
 
 %% xPlt Indexing

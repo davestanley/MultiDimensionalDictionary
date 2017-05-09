@@ -1,4 +1,4 @@
-function obj = importFile(varargin)
+function obj = importFile(obj, filePath, dataCol, headerFlag, delimiter)
 %% importFile
 % Author: Erik Roberts
 %
@@ -6,13 +6,13 @@ function obj = importFile(varargin)
 %
 % Usage:
 %   As class static method:
-%     obj = nDDict.importFile(filePath)
-%     obj = nDDict.importFile(filePath, dataCol, headerFlag, delimiter)
+%     obj = nDDict.ImportFile(filePath) % uppercase method
+%     obj = nDDict.ImportFile(filePath, dataCol, headerFlag, delimiter) % uppercase method
 % 
 %   As object method:
 %     obj = nDDict();
-%     obj = obj.importFile(filePath)
-%     obj = obj.importFile(filePath, dataCol, headerFlag, delimiter)
+%     obj = obj.importFile(filePath) % lowercase method
+%     obj = obj.importFile(filePath, dataCol, headerFlag, delimiter) % lowercase method
 %
 % Inputs:
 %   filePath: path to file
@@ -52,25 +52,8 @@ function obj = importFile(varargin)
 %   Add excel file support for mixed columns of strings and numerics
 %   Add more error handling
 
-%% parse arguments
-[varargin, objClass] = nDDict.nonObjArgs(varargin{:}); % remove possible object arg
-nargin = length(varargin); % redefine nargin in case first arg was object
-if nargin < 4
-    varargin{4} = []; % fill in missing args with []
-end
-[filePath, dataCol, headerFlag, delimiter] = deal(varargin{:});
-
-%% instantiate object
-if isempty(objClass) % didn't use object.method syntax
-    obj = nDDict();
-else % used object.method syntax
-    obj = feval(str2func(objClass)); % support subclass
-end
-
-%% Main fn
-
 % Input default values
-if nargin < 3 || isempty(headerFlag)
+if nargin < 4 || isempty(headerFlag)
     headerFlag = -1; % default: ambiguous about headers
     headerArg = nan;
 else

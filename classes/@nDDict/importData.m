@@ -1,30 +1,15 @@
-function obj = importData(varargin)
+function obj = importData(obj, data, axis_vals, axis_names)
 %% importData - import multidimensional data
 
-% Note: can be called as a static (ie class) or object method
-%   obj = importData(data,axis_vals,axis_names)
-%   obj = importData(obj, data,axis_vals,axis_names)
-
-%% parse arguments
-[varargin, objClass] = nDDict.nonObjArgs(varargin{:}); % remove possible object arg
-nargin = length(varargin); % redefine nargin in case first arg was object
-if nargin < 3
-    varargin{3} = []; % fill in missing args with []
-end
-[data, axis_vals, axis_names] = deal(varargin{:});
-
-%% instantiate object
-if isempty(objClass) % didn't use object.method syntax
-    obj = nDDict();
-else % used object.method syntax
-    obj = feval(str2func(objClass)); % support subclass
-end
+% Note: functionality can be called from a static (ie class) or object method
+%   obj = ImportData(data,axis_vals,axis_names) % uppercase method
+%   obj = importData(obj, data,axis_vals,axis_names) % lowercase method
 
 obj.data_pr = data;
 obj = obj.fixAxes;
 
 %% import data
-if nargin > 1 && ~isempty(axis_vals)
+if nargin > 2 && ~isempty(axis_vals)
     if ~iscell(axis_vals); error('axis_vals must be a cell array.'); end
     
     for i = 1:length(axis_vals)
@@ -34,7 +19,7 @@ if nargin > 1 && ~isempty(axis_vals)
     obj.checkDims;
 end
 
-if nargin > 2 && ~isempty(axis_names)
+if nargin > 3 && ~isempty(axis_names)
     obj = obj.importAxisNames(axis_names);
 end
 
