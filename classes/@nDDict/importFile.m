@@ -4,6 +4,16 @@ function obj = importFile(obj, filePath, dataCol, headerFlag, delimiter)
 %
 % Purpose: import linear data from data file (using importDataTable method)
 %
+% Usage:
+%   As class static method:
+%     obj = nDDict.ImportFile(filePath) % uppercase method
+%     obj = nDDict.ImportFile(filePath, dataCol, headerFlag, delimiter) % uppercase method
+% 
+%   As object method:
+%     obj = nDDict();
+%     obj = obj.importFile(filePath) % lowercase method
+%     obj = obj.importFile(filePath, dataCol, headerFlag, delimiter) % lowercase method
+%
 % Inputs:
 %   filePath: path to file
 %       Supported filetypes:
@@ -42,11 +52,7 @@ function obj = importFile(obj, filePath, dataCol, headerFlag, delimiter)
 %   Add excel file support for mixed columns of strings and numerics
 %   Add more error handling
 
-
 % Input default values
-if nargin < 3
-    dataCol = [];
-end
 if nargin < 4 || isempty(headerFlag)
     headerFlag = -1; % default: ambiguous about headers
     headerArg = nan;
@@ -145,7 +151,7 @@ if ~iscell(fileInput)
     end
 else
     % implicity choose delimiter if not explicitly given as argument
-    if ~exist('delimiter', 'var')
+    if ~exist('delimiter', 'var') || isempty(delimiter)
         [~,~,ext] = fileparts(filePath);
         switch lower(ext) % lowercase
             case '.csv'

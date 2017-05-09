@@ -130,8 +130,8 @@ clear meta
 % xPlt objects are just matrices or cell arrays with extra functionality to
 % keep track of what each dimension is storing. 
 
-% Above, we imported data linearized data into an xPlt object. But
-% it is also possible to import a high dimensional matrix directly.
+% Above, we imported data into an xPlt object along with axis values and names. 
+% But it is also possible to import a high dimensional matrix alone.
 
 % For example let's say we have a random cell array.
 mydata = xp.data;
@@ -139,6 +139,10 @@ mydata = xp.data;
 % We can import the data as follows.
 xp2 = xPlt;
 xp2 = xp2.importData(mydata);
+
+% or one can use a class method without having to make the object first by using
+% an uppercase method name.
+xp2 = xPlt.ImportData(mydata);
 
 % We didn't supply any axis names/values, so default values were assgined
 xp2.printAxisInfo;
@@ -154,6 +158,16 @@ xp2.printAxisInfo
 ax_names = xp.exportAxisNames;
 xp2 = xp2.importData(mydata,ax_vals,ax_names);
 xp2.printAxisInfo
+
+%% Importing Data from 2D Table
+
+% Multi-dimensional data is often represented in 2D table form, with 1 column
+% representing the data, and other columns representing parameters associated
+% with the data.
+% xp3 = xPlt;
+% xp3 = xp3.importDataTable(data_columns, axis_val_columns, axis_names); % lowercase object method
+%   or
+% xp3 = xPlt.ImportDataTable(data_columns, axis_val_columns, axis_names); % uppercase class method
 
 
 %% xPlt Indexing

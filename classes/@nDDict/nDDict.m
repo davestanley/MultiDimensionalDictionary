@@ -33,7 +33,7 @@ classdef nDDict
     
     methods
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % Getter and Setters % % % % % % % % % % % % %
+        % % % % % % % % % % % Getter and Setters % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function obj = set.data(obj,value)
             obj.data_pr = value;
@@ -77,7 +77,7 @@ classdef nDDict
             nargs = nargin;
             
             % (4) Check if axisClass overwritten by first arg
-            if nargs && (isobject(varargs{1}) && strcmp(superclasses(varargs{1}), 'nDDictAxis'))
+            if nargs && (isobject(varargs{1}) && any(strcmp(superclasses(varargs{1}), 'nDDictAxis')))
                 obj.axisClass = varargs{1};
                 varargs(1) = [];
                 nargs = nargs-1;
@@ -291,13 +291,14 @@ classdef nDDict
         function obj = importMeta(obj,meta_struct)
             obj.meta = meta_struct;
         end
-        
-        
+
+
         obj = importDataTable(obj,data_column,axis_val_columns,axis_names)    % Function for importing data in a 2D table format
         
         obj = importData(obj,data,axis_vals,axis_names)
         
         obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import table data from data file (using importDataTable method)
+        
         
         function out = exportAxisVals(obj)
             Na = length(obj.axis);
@@ -468,7 +469,7 @@ classdef nDDict
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % HOUSEKEEPING FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % HOUSEKEEPING METHODS % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function out = printAxisInfo(obj,showclass)
@@ -555,7 +556,7 @@ classdef nDDict
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % OVERLOADED FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % OVERLOADED METHODS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function A = isempty(obj)
             A = isempty(obj.data_pr);
@@ -753,7 +754,7 @@ classdef nDDict
     methods (Access = protected) % same as private, but allows access from subclasses
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % HELPER FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % HELPER METHODS % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function [out, outsimple] = getclass_obj_data(obj)
             [out, outsimple] = nDDict.calcClasses(obj.data_pr,'data');
@@ -831,12 +832,44 @@ classdef nDDict
     end
     
     
+    methods (Static)
+        % ** start Import Methods **
+        %   Note: these can be called as static (ie class) methods using
+        %   uppercase version or as object methods using lowercsae version
+        function obj = ImportDataTable(varargin)    % Function for importing data in a 2D table format
+            % instantiate object
+            obj = nDDict();
+            
+            % call object method
+            obj = importDataTable(obj, varargin{:});
+        end
+        
+        function obj = ImportData(varargin)
+            % instantiate object
+            obj = nDDict();
+            
+            % call object method
+            obj = importData(obj, varargin{:});
+        end
+        
+        function obj = ImportFile(varargin) % import linear data from data file (using importDataTable method)
+            % instantiate object
+            obj = nDDict();
+            
+            % call object method
+            obj = importFile(obj, varargin{:});
+        end
+        % ** end Import Methods **
+    end
+    
+    
     methods (Static, Access = protected)
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % STATIC FUNCTIONS % % % % % % % % % % %
+        % % % % % % % % % % % STATIC METHODS % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         [out, outsimple] = calcClasses(input,field_type)     % Used by importDataTable and other importData functions
+        
         
         function output = inheritObj(output,input)
             % Merges contents of input into output.
@@ -888,4 +921,5 @@ classdef nDDict
         %     end
         % end
     end
+
 end
