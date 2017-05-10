@@ -9,7 +9,7 @@
 % #whowrotethis - Requested author information
 % #makeprivate - Perhaps make the function private
 % #isitoutdated - This might be outdated - if so, remove
-% #Toimplement
+% #toimplement
 % #requestexample - requests an example of implementation of this code in demos_xPlt
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -86,7 +86,6 @@ classdef nDDict
             % (1) default constructor
             obj.axis_pr = repmat(obj.axisClass,1,ndims(obj.data_pr));     % For a 2D matrix
             obj = obj.fixAxes;
-            obj.meta.datainfo = obj.axisClass;
             
             if nargs % (2) or (3) import data
                 % Determine if table or not
