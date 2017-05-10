@@ -1,4 +1,8 @@
-function [dt_formatted] = previewTable(data_table,col_names)
+function [dt_formatted] = previewTable(data_table,col_names,maxrows)
+
+    if nargin < 3
+        maxrows = 10;
+    end
 
     % All data, formatted into cells
     dt_formatted = data_table;
@@ -12,7 +16,13 @@ function [dt_formatted] = previewTable(data_table,col_names)
     divider = repmat({'------'},1,length(col_names));
     
     % Display the concatenated table
-    display(vertcat(col_names,divider,dt_formatted));
+    Nrows = size(dt_formatted, 1);
+    if Nrows > maxrows
+        display(vertcat(col_names,divider,dt_formatted(1:maxrows,:)));
+        fprintf('~~~~ Output truncated. Increase maxrows to show full table ~~~~ \n');
+    else
+        display(vertcat(col_names,divider,dt_formatted));
+    end
     
 
 end

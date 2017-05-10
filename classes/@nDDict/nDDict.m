@@ -321,6 +321,45 @@ classdef nDDict
             out = obj.data;
         end
         
+        function [data_column, axis_val_columns, axis_names] = exportDataTable(obj, preview_table)
+            
+            if nargin < 2
+                preview_table = false;
+            end
+            
+            Nd = ndims(obj);
+            
+            % Get axis names
+            axis_names = obj.exportAxisNames;
+            
+            % Linearize the data into a single 1D object
+            om = obj.mergeDims(1:Nd);
+            om = om.squeeze;
+            
+            % Pull out this linear data
+            data_column = om.data;
+            
+            % Pull out the corresponding axis values for each data entry
+            axis_val_columns = cell(1,Nd);
+            for i = 1:Nd
+                axis_val_columns{i} = om.axis(1).axismeta.premerged_values{i}(:);
+            end
+            
+            % Finally, remove any empties caused by sparsity in this matrix
+            if iscell(data_column)
+                ind = cellfun(@isempty,data_column);
+                data_column = data_column(~ind);
+                for i = 1:length(axis_val_columns)
+                    axis_val_columns{i} = axis_val_columns{i}(~ind);
+                end
+            end
+            
+            if preview_table
+                previewTable( {data_column, axis_val_columns{:}}, {'data', axis_names{:}});
+            end
+
+        end
+        
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
