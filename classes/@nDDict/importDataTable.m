@@ -70,7 +70,7 @@ sz = zeros(1, Ndims);
 for iDim = 1:Ndims
     if strcmp(axLinearFormat{iDim}, 'cellnum')
         axlinear{iDim} = [axlinear{iDim}{:}]; % convert cellnum to numeric array
-        fprintf('  Note: Converting dim %i axis_values to numeric array from cell array of numerics\n', iDim)
+%         fprintf('  Note: Converting dim %i axis_values to numeric array from cell array of numerics\n', iDim)
     end
     
     obj.axis_pr(iDim).values = unique(axlinear{iDim},'stable');
