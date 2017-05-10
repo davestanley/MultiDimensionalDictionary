@@ -120,6 +120,7 @@ classdef nDDict
             
         end
         
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % INDEXING/SEARCHING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -217,6 +218,7 @@ classdef nDDict
             end
         end
         
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -293,7 +295,9 @@ classdef nDDict
 
         obj = importDataTable(obj,data_column,axis_val_columns,axis_names)    % Function for importing data in a 2D table format
         
+        
         obj = importData(obj,data,axis_vals,axis_names)
+        
         
         obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import table data from data file (using importDataTable method)
         
@@ -315,14 +319,19 @@ classdef nDDict
             end
         end
         
+        
         function out = exportData(obj)
             out = obj.data;
         end
         
-        function [data_column, axis_val_columns, axis_names] = exportDataTable(obj, preview_table)
+        
+        function [data_column, axis_val_columns, axis_names] = exportDataTable(obj, preview_table, maxRows)
             
             if nargin < 2
                 preview_table = false;
+            end
+            if nargin < 3
+                maxRows = []; % set to default
             end
             
             Nd = ndims(obj);
@@ -353,7 +362,7 @@ classdef nDDict
             end
             
             if preview_table
-                previewTable( {data_column, axis_val_columns{:}}, {'data', axis_names{:}});
+                previewTable( [{data_column}, axis_val_columns], [{'data'}, axis_names], maxRows );
             end
 
         end
@@ -477,7 +486,9 @@ classdef nDDict
             warning('Not yet implemented');
         end
         
+        
         obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values);
+        
         
         function obj = alignAxes(obj, obj2)
             % Author: Ben Pittman-Polletta.
@@ -504,6 +515,7 @@ classdef nDDict
             end
             
         end
+        
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % HOUSEKEEPING METHODS % % % % % % % % % %
@@ -592,9 +604,11 @@ classdef nDDict
             
         end
         
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED METHODS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
         function A = isempty(obj)
             A = isempty(obj.data_pr);
         end
@@ -742,6 +756,7 @@ classdef nDDict
             
         end
         
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -817,6 +832,7 @@ classdef nDDict
             end
         end
         
+        
         function obj = setAxisDefaults(obj,dim)
             % Sets obj.axis_pr(i) to default values
             
@@ -873,6 +889,7 @@ classdef nDDict
         % ** start Import Methods **
         %   Note: these can be called as static (ie class) methods using
         %   uppercase version or as object methods using lowercsae version
+        
         function obj = ImportDataTable(varargin)    % Function for importing data in a 2D table format
             % instantiate object
             obj = nDDict();
@@ -881,6 +898,7 @@ classdef nDDict
             obj = importDataTable(obj, varargin{:});
         end
         
+        
         function obj = ImportData(varargin)
             % instantiate object
             obj = nDDict();
@@ -888,6 +906,7 @@ classdef nDDict
             % call object method
             obj = importData(obj, varargin{:});
         end
+        
         
         function obj = ImportFile(varargin) % import linear data from data file (using importDataTable method)
             % instantiate object

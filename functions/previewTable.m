@@ -1,6 +1,6 @@
 function [dt_formatted] = previewTable(data_table,col_names,maxrows)
 
-    if nargin < 3
+    if nargin < 3 || isempty(maxrows)
         maxrows = 10;
     end
 
@@ -24,6 +24,5 @@ function [dt_formatted] = previewTable(data_table,col_names,maxrows)
         display(vertcat(col_names,divider,dt_formatted));
     end
     
-
 end
     
