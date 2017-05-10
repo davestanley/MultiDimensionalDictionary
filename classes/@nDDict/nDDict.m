@@ -59,43 +59,42 @@ classdef nDDict
         function obj = nDDict(varargin)
             % Default constructor
             % Usage:
-            % obj = nDDict(data,axis_vals,axis_names)
-            % obj = nDDict(axis_class,data,axis_vals,axis_names)
-            % obj = nDDict(data,axis_vals,axis_names,'table')
-            % obj = nDDict(axis_class,data,axis_vals,axis_names,'table')
+            % obj = nDDict(data, axis_vals, axis_names)
+            % obj = nDDict(axis_class, data, axis_vals, axis_names)
             % 
             % Possible input configurations:
             %   1) nargin==0
             %   2) data for call to importData
-            %   3) data for call to importDataTable, with final argument 'table'
+            %   3) data for call to importDataTable, when data is a vector
             %   4) one of the above, with additional first argument specifying
-            %      the 'axisClass' from a subclass.
+            %      the 'axisClass' from a subclass (ie something other than nDDictAxis).
+            %
             % Author v2.0: Erik Roberts (iss 24)
             % Author v1.0: Dave Stanley
-
-            varargs = varargin;
-            nargs = nargin;
+            
             
             % (4) Check if axisClass overwritten by first arg
-            if nargs && (isobject(varargs{1}) && any(strcmp(superclasses(varargs{1}), 'nDDictAxis')))
-                obj.axisClass = varargs{1};
-                varargs(1) = [];
-                nargs = nargs-1;
+            nargin = length(varargin);
+            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'nDDictAxis')))
+                obj.axisClass = varargin{1};
+                varargin(1) = [];
+                nargin = length(varargin);
             end
             
             % (1) default constructor
             obj.axis_pr = repmat(obj.axisClass,1,ndims(obj.data_pr));     % For a 2D matrix
             obj = obj.fixAxes;
             
-            if nargs % (2) or (3) import data
+            if nargin % (2) or (3) import data
                 % Determine if table or not
-                linStrInd = strcmp(varargs, 'table');
-                if ~any(linStrInd)
+                if nargin > 1 && isvector(varargin{1}) % If Table: axis_vals must exist and data must be a vector
+                    lengthsCell = cellfunu(@length,varargin{2});
+                    if all(length(varargin{1}) == [lengthsCell{:}]) % If Table: each axis_vals cell contents must be same length as data
+                        obj = obj.importDataTable(varargin{:});
+                    end
+                else % Not table
                     obj = obj.fixAxes;
-                    obj = obj.importData(varargs{:});
-                else
-                    varargs(linStrInd) = []; % remove 'table' string from args
-                    obj = obj.importDataTable(varargs{:});
+                    obj = obj.importData(varargin{:});
                 end
             end
             obj.fixAxes(1);     % Convert any axis vallues that are cellnums to numeric matrices
