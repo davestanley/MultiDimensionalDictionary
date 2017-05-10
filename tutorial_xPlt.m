@@ -159,15 +159,46 @@ ax_names = xp.exportAxisNames;
 xp2 = xp2.importData(mydata,ax_vals,ax_names);
 xp2.printAxisInfo
 
-%% Importing Data from 2D Table
+
+%% Exporting Data to 2D Table
 
 % Multi-dimensional data is often represented in 2D table form, with 1 column
 % representing the data, and other columns representing parameters associated
-% with the data.
-% xp3 = xPlt;
-% xp3 = xp3.importDataTable(data_columns, axis_val_columns, axis_names); % lowercase object method
-%   or
-% xp3 = xPlt.ImportDataTable(data_columns, axis_val_columns, axis_names); % uppercase class method
+% with the data. The multidimensional data from an xPlt object can be exported
+% to a 2D table as below.
+
+[data_column, axis_val_columns, axis_names] = xp.exportDataTable();
+
+% The table can be previewed in the command window by calling:
+xp.exportDataTable(true);
+
+% The number of rows printed to screen can be changed from the default of 10 by
+% passing a second argument.
+xp.exportDataTable(true, 5); % printing 5 rows to screen
+
+
+%% Importing Data from 2D Table
+
+% As mentioned before, multi-dimensional data is often represented in 2D table form, 
+% with 1 column representing the data, and other columns representing parameters 
+% associated with the data. xPlt can import this 2D data, as we generated
+% previously.
+
+% First let us inspect the tabular data sizes:
+
+fprintf('Data column size: %s\n', num2str(size(data_column)))
+fprintf('Axis values columns size: %s\n', num2str(size(axis_val_columns)))
+fprintf('Axis names size: %s\n', num2str(size(axis_names)))
+
+% As with importData, there are 2 interfaces for importing:
+xp3 = xPlt;
+xp3 = xp3.importDataTable(data_column, axis_val_columns, axis_names); % lowercase object method
+xp3.printAxisInfo
+
+%  or
+
+xp3 = xPlt.ImportDataTable(data_column, axis_val_columns, axis_names); % uppercase class method
+xp3.printAxisInfo
 
 
 %% xPlt Indexing
