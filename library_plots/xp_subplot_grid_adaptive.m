@@ -159,7 +159,7 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
 end
 
 function outstr = setup_axis_labels(xpa)
-    vals = xpa.getvaluescellstring;
+    vals = xpa.getvalues_cellstr;
     vals = strrep(vals,'_',' ');
     outstr = cell(size(vals));
     for j = 1:length(outstr)

@@ -46,6 +46,14 @@ classdef MDDictAxis
             end
         end
 
+        function out = getvalues_cellstr(obj)
+            % Looks at entry obj.value(i) and returns its output as a
+            % cell array of strings
+            out = cell(1,length(obj.values));
+            for i = 1:length(obj.values)
+                out{i} = num2str(obj.getvalue_noncell(i));
+            end
+        end
 
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
@@ -164,14 +172,6 @@ classdef MDDictAxis
             end
         end
 
-        function out = getvalues_cellstr(obj)
-            % Looks at entry obj.value(i) and returns its output as a
-            % cell array of strings
-            out = cell(1,length(obj.values));
-            for i = 1:length(obj.values)
-                out{i} = num2str(obj.getvalue_noncell(i));
-            end
-        end
         
     end
     

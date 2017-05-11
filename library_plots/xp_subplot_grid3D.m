@@ -92,7 +92,7 @@ function hxp = xp_subplot_grid3D (xp, op)
 end
 
 function outstr = setup_axis_labels(xpa)
-    vals = xpa.getvaluescellstring;
+    vals = xpa.getvalues_cellstr;
     vals = strrep(vals,'_',' ');
     outstr = cell(size(vals));
     for j = 1:length(outstr)
