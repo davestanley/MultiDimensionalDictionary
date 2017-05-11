@@ -170,7 +170,7 @@ function [hts, titles] = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_s
 end
 
 function vals = setup_axis_labels(xpa)
-    vals = xpa.getvaluescellstring;
+    vals = xpa.getvalues_cellstr;
     vals = strrep(vals,'_',' ');
     % outstr = cell(size(vals));
     % for j = 1:length(outstr)
