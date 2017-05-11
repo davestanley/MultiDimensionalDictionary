@@ -127,7 +127,7 @@ function varargout = recursiveFunc_2(xp,function_handles,dimensions,function_arg
             
             xp_indices(dimensions{1}) = xp2_indices(call, :);
             
-            mydata{xp2_indices{call, :}} = @() recursivePlot_2(xp.subset(xp_indices{:}),...
+            mydata{xp2_indices{call, :}} = @() recursiveFunc_2(xp.subset(xp_indices{:}),...
                 function_handles(2:end), dimensions(2:end), function_arguments(2:end));
             
         end

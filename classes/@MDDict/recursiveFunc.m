@@ -47,7 +47,7 @@ function varargout = recursiveFunc(xp,function_handles,dimensions,function_argum
                 for i = 1:sz(dim1)
                     selection_curr{dim1} = i;
                         % Note: need to make it a row vector!
-                    mydata{i,1} = @() recursivePlot(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
+                    mydata{i,1} = @() recursiveFunc(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
                 end
                 
             case 2                          % 2D
@@ -57,7 +57,7 @@ function varargout = recursiveFunc(xp,function_handles,dimensions,function_argum
                     for j = 1:sz(dim2)
                         selection_curr{dim1} = i;
                         selection_curr{dim2} = j;
-                        mydata{i,j} = @() recursivePlot(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
+                        mydata{i,j} = @() recursiveFunc(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
                     end
                 end
                 
@@ -71,7 +71,7 @@ function varargout = recursiveFunc(xp,function_handles,dimensions,function_argum
                             selection_curr{dim1} = i;
                             selection_curr{dim2} = j;
                             selection_curr{dim3} = k;
-                            mydata{i,j,k} = @() recursivePlot(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
+                            mydata{i,j,k} = @() recursiveFunc(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
                         end
                     end
                 end
@@ -89,7 +89,7 @@ function varargout = recursiveFunc(xp,function_handles,dimensions,function_argum
                                 selection_curr{dim2} = j;
                                 selection_curr{dim3} = k;
                                 selection_curr{dim4} = l;
-                                mydata{i,j,k,l} = @() recursivePlot(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
+                                mydata{i,j,k,l} = @() recursiveFunc(xp.subset(selection_curr{:}),function_handles(2:end),dimensions(2:end),function_arguments(2:end));
                             end
                         end
                     end
@@ -138,7 +138,7 @@ function dimensions = dimensions_regex_2_index(xp,dimensions)
             try
                 dim_curr = cell2mat(dim_curr);
             catch err
-                error('Ambiguous dimension supplied, unable to create matrix of dimensions for recursivePlot.')
+                error('Ambiguous dimension supplied, unable to create matrix of dimensions for recursiveFunc.')
                 display(err)
             end
         elseif ischar(dim_curr)
