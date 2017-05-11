@@ -242,7 +242,7 @@ clear mydata mydata2 xp4 xp5
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Plot 2D data
-% Tip: don't try to understand what recursivePlot is doing - instead, try
+% Tip: don't try to understand what recursiveFunc is doing - instead, try
 % putting break points in the various function handles to see how this
 % command works.
 close all;
@@ -263,7 +263,7 @@ function_arguments = {{},{}};	% This allows you to supply input arguments to eac
                                 % now we'll leave this empty.
                                                                 
 % Run the plot. Note the "+" icons next to each plot allow zooming. 
-figl; recursivePlot(xp4,function_handles,dimensions,function_arguments);
+figl; recursiveFunc(xp4,function_handles,dimensions,function_arguments);
 
 %% Plot 3D data 
 
@@ -278,7 +278,7 @@ xp4.printAxisInfo
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -288,7 +288,7 @@ recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimen
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 %% Plot 4D data
 
@@ -308,7 +308,7 @@ xp_subplot_grid_options.display_mode = 1;
 function_arguments = {{},{},{xp_subplot_grid_options},{}};
 
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
-recursivePlot(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
+recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
 
 %% Plot multiple dimensions adaptively.
 
@@ -318,7 +318,7 @@ close all;
 % descending order of the size of the axis values, and plot remaining
 % combinations of axis values across figures.
 
-recursivePlot(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
+recursiveFunc(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
 %% Plot two MDDict objects combined
 close all;
@@ -332,7 +332,7 @@ xp4.printAxisInfo
 xp5 = merge(xp3,xp4);
 
 dimensions = {[1,2],0};
-figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 
 %% % % % % % % % % % % % % % % ADVANCED MDDict / MDDict USAGE % % % % % % % 
@@ -447,7 +447,7 @@ xp3 = xp2.packDim(src,dest);
 
 
 % Plot 
-figl; recursivePlot(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+figl; recursiveFunc(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 %% Use packDim to average over synaptic currents
 % Analogous to cell2mat
@@ -467,7 +467,7 @@ xp3.printAxisInfo;
 xp3.data = cellfun(@(x) nanmean(x,3), xp3.data,'UniformOutput',0);
 
 % Plot 
-recursivePlot(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
+recursiveFunc(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
 
 %% Test mergeDims
 % Analogous to Reshape.
