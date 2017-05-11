@@ -11,11 +11,11 @@
 % Format
 format compact
 
-% Check if in MDD folder
+% Check if in MDict folder
 [parentfolder,currfolder] = fileparts(pwd);
-if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
+if ~strcmp(currfolder,'MDict'); error('Should be in MDict folder to run this code.'); end
 
-% Add MDD toolbox to Matlab path if needed
+% Add MDict toolbox to Matlab path if needed
 if ~exist('MDict','class')
   addpath(genpath(pwd));
 end
