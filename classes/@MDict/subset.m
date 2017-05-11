@@ -9,7 +9,7 @@ function [obj2, ro] = subset(obj,varargin)
 %       2) regular expression string for cellstring axis values
 %       3) numeric array or cellnum of indicies for numeric or cellnum axis
 %          values
-%   Optional: 'numericsAsValuesFlag' - see MDDict.valSubset
+%   Optional: 'numericsAsValuesFlag' - see MDict.valSubset
 %
 % Outputs:
 %   obj2: object with subset of data
@@ -100,7 +100,7 @@ for i = 1:Ns
         if strcmp(axClasses{i}, 'cellstr')
             % Convert selection to index if using regular expressions
             ro{i}(1,:) = obj.axis_pr(i).values;
-            [selection{i} ro{i}(2,:)] = MDDict.regex_lookup(obj.axis_pr(i).values, selection{i});
+            [selection{i} ro{i}(2,:)] = MDict.regex_lookup(obj.axis_pr(i).values, selection{i});
         elseif numericsAsValuesFlag
             % Convert expression on vals for numerics to indicies
             

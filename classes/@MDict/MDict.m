@@ -10,10 +10,10 @@
 % #makeprivate - Perhaps make the function private
 % #isitoutdated - This might be outdated - if so, remove
 % #toimplement
-% #requestexample - requests an example of implementation of this code in demos_MDDict
+% #requestexample - requests an example of implementation of this code in demos_MDict
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-classdef MDDict
+classdef MDict
     
     properties
         meta = struct; % Metadata about stuff that's stored in data
@@ -21,8 +21,8 @@ classdef MDDict
     
     properties (Access = private) % private so that subclass can override
         data_pr        % Storing the actual data (multi-dimensional matrix or cell array)
-        axis_pr        % 1xNdims - array of MDDictAxis classes for each axis. Ndims = ndims(data)
-        axisClass = MDDictAxis
+        axis_pr        % 1xNdims - array of MDictAxis classes for each axis. Ndims = ndims(data)
+        axisClass = MDictAxis
     end
     
     properties (Dependent)
@@ -56,18 +56,18 @@ classdef MDDict
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % CLASS SETUP % % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function obj = MDDict(varargin)
+        function obj = MDict(varargin)
             % Default constructor
             % Usage:
-            % obj = MDDict(data, axis_vals, axis_names)
-            % obj = MDDict(axis_class, data, axis_vals, axis_names)
+            % obj = MDict(data, axis_vals, axis_names)
+            % obj = MDict(axis_class, data, axis_vals, axis_names)
             % 
             % Possible input configurations:
             %   1) nargin==0
             %   2) data for call to importData
             %   3) data for call to importDataTable, when data is a vector
             %   4) one of the above, with additional first argument specifying
-            %      the 'axisClass' from a subclass (ie something other than MDDictAxis).
+            %      the 'axisClass' from a subclass (ie something other than MDictAxis).
             %
             % Author v2.0: Erik Roberts (iss 24)
             % Author v1.0: Dave Stanley
@@ -75,7 +75,7 @@ classdef MDDict
             
             % (4) Check if axisClass overwritten by first arg
             nargin = length(varargin);
-            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDDictAxis')))
+            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDictAxis')))
                 obj.axisClass = varargin{1};
                 varargin(1) = [];
                 nargin = length(varargin);
@@ -116,7 +116,7 @@ classdef MDDict
             % Returns the index of the axis with name matching str
             allnames = {obj.axis_pr.name};
             try
-                [selection_out, startIndex] = MDDict.regex_lookup(allnames, str);
+                [selection_out, startIndex] = MDict.regex_lookup(allnames, str);
             catch
                 selection_out = [];         % Return empty if no result found.
             end
@@ -416,7 +416,7 @@ classdef MDDict
         end
         
         
-        function obj = packDim2MDDict(obj,dim_src,dim_target)
+        function obj = packDim2MDict(obj,dim_src,dim_target)
             % #Toimplement
             warning('Not yet implemented');
         end
@@ -468,7 +468,7 @@ classdef MDDict
             warning('Not yet implemented');
         end
         
-        function obj_new = unpackDim2MDDict(obj, dim_src, dim_target, dim_name, dim_values)
+        function obj_new = unpackDim2MDict(obj, dim_src, dim_target, dim_name, dim_values)
             % #Toimplement
             warning('Not yet implemented');
         end
@@ -544,12 +544,12 @@ classdef MDDict
                 return;
             end
             
-            % Lastly output a summary of dimensionality comparing MDDict.axis_pr
-            % and MDDict.data_pr. These should match up.
+            % Lastly output a summary of dimensionality comparing MDict.axis_pr
+            % and MDict.data_pr. These should match up.
             if nargout == 0
                 fprintf('For Dev:\n')
-                fprintf(['  MDDict.axis_pr size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
-                fprintf(['  MDDict.data_pr size: [' num2str(size(obj.data_pr)) ']\n']);
+                fprintf(['  MDict.axis_pr size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
+                fprintf(['  MDict.data_pr size: [' num2str(size(obj.data_pr)) ']\n']);
             end
         end
         
@@ -718,7 +718,7 @@ classdef MDDict
         function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
             % Author: Ben Pittman-Polletta.
             % Creates new axis with specified values, and an identical copy
-            % of the existing MDDict object at each value.
+            % of the existing MDict object at each value.
             % #requestexample
             checkDims(obj);
             
@@ -796,7 +796,7 @@ classdef MDDict
         % % % % % % % % % % % HELPER METHODS % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function [out, outsimple] = getclass_obj_data(obj)
-            [out, outsimple] = MDDict.calcClasses(obj.data_pr,'data');
+            [out, outsimple] = MDict.calcClasses(obj.data_pr,'data');
         end
         
         
@@ -879,7 +879,7 @@ classdef MDDict
         
         function obj = ImportDataTable(varargin)    % Function for importing data in a 2D table format
             % instantiate object
-            obj = MDDict();
+            obj = MDict();
             
             % call object method
             obj = importDataTable(obj, varargin{:});
@@ -888,7 +888,7 @@ classdef MDDict
         
         function obj = ImportData(varargin)
             % instantiate object
-            obj = MDDict();
+            obj = MDict();
             
             % call object method
             obj = importData(obj, varargin{:});
@@ -897,7 +897,7 @@ classdef MDDict
         
         function obj = ImportFile(varargin) % import linear data from data file (using importDataTable method)
             % instantiate object
-            obj = MDDict();
+            obj = MDict();
             
             % call object method
             obj = importFile(obj, varargin{:});

@@ -21,7 +21,7 @@ function hxp = xp_PlotFR2 (xp, op)
     xp.axis(Na+1).values = {'v'};
 
     % Convert xp to DynaSim data struct
-    data = MDDict2DynaSim(xp);
+    data = MDict2DynaSim(xp);
     
     % Feed into original PlotFR2 command, making sure it doesn't generate
     % new figures (rather, should produce it in the current subplot)

@@ -1,5 +1,5 @@
-classdef MDDictAxis
-    % Helper class for handling axis in MDDict class
+classdef MDictAxis
+    % Helper class for handling axis in MDict class
 
     properties
         name = ''         % (optional) 1x1 - string naming the axis in question (e.g. time, voltage, cell number, etc)

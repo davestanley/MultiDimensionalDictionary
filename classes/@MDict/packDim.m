@@ -1,6 +1,6 @@
 function obj = packDim(obj,dim_src,dim_target)
 % Warning - this command will be replaced in the future. Use
-% packDim2Mat instead. See also packDim2Cell, packDim2MDDict.
+% packDim2Mat instead. See also packDim2Cell, packDim2MDict.
 if ischar(dim_src)
     dim_src_string = dim_src;
     dim_src = obj.findaxis(dim_src_string);
@@ -30,15 +30,15 @@ end
 checkDims(obj);
 
 % Make sure that obj.data_pr is a cell array
-if ~iscell(obj.data_pr); error('MDDict.data must be a cell array.'); end
+if ~iscell(obj.data_pr); error('MDict.data must be a cell array.'); end
 
 % Make sure that obj.data_pr is a numeric
 temp = cellfun(@isnumeric,obj.data_pr);
-if any(temp(:) ~= 1); error([class(obj) '.data must contain only numerics']); end      % Can redo this in the future to work with MDDicts containing matrices
-% % To do: implement this so it works with cell arrays and MDDict
+if any(temp(:) ~= 1); error([class(obj) '.data must contain only numerics']); end      % Can redo this in the future to work with MDicts containing matrices
+% % To do: implement this so it works with cell arrays and MDict
 % classes in the future too
 
-% Make sure target dimension in MDDict.data_pr is a singleton
+% Make sure target dimension in MDict.data_pr is a singleton
 temp = cellfun(@(x) size(x,dim_target),obj.data_pr);
 if any(temp(:) > 1); error(['Target dimension in ' class(obj) '.data needs to be size 1. Try reshaping contents of ' class(obj) '.data or choosing a different target dimension.']); end
 clear sz_targets
@@ -87,7 +87,7 @@ myfunc = @(x,y) any(x(:) ~= y(:));
 bool_size_mismatch = cellfun(myfunc,data_sz,data_sz_firsts);
 if any(bool_size_mismatch(:))
     % Suppressing this warning.
-    %warning('Sizes of MDDict.data_pr are not uniform along packing dimension. (E.g. This usually results form trying to combine populations with different numbers of cells). Filling out with NaNs');
+    %warning('Sizes of MDict.data_pr are not uniform along packing dimension. (E.g. This usually results form trying to combine populations with different numbers of cells). Filling out with NaNs');
     for j = 1:sz(2)
         % For each column in the cell array data_sz, find the
         % dimensions of the largest matrix (sz_max)
@@ -119,7 +119,7 @@ obj.data_pr = obj.data_pr(1,:);         % Keep only 1st dimension;
 sz0(1) = 1;
 
 % Lastly, restore original dimensions
-% of MDDict.data_pr
+% of MDict.data_pr
 obj.data_pr = reshape(obj.data_pr,sz0);
 obj.data_pr = permute(obj.data_pr,[2:dim_src, 1, dim_src+1:Nd]);
 
@@ -131,10 +131,10 @@ obj.axis_pr(dim_src).name = ['Dim ' num2str(dim_src)];
 % Store obj.axis_pr(dim_src) as meta data.
 obj.meta.(['matrix_dim_', num2str(dim_target)]) = ax_src;
 
-% If obj.data_pr is a MDDict object itself, update axes labels
+% If obj.data_pr is a MDict object itself, update axes labels
 % appropriately
 for i = 1:numel(obj.data_pr)
-    if isa(obj.data_pr{i},'MDDict')
+    if isa(obj.data_pr{i},'MDict')
         warning('This mode doesnt work yet');
         obj.data_pr{i}.axis_pr(dim_target) = ax_src;
     end

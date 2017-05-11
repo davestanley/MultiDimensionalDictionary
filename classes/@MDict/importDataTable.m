@@ -10,11 +10,11 @@ function obj = importDataTable(obj, data_column, axis_val_columns, axis_names)
 %   Usage:
 %       Note: functionality can be called from a static (ie class) or object method
 %     As class static method:
-%       obj = MDDict.ImportDataTable(data_column,axis_val_columns) % uppercase method
-%       obj = MDDict.ImportDataTable(data_column,axis_val_columns,axis_names) % uppercase method
+%       obj = MDict.ImportDataTable(data_column,axis_val_columns) % uppercase method
+%       obj = MDict.ImportDataTable(data_column,axis_val_columns,axis_names) % uppercase method
 %
 %     As object method:
-%       obj = MDDict();
+%       obj = MDict();
 %       obj = obj.importDataTable(data_column,axis_val_columns) % lowercase method
 %       obj = obj.importDataTable(data_column,axis_val_columns,axis_names) % lowercase method
 %
@@ -54,14 +54,14 @@ Ndims = length(axlinear);
 if ~isvector(X); error('data_column must be linear'); end
 
 % Error checking - X must be cell or numeric
-[~, XsimpleFormat] = MDDict.calcClasses(X,'data');
+[~, XsimpleFormat] = MDict.calcClasses(X,'data');
 if strcmp(XsimpleFormat,'unknown'); error('data_column must be a numeric or cell array'); end
 
 % Error checking - each entry in axislinear must be either numeric or
 % cell. If it's a cell, all entries must char.
 axLinearFormat = cell(1, Ndims);
 for k = 1:Ndims
-    axLinearFormat{k} = MDDict.calcClasses(axlinear{k}, 'axis_values');
+    axLinearFormat{k} = MDict.calcClasses(axlinear{k}, 'axis_values');
 end
 if any(strcmp(axLinearFormat,'unknown')) || isempty(axlinear); error('Cells in axis_val_columns must be a numeric array, cell array of numerics, or cell array of chars'); end
 
