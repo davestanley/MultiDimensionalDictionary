@@ -26,7 +26,7 @@ function di = update_metadata_packedDims(di,packed_vars,packed_name)
     % Updates the metadata (Which will be later used for specifying the
     % legend, x-axis labels, etc)
     
-    % Pull out xPlt object storing metadata. This object holds metadata
+    % Pull out MDDict object storing metadata. This object holds metadata
     % about each matrix in the xp.data cell array (e.g. time x cells)
     di = xp2.meta.datainfo;
     did = di.data;
@@ -40,7 +40,7 @@ function di = update_metadata_packedDims(di,packed_vars,packed_name)
         packed_vars = cellfunu(@(s) ['<' s '>'], packed_vars);
     end
     
-    % Create the new metadata xPlt object
+    % Create the new metadata MDDict object
     sz = size(did);
     sz(end+1) = length(packed_vars);
     did = ones(sz);         % Some random placeholder
@@ -51,7 +51,7 @@ end
 
 
 
-Dynasim2xplt
+Dynasim2MDDict
 
 % Store metadata info
     meta = struct;
@@ -59,8 +59,8 @@ Dynasim2xplt
     cell_names = [1:max(cellfun(@(x) size(x,2),xp.data(:)))];
     cell_names_str = cellfunu(@(s) ['Cell ' num2str(s)], num2cell(cell_names));
     
-    % Create dummy xPlt object full of ones in order to store axis info.
-    di = xPlt;
+    % Create dummy MDDict object full of ones in order to store axis info.
+    di = MDDict;
     di = di.importData(ones(length(time),length(cell_names_str)),{time,cell_names_str});
     di = di.importAxisNames({'time (ms)','cells'});
     meta.datainfo = di;

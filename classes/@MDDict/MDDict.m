@@ -10,7 +10,7 @@
 % #makeprivate - Perhaps make the function private
 % #isitoutdated - This might be outdated - if so, remove
 % #toimplement
-% #requestexample - requests an example of implementation of this code in demos_xPlt
+% #requestexample - requests an example of implementation of this code in demos_MDDict
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 classdef MDDict
@@ -105,20 +105,7 @@ classdef MDDict
             % call object specific-constructor
             obj = feval(str2func(class(obj)));
         end
-        
-        
-        % TO DO: Fix this.
-        function obj_xp = xPlt(obj)
-            % Who wrote this ? 
-            % Can we use inheritObj instead?
-            % Tags: (#whowrotethis, #isitoutdated)
-            % Converter MDDict -> xPlt.
-            obj_xp = xPlt;
-            obj_xp = importData(obj_xp, obj.data);
-            obj_xp.axis = obj.axis;
-            obj_xp.meta = obj.meta;
-            
-        end
+
         
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -429,7 +416,7 @@ classdef MDDict
         end
         
         
-        function obj = packDim2xPlt(obj,dim_src,dim_target)
+        function obj = packDim2MDDict(obj,dim_src,dim_target)
             % #Toimplement
             warning('Not yet implemented');
         end
@@ -481,7 +468,7 @@ classdef MDDict
             warning('Not yet implemented');
         end
         
-        function obj_new = unpackDim2xPlt(obj, dim_src, dim_target, dim_name, dim_values)
+        function obj_new = unpackDim2MDDict(obj, dim_src, dim_target, dim_name, dim_values)
             % #Toimplement
             warning('Not yet implemented');
         end
@@ -731,7 +718,7 @@ classdef MDDict
         function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
             % Author: Ben Pittman-Polletta.
             % Creates new axis with specified values, and an identical copy
-            % of the existing xPlt object at each value.
+            % of the existing MDDict object at each value.
             % #requestexample
             checkDims(obj);
             

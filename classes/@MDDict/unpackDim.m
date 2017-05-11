@@ -1,7 +1,7 @@
 function obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values)
 % Author: Ben Pittman-Polletta.
 % Warning - this command will be replaced in the future. Use
-% unpackDim2Mat instead. See also unpackDim2Cell, unpackDim2xPlt.
+% unpackDim2Mat instead. See also unpackDim2Cell, unpackDim2MDDict.
 
 % Temporarily linearize obj.data_pr.
 sz0 = size(obj);

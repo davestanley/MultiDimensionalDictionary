@@ -1,4 +1,4 @@
-function varargout = recursivePlot(xp,function_handles,dimensions,function_arguments)
+function varargout = recursiveFunc(xp,function_handles,dimensions,function_arguments)
     % function_arguments - cell array of argument cell arrays to pass to
     % function_handles. Must have one cell array for each function_handle
     % passed. Use empty cell arrays for no arguments. E.g.
@@ -36,7 +36,7 @@ function varargout = recursivePlot(xp,function_handles,dimensions,function_argum
     sz = size(xp);
     if length(function_handles) > 1
         
-        xp2 = xPlt;
+        xp2 = MDDict;
         selection_curr = cell(1,length(sz));
         % Just hardcode in the various cases for dimensionality. It's
         % unlikely they will ever want to go above showing 4D in a single

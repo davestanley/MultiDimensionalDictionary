@@ -15,7 +15,7 @@ function [out, outsimple] = calcClasses(input,field_type)
             elseif iscell(input)
                 if iscellnum(input)
                     out = 'cellnum';
-                elseif all(cellfun(@(s) isa(s,'MDDict'),input(:))) || all(cellfun(@(s) isa(s,'xPlt'),input(:)))
+                elseif all(cellfun(@(s) isa(s,'MDDict'),input(:)))
                     out = 'cellMDDict';
                 else
                     out = 'cell';

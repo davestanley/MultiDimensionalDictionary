@@ -1,8 +1,8 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % xPlt Tutorial % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % MDDict Tutorial % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% % % % % % % % % % % % % % % xPlt Setup % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDDict Setup % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Set up paths 
@@ -60,27 +60,27 @@ disp(axis_vals{3}{2})       % Inhibitory cells
 disp(axis_vals{4}{1})       % Voltage, v
 
 
-%% Import into xPlt object
+%% Import into MDDict object
 
-% All of this information can be imported into an xPlt object.
+% All of this information can be imported into an MDDict object.
 
-% Create xPlt object
-xp = xPlt;
+% Create MDDict object
+xp = MDDict;
 
 % Import the data
 xp = xp.importData(dat,axis_vals,axis_names);
 
 
-% xPlt objects are essentially cell arrays (or matricies), but with the
+% MDDict objects are essentially cell arrays (or matricies), but with the
 % option to index using strings instead of just integers. 
 % Thus, they are analogous to dictionaries in Python.
 % (This core functionality is implemented by the multidimensional
-% dictionaries (MDDict), which xPlt inherits, and to which xPlt adds
+% dictionaries (MDDict), which MDDict inherits, and to which MDDict adds
 % plotting functionality.)
 disp(xp);
 
 
-% At its core, xPlt has 3 fields. xp.data stores the actual data (either a 
+% At its core, MDDict has 3 fields. xp.data stores the actual data (either a 
 % matrix or a cell array). Note: it is okay that there are some empties.
 disp(xp.data);
 size(xp.data)
@@ -111,7 +111,7 @@ xp.printAxisInfo
 % Here we will add some custom info to xp.metadata. This can be whatever
 % you want. Here, I will use this to provide information about what is
 % stored in each of the matrices in the xp.data cell array. (Alternatively,
-% we could also make each of these matrices an xPlt object!)
+% we could also make each of these matrices an MDDict object!)
 meta = struct;
 meta.datainfo(1:2) = MDDictAxis;
 meta.datainfo(1).name = 'time(ms)';
@@ -122,27 +122,27 @@ xp.meta = meta;
 clear meta
 
 
-%% % % % % % % % % % % % % % % xPlt BASICS % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDDict BASICS % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Importing data
 
-% xPlt objects are just matrices or cell arrays with extra functionality to
+% MDDict objects are just matrices or cell arrays with extra functionality to
 % keep track of what each dimension is storing. 
 
-% Above, we imported data into an xPlt object along with axis values and names. 
+% Above, we imported data into an MDDict object along with axis values and names. 
 % But it is also possible to import a high dimensional matrix alone.
 
 % For example let's say we have a random cell array.
 mydata = xp.data;
 
 % We can import the data as follows.
-xp2 = xPlt;
+xp2 = MDDict;
 xp2 = xp2.importData(mydata);
 
 % or one can use a class method without having to make the object first by using
 % an uppercase method name.
-xp2 = xPlt.ImportData(mydata);
+xp2 = MDDict.ImportData(mydata);
 
 % We didn't supply any axis names/values, so default values were assgined
 xp2.printAxisInfo;
@@ -150,7 +150,7 @@ xp2.printAxisInfo;
 % We can instead import axis values along with the data
 ax_vals = xp.exportAxisVals;
 clear xp2
-xp2 = xPlt;
+xp2 = MDDict;
 xp2 = xp2.importData(mydata,ax_vals);
 xp2.printAxisInfo
 
@@ -164,7 +164,7 @@ xp2.printAxisInfo
 
 % Multi-dimensional data is often represented in 2D table form, with 1 column
 % representing the data, and other columns representing parameters associated
-% with the data. The multidimensional data from an xPlt object can be exported
+% with the data. The multidimensional data from an MDDict object can be exported
 % to a 2D table as below.
 
 [data_column, axis_val_columns, axis_names] = xp.exportDataTable();
@@ -181,7 +181,7 @@ xp.exportDataTable(true, 5); % printing 5 rows to screen
 
 % As mentioned before, multi-dimensional data is often represented in 2D table form, 
 % with 1 column representing the data, and other columns representing parameters 
-% associated with the data. xPlt can import this 2D data, as we generated
+% associated with the data. MDDict can import this 2D data, as we generated
 % previously.
 
 % First let us inspect the tabular data sizes:
@@ -191,17 +191,17 @@ fprintf('Axis values columns size: %s\n', num2str(size(axis_val_columns)))
 fprintf('Axis names size: %s\n', num2str(size(axis_names)))
 
 % As with importData, there are 2 interfaces for importing:
-xp3 = xPlt;
+xp3 = MDDict;
 xp3 = xp3.importDataTable(data_column, axis_val_columns, axis_names); % lowercase object method
 xp3.printAxisInfo
 
 %  or
 
-xp3 = xPlt.ImportDataTable(data_column, axis_val_columns, axis_names); % uppercase class method
+xp3 = MDDict.ImportDataTable(data_column, axis_val_columns, axis_names); % uppercase class method
 xp3.printAxisInfo
 
 
-%% xPlt Indexing
+%% MDDict Indexing
 
 % Indexing works just like with normal matrices and cell arrays and axis
 % labels are updated appropriately.
@@ -320,7 +320,7 @@ close all;
 
 recursivePlot(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
-%% Plot two xPlt objects combined
+%% Plot two MDDict objects combined
 close all;
 clc
 xp3 = xp(2,:,'E','v');
@@ -335,12 +335,12 @@ dimensions = {[1,2],0};
 figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 
-%% % % % % % % % % % % % % % % ADVANCED xPlt / MDDict USAGE % % % % % % % 
+%% % % % % % % % % % % % % % % ADVANCED MDDict / MDDict USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% Modifying xPlt.data directly
+%% Modifying MDDict.data directly
 
-% While it is encouraged to use importData, xPlt.data can also be written
+% While it is encouraged to use importData, MDDict.data can also be written
 % to directly. For example, we can take the average across all cells by
 % doing the following.
 xp2 = xp;
@@ -406,14 +406,14 @@ xlabel(xp2.axis(2).name);
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
 %% Method unpackDim (undoing packDims)
-% When packDim is applied to an xPlt object, say to pack dimension 3, the
+% When packDim is applied to an MDDict object, say to pack dimension 3, the
 % information from the packed axis is stored in the MDDictAxis
 % matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.printAxisInfo
 
 % If dimension 3 of each cell in xp3.data is unpacked using unpackDim,
 % xp3.meta.matrix_dim_3 will be used to provide axis info for the new
-% xPlt object.
+% MDDict object.
 xp4 = xp3.unpackDim(dest, src);
 xp4.printAxisInfo;
 
@@ -433,7 +433,7 @@ xp2 = xp2.squeeze;
 % Average across all cells
 xp2.data = cellfun(@(x) mean(x,2), xp2.data,'UniformOutput',0);
 
-% % Convert xp2.data from a matrix into an xPlt object as well. This is
+% % Convert xp2.data from a matrix into an MDDict object as well. This is
 % % useful for keeping track of axis names. 
 % mat_ax_names = {'Time','Cell Number'};
 % mat_ax_values = {1:10001, []};

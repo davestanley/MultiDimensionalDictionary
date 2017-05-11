@@ -1,6 +1,6 @@
 function obj = packDim(obj,dim_src,dim_target)
 % Warning - this command will be replaced in the future. Use
-% packDim2Mat instead. See also packDim2Cell, packDim2xPlt.
+% packDim2Mat instead. See also packDim2Cell, packDim2MDDict.
 if ischar(dim_src)
     dim_src_string = dim_src;
     dim_src = obj.findaxis(dim_src_string);
