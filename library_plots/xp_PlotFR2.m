@@ -21,11 +21,11 @@ function hxp = xp_PlotFR2 (xp, op)
     xp.axis(Na+1).values = {'v'};
 
     % Convert xp to DynaSim data struct
-    data = MDict2DynaSim(xp);
+    data = ds.MDict2ds(xp);
     
     % Feed into original PlotFR2 command, making sure it doesn't generate
     % new figures (rather, should produce it in the current subplot)
-    hxp.hcurr = PlotFR2(data,op.args{:},'lock_gca',true);
+    hxp.hcurr = ds.PlotFR2(data,op.args{:},'lock_gca',true);
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end

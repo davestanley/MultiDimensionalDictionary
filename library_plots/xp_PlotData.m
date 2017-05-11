@@ -21,7 +21,7 @@ function hxp = xp_PlotData (xp, op)
     xp = xp.squeezeRegexp('Dim');
     
     % Convert xp to DynaSim data struct
-    data = MDict2DynaSim(xp);
+    data = ds.MDict2ds(xp);
     
     % Remove NaNs introduced due to packing
     for i = 1:length(data)
@@ -38,7 +38,7 @@ function hxp = xp_PlotData (xp, op)
     
     % Feed into original PlotData command, making sure it doesn't generate
     % new figures (rather, should produce it in the current subplot)
-    hxp.hcurr = PlotData(data,op.args{:},'lock_gca',true);
+    hxp.hcurr = dsPlot(data,op.args{:},'lock_gca',true);
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
