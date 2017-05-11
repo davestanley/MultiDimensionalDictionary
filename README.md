@@ -1,5 +1,5 @@
-# MDD
-MATLAB MultiDimensional Dictionary class
+# MDict
+MATLAB Multidimensional Dictionary class
 
 **Summary**: MDD allows the implementation of multidimensional Python-esque dictionaries in MATLAB.
 
