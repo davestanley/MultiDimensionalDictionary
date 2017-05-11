@@ -75,7 +75,7 @@ function hxp = xp_handles_newfig (xp, op)
         
         % Add a title to the current figure
         if isa(hxp.hsub{i}.hcurr,'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
-            mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(i))];
+            mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvalues_cellstr{i})];
             hxp.hsub{i}.hcurr.figtitle(mytitle);
         end
         

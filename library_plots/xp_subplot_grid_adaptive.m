@@ -101,7 +101,7 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
         
         if figs_through(2) > 1 || sz(2) == 1
             
-            title([figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(plot))])
+            title([figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvalues_cellstr{plot})])
             
         else
             
@@ -137,7 +137,7 @@ function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, displa
             mytitle = '';
             for a = 1:length(title_axis)
                 mytitle = [mytitle, figformat_str(title_axis(a).name) ': '...
-                    figformat_str(title_axis(a).getvaluestring(dim_indices{plot, start_title_axes + a - 1})), ' '];
+                    figformat_str(title_axis(a).getvalues_cellstr{dim_indices{plot, start_title_axes + a - 1}}), ' '];
             end
             hsg(fig_for_plot).figtitle(mytitle);
             

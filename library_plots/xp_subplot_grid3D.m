@@ -58,7 +58,7 @@ function hxp = xp_subplot_grid3D (xp, op)
             end
             
             if ~verLessThan('matlab','8.4'); hxp.hcurr(i).figplace(N1,i); end
-            mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvaluestring(i))];
+            mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvalues_cellstr{i})];
             hxp.hcurr(i).figtitle(mytitle);
             c=0;
             for j = 1:N2
