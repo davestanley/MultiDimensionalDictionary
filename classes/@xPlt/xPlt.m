@@ -1,6 +1,6 @@
-classdef xPlt < nDDict
+classdef xPlt < MDDict
     
-    % xPlt class inherets from the nDDict class (AKA multidimensional
+    % xPlt class inherets from the MDDict class (AKA multidimensional
     % dictionaries). xPlt adds some plotting functionality (see
     % xPlt.RecursivePlot)
     
@@ -8,8 +8,8 @@ classdef xPlt < nDDict
         
         %% Constructor
         function obj = xPlt(varargin)
-            obj = obj@nDDict(varargin{:});
-            obj.meta.datainfo = nDDictAxis; % #isitoutdated
+            obj = obj@MDDict(varargin{:});
+            obj.meta.datainfo = MDDictAxis; % #isitoutdated
         end
         
     end

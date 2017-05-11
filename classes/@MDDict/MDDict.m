@@ -13,7 +13,7 @@
 % #requestexample - requests an example of implementation of this code in demos_xPlt
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-classdef nDDict
+classdef MDDict
     
     properties
         meta = struct; % Metadata about stuff that's stored in data
@@ -21,8 +21,8 @@ classdef nDDict
     
     properties (Access = private) % private so that subclass can override
         data_pr        % Storing the actual data (multi-dimensional matrix or cell array)
-        axis_pr        % 1xNdims - array of nDDictAxis classes for each axis. Ndims = ndims(data)
-        axisClass = nDDictAxis
+        axis_pr        % 1xNdims - array of MDDictAxis classes for each axis. Ndims = ndims(data)
+        axisClass = MDDictAxis
     end
     
     properties (Dependent)
@@ -56,18 +56,18 @@ classdef nDDict
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % CLASS SETUP % % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function obj = nDDict(varargin)
+        function obj = MDDict(varargin)
             % Default constructor
             % Usage:
-            % obj = nDDict(data, axis_vals, axis_names)
-            % obj = nDDict(axis_class, data, axis_vals, axis_names)
+            % obj = MDDict(data, axis_vals, axis_names)
+            % obj = MDDict(axis_class, data, axis_vals, axis_names)
             % 
             % Possible input configurations:
             %   1) nargin==0
             %   2) data for call to importData
             %   3) data for call to importDataTable, when data is a vector
             %   4) one of the above, with additional first argument specifying
-            %      the 'axisClass' from a subclass (ie something other than nDDictAxis).
+            %      the 'axisClass' from a subclass (ie something other than MDDictAxis).
             %
             % Author v2.0: Erik Roberts (iss 24)
             % Author v1.0: Dave Stanley
@@ -75,7 +75,7 @@ classdef nDDict
             
             % (4) Check if axisClass overwritten by first arg
             nargin = length(varargin);
-            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'nDDictAxis')))
+            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDDictAxis')))
                 obj.axisClass = varargin{1};
                 varargin(1) = [];
                 nargin = length(varargin);
@@ -112,7 +112,7 @@ classdef nDDict
             % Who wrote this ? 
             % Can we use inheritObj instead?
             % Tags: (#whowrotethis, #isitoutdated)
-            % Converter nDDict -> xPlt.
+            % Converter MDDict -> xPlt.
             obj_xp = xPlt;
             obj_xp = importData(obj_xp, obj.data);
             obj_xp.axis = obj.axis;
@@ -129,7 +129,7 @@ classdef nDDict
             % Returns the index of the axis with name matching str
             allnames = {obj.axis_pr.name};
             try
-                [selection_out, startIndex] = nDDict.regex_lookup(allnames, str);
+                [selection_out, startIndex] = MDDict.regex_lookup(allnames, str);
             catch
                 selection_out = [];         % Return empty if no result found.
             end
@@ -557,12 +557,12 @@ classdef nDDict
                 return;
             end
             
-            % Lastly output a summary of dimensionality comparing nDDict.axis_pr
-            % and nDDict.data_pr. These should match up.
+            % Lastly output a summary of dimensionality comparing MDDict.axis_pr
+            % and MDDict.data_pr. These should match up.
             if nargout == 0
                 fprintf('For Dev:\n')
-                fprintf(['  nDDict.axis_pr size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
-                fprintf(['  nDDict.data_pr size: [' num2str(size(obj.data_pr)) ']\n']);
+                fprintf(['  MDDict.axis_pr size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
+                fprintf(['  MDDict.data_pr size: [' num2str(size(obj.data_pr)) ']\n']);
             end
         end
         
@@ -809,7 +809,7 @@ classdef nDDict
         % % % % % % % % % % % HELPER METHODS % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function [out, outsimple] = getclass_obj_data(obj)
-            [out, outsimple] = nDDict.calcClasses(obj.data_pr,'data');
+            [out, outsimple] = MDDict.calcClasses(obj.data_pr,'data');
         end
         
         
@@ -892,7 +892,7 @@ classdef nDDict
         
         function obj = ImportDataTable(varargin)    % Function for importing data in a 2D table format
             % instantiate object
-            obj = nDDict();
+            obj = MDDict();
             
             % call object method
             obj = importDataTable(obj, varargin{:});
@@ -901,7 +901,7 @@ classdef nDDict
         
         function obj = ImportData(varargin)
             % instantiate object
-            obj = nDDict();
+            obj = MDDict();
             
             % call object method
             obj = importData(obj, varargin{:});
@@ -910,7 +910,7 @@ classdef nDDict
         
         function obj = ImportFile(varargin) % import linear data from data file (using importDataTable method)
             % instantiate object
-            obj = nDDict();
+            obj = MDDict();
             
             % call object method
             obj = importFile(obj, varargin{:});

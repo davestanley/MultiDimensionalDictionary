@@ -16,7 +16,7 @@ format compact
 if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
 % Add MDD toolbox to Matlab path if needed
-if ~exist('nDDict','class')
+if ~exist('MDDict','class')
   addpath(genpath(pwd));
 end
 
@@ -75,7 +75,7 @@ xp = xp.importData(dat,axis_vals,axis_names);
 % option to index using strings instead of just integers. 
 % Thus, they are analogous to dictionaries in Python.
 % (This core functionality is implemented by the multidimensional
-% dictionaries (nDDict), which xPlt inherits, and to which xPlt adds
+% dictionaries (MDDict), which xPlt inherits, and to which xPlt adds
 % plotting functionality.)
 disp(xp);
 
@@ -113,7 +113,7 @@ xp.printAxisInfo
 % stored in each of the matrices in the xp.data cell array. (Alternatively,
 % we could also make each of these matrices an xPlt object!)
 meta = struct;
-meta.datainfo(1:2) = nDDictAxis;
+meta.datainfo(1:2) = MDDictAxis;
 meta.datainfo(1).name = 'time(ms)';
 meta.datainfo(1).values = time;
 meta.datainfo(2).name = 'cells';
@@ -335,7 +335,7 @@ dimensions = {[1,2],0};
 figl; recursivePlot(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 
-%% % % % % % % % % % % % % % % ADVANCED xPlt / nDDict USAGE % % % % % % % 
+%% % % % % % % % % % % % % % % ADVANCED xPlt / MDDict USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Modifying xPlt.data directly
@@ -407,7 +407,7 @@ set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.a
 
 %% Method unpackDim (undoing packDims)
 % When packDim is applied to an xPlt object, say to pack dimension 3, the
-% information from the packed axis is stored in the nDDictAxis
+% information from the packed axis is stored in the MDDictAxis
 % matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.printAxisInfo
 
@@ -438,7 +438,7 @@ xp2.data = cellfun(@(x) mean(x,2), xp2.data,'UniformOutput',0);
 % mat_ax_names = {'Time','Cell Number'};
 % mat_ax_values = {1:10001, []};
 % 
-% % xp2.data = Cell_2_nDDict(xp2.data,mat_ax_names,mat_ax_values);
+% % xp2.data = Cell_2_MDDict(xp2.data,mat_ax_names,mat_ax_values);
 
 % Pack E and I cells together
 src=3;

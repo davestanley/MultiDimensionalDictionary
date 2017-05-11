@@ -12,11 +12,11 @@ obj.data_pr = reshape(obj.data_pr,prod(sz0),1);
 sizes = cellfun(@(x) size(x, dim_src), obj.data_pr);
 max_size = max(sizes);
 
-% Calculate size of new nDDict object with dim_src unpacked.
+% Calculate size of new MDDict object with dim_src unpacked.
 % The unpacked dimension will be the new first dimension.
 sz_new = [max_size, sz0];
 
-% Initialize new nDDict object which will have dim_src
+% Initialize new MDDict object which will have dim_src
 % unpacked.
 obj_new = obj; % eval(['obj_new = ', class(obj), ';'])
 obj_new = obj_new.reset;

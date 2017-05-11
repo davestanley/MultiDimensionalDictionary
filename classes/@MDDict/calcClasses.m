@@ -1,5 +1,5 @@
 function [out, outsimple] = calcClasses(input,field_type)
-    % For internal use in importing data in to nDDict.
+    % For internal use in importing data in to MDDict.
     if nargin==1
       warning('Must specifify input and field_type')
       out = [];
@@ -15,8 +15,8 @@ function [out, outsimple] = calcClasses(input,field_type)
             elseif iscell(input)
                 if iscellnum(input)
                     out = 'cellnum';
-                elseif all(cellfun(@(s) isa(s,'nDDict'),input(:))) || all(cellfun(@(s) isa(s,'xPlt'),input(:)))
-                    out = 'cellnDDict';
+                elseif all(cellfun(@(s) isa(s,'MDDict'),input(:))) || all(cellfun(@(s) isa(s,'xPlt'),input(:)))
+                    out = 'cellMDDict';
                 else
                     out = 'cell';
                 end
@@ -35,7 +35,7 @@ function [out, outsimple] = calcClasses(input,field_type)
                     out = 'cellnum';
                 else % input not consistent type so return output for each cell
                     % Create dummy axis handle to get access to its functions
-                    nda = nDDictAxis;
+                    nda = MDDictAxis;
 
                     axLen = length(input);
                     out = cell(1,axLen);
@@ -59,7 +59,7 @@ function [out, outsimple] = calcClasses(input,field_type)
                 out = 'cellstr';
             else
                 % Create dummy axis handle to get access to its functions
-                nda = nDDictAxis;
+                nda = MDDictAxis;
 
                 axLen = length(input);
                 out = cell(1,axLen);
@@ -78,6 +78,6 @@ function [out, outsimple] = calcClasses(input,field_type)
     % If out is a cell, just call it a cell and dont give advanced details
     outsimple = out;
     outsimple = strrep(outsimple,'cellnum','cell');
-    outsimple = strrep(outsimple,'cellnDDict','cell');
+    outsimple = strrep(outsimple,'cellMDDict','cell');
 
 end

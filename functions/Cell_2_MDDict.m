@@ -1,4 +1,4 @@
-function data_out = Cell_2_nDDict(data,mat_ax_names,mat_ax_values)
+function data_out = Cell_2_MDDict(data,mat_ax_names,mat_ax_values)
     
     if ~iscell(data); error('Data must be a cell array.');end
     if ~exist('mat_ax_names','var'); mat_ax_names = cell(1,ndims(data)); end
@@ -6,7 +6,7 @@ function data_out = Cell_2_nDDict(data,mat_ax_names,mat_ax_values)
     
     data_out=cell(numel(data),1);
     for i = 1:numel(data_out)
-        obj = nDDict;
+        obj = MDDict;
         obj.data = data{i};
         obj = obj.importAxisNames(mat_ax_names);
         for j = 1:ndims(data{i})
