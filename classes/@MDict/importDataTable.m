@@ -92,7 +92,7 @@ switch XsimpleFormat
         %         case 'string'
         %             xp.data_pr = repmat(string(''),sz);
     case 'numeric'
-        obj.data_pr = zeros(sz);
+        obj.data_pr = nan(sz);
     otherwise
         error('Case not implemented');
 end
