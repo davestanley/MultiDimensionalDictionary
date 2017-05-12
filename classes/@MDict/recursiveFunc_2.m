@@ -11,7 +11,7 @@ function varargout = recursiveFunc_2(xp,function_handles,dimensions,function_arg
 %         varargout = recursivePlot_2(xp,function_handles,dimensions,function_arguments)
 % 
 %     Inputs:
-%       xp                          : MDict structure with Nd dimensions
+%       xp                          : MDD structure with Nd dimensions
 % 
 %       function_handles            : 1xNd+1 cell array of function handles. See below
 %                                     for function handle specifications.
@@ -28,12 +28,12 @@ function varargout = recursiveFunc_2(xp,function_handles,dimensions,function_arg
 %     Details:
 %       The function_handles cell array should point to functions of the form:
 %             varargout = function func (xp,varargin)
-%       where xp is an MDict object. Each function handle
+%       where xp is an MDD object. Each function handle
 % warning('finish this');
 % 
 %     Algorithm:
 %     recursivePlot plots the data in a recursive manner. It does the following
-%         1. Creates a new MDict structure called xp2, which is a low-dimensional
+%         1. Creates a new MDD structure called xp2, which is a low-dimensional
 %            version of xp. The dimensions of xp2 are given by dimensions{1}.
 % 
 %         2. recusrivePlot then passes xp2 to the first function handle,
@@ -53,7 +53,7 @@ function varargout = recursiveFunc_2(xp,function_handles,dimensions,function_arg
 %            actually plot the data.
 %            
 %     Example
-%         See demos_MDict.m
+%         See demos_MDD.m
 %            
 %            for plotting the 
 %                function_handles{1} cycles through all the entries in xp2
@@ -107,9 +107,9 @@ function varargout = recursiveFunc_2(xp,function_handles,dimensions,function_arg
         
         % xp_temp = permute(xp, [dimensions{1}, cell2mat(dimensions{2:end})]);
         
-        % Set up a new MDict object with dimensions matching current
+        % Set up a new MDD object with dimensions matching current
         % function handle
-        xp2 = xp.reset;                         % Create a new MDict object
+        xp2 = xp.reset;                         % Create a new MDD object
         sz2 = sz(dimensions{1});
         ndims2 = length(dimensions{1});
         total_calls = prod(sz2);

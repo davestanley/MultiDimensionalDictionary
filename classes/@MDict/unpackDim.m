@@ -1,7 +1,7 @@
 function obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values)
 % Author: Ben Pittman-Polletta.
 % Warning - this command will be replaced in the future. Use
-% unpackDim2Mat instead. See also unpackDim2Cell, unpackDim2MDict.
+% unpackDim2Mat instead. See also unpackDim2Cell, unpackDim2MDD.
 
 % Temporarily linearize obj.data_pr.
 sz0 = size(obj);
@@ -12,11 +12,11 @@ obj.data_pr = reshape(obj.data_pr,prod(sz0),1);
 sizes = cellfun(@(x) size(x, dim_src), obj.data_pr);
 max_size = max(sizes);
 
-% Calculate size of new MDict object with dim_src unpacked.
+% Calculate size of new MDD object with dim_src unpacked.
 % The unpacked dimension will be the new first dimension.
 sz_new = [max_size, sz0];
 
-% Initialize new MDict object which will have dim_src
+% Initialize new MDD object which will have dim_src
 % unpacked.
 obj_new = obj; % eval(['obj_new = ', class(obj), ';'])
 obj_new = obj_new.reset;

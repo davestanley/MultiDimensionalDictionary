@@ -1,8 +1,8 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % MDict Tutorial % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % MDD Tutorial % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% % % % % % % % % % % % % % % MDict Setup % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDD Setup % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Set up paths 
@@ -11,12 +11,12 @@
 % Format
 format compact
 
-% Check if in MDict folder
+% Check if in MDD folder
 [parentfolder,currfolder] = fileparts(pwd);
-if ~strcmp(currfolder,'MDict'); error('Should be in MDict folder to run this code.'); end
+if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
 
-% Add MDict toolbox to Matlab path if needed
-if ~exist('MDict','class')
+% Add MDD toolbox to Matlab path if needed
+if ~exist('MDD','class')
   addpath(genpath(pwd));
 end
 
@@ -60,27 +60,27 @@ disp(axis_vals{3}{2})       % Inhibitory cells
 disp(axis_vals{4}{1})       % Voltage, v
 
 
-%% Import into MDict object
+%% Import into MDD object
 
-% All of this information can be imported into an MDict object.
+% All of this information can be imported into an MDD object.
 
-% Create MDict object
-xp = MDict;
+% Create MDD object
+xp = MDD;
 
 % Import the data
 xp = xp.importData(dat,axis_vals,axis_names);
 
 
-% MDict objects are essentially cell arrays (or matricies), but with the
+% MDD objects are essentially cell arrays (or matricies), but with the
 % option to index using strings instead of just integers. 
 % Thus, they are analogous to dictionaries in Python.
 % (This core functionality is implemented by the multidimensional
-% dictionaries (MDict), which MDict inherits, and to which MDict adds
+% dictionaries (MDD), which MDD inherits, and to which MDD adds
 % plotting functionality.)
 disp(xp);
 
 
-% At its core, MDict has 3 fields. xp.data stores the actual data (either a 
+% At its core, MDD has 3 fields. xp.data stores the actual data (either a 
 % matrix or a cell array). Note: it is okay that there are some empties.
 disp(xp.data);
 size(xp.data)
@@ -111,9 +111,9 @@ xp.printAxisInfo
 % Here we will add some custom info to xp.metadata. This can be whatever
 % you want. Here, I will use this to provide information about what is
 % stored in each of the matrices in the xp.data cell array. (Alternatively,
-% we could also make each of these matrices an MDict object!)
+% we could also make each of these matrices an MDD object!)
 meta = struct;
-meta.datainfo(1:2) = MDictAxis;
+meta.datainfo(1:2) = MDDAxis;
 meta.datainfo(1).name = 'time(ms)';
 meta.datainfo(1).values = time;
 meta.datainfo(2).name = 'cells';
@@ -122,27 +122,27 @@ xp.meta = meta;
 clear meta
 
 
-%% % % % % % % % % % % % % % % MDict BASICS % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDD BASICS % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% Importing data
 
-% MDict objects are just matrices or cell arrays with extra functionality to
+% MDD objects are just matrices or cell arrays with extra functionality to
 % keep track of what each dimension is storing. 
 
-% Above, we imported data into an MDict object along with axis values and names. 
+% Above, we imported data into an MDD object along with axis values and names. 
 % But it is also possible to import a high dimensional matrix alone.
 
 % For example let's say we have a random cell array.
 mydata = xp.data;
 
 % We can import the data as follows.
-xp2 = MDict;
+xp2 = MDD;
 xp2 = xp2.importData(mydata);
 
 % or one can use a class method without having to make the object first by using
 % an uppercase method name.
-xp2 = MDict.ImportData(mydata);
+xp2 = MDD.ImportData(mydata);
 
 % We didn't supply any axis names/values, so default values were assgined
 xp2.printAxisInfo;
@@ -150,7 +150,7 @@ xp2.printAxisInfo;
 % We can instead import axis values along with the data
 ax_vals = xp.exportAxisVals;
 clear xp2
-xp2 = MDict;
+xp2 = MDD;
 xp2 = xp2.importData(mydata,ax_vals);
 xp2.printAxisInfo
 
@@ -164,7 +164,7 @@ xp2.printAxisInfo
 
 % Multi-dimensional data is often represented in 2D table form, with 1 column
 % representing the data, and other columns representing parameters associated
-% with the data. The multidimensional data from an MDict object can be exported
+% with the data. The multidimensional data from an MDD object can be exported
 % to a 2D table as below.
 
 [data_column, axis_val_columns, axis_names] = xp.exportDataTable();
@@ -181,7 +181,7 @@ xp.exportDataTable(true, 5); % printing 5 rows to screen
 
 % As mentioned before, multi-dimensional data is often represented in 2D table form, 
 % with 1 column representing the data, and other columns representing parameters 
-% associated with the data. MDict can import this 2D data, as we generated
+% associated with the data. MDD can import this 2D data, as we generated
 % previously.
 
 % First let us inspect the tabular data sizes:
@@ -191,17 +191,17 @@ fprintf('Axis values columns size: %s\n', num2str(size(axis_val_columns)))
 fprintf('Axis names size: %s\n', num2str(size(axis_names)))
 
 % As with importData, there are 2 interfaces for importing:
-xp3 = MDict;
+xp3 = MDD;
 xp3 = xp3.importDataTable(data_column, axis_val_columns, axis_names); % lowercase object method
 xp3.printAxisInfo
 
 %  or
 
-xp3 = MDict.ImportDataTable(data_column, axis_val_columns, axis_names); % uppercase class method
+xp3 = MDD.ImportDataTable(data_column, axis_val_columns, axis_names); % uppercase class method
 xp3.printAxisInfo
 
 
-%% MDict Indexing
+%% MDD Indexing
 
 % Indexing works just like with normal matrices and cell arrays and axis
 % labels are updated appropriately.
@@ -320,7 +320,7 @@ close all;
 
 recursiveFunc(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
-%% Plot two MDict objects combined
+%% Plot two MDD objects combined
 close all;
 clc
 xp3 = xp(2,:,'E','v');
@@ -335,12 +335,12 @@ dimensions = {[1,2],0};
 figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
 
-%% % % % % % % % % % % % % % % ADVANCED MDict / MDict USAGE % % % % % % % 
+%% % % % % % % % % % % % % % % ADVANCED MDD / MDD USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% Modifying MDict.data directly
+%% Modifying MDD.data directly
 
-% While it is encouraged to use importData, MDict.data can also be written
+% While it is encouraged to use importData, MDD.data can also be written
 % to directly. For example, we can take the average across all cells by
 % doing the following.
 xp2 = xp;
@@ -406,14 +406,14 @@ xlabel(xp2.axis(2).name);
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
 %% Method unpackDim (undoing packDims)
-% When packDim is applied to an MDict object, say to pack dimension 3, the
-% information from the packed axis is stored in the MDictAxis
+% When packDim is applied to an MDD object, say to pack dimension 3, the
+% information from the packed axis is stored in the MDDAxis
 % matrix_dim_3, a field of xp3.meta.
 xp3.meta.matrix_dim_3.printAxisInfo
 
 % If dimension 3 of each cell in xp3.data is unpacked using unpackDim,
 % xp3.meta.matrix_dim_3 will be used to provide axis info for the new
-% MDict object.
+% MDD object.
 xp4 = xp3.unpackDim(dest, src);
 xp4.printAxisInfo;
 
@@ -433,12 +433,12 @@ xp2 = xp2.squeeze;
 % Average across all cells
 xp2.data = cellfun(@(x) mean(x,2), xp2.data,'UniformOutput',0);
 
-% % Convert xp2.data from a matrix into an MDict object as well. This is
+% % Convert xp2.data from a matrix into an MDD object as well. This is
 % % useful for keeping track of axis names. 
 % mat_ax_names = {'Time','Cell Number'};
 % mat_ax_values = {1:10001, []};
 % 
-% % xp2.data = Cell_2_MDict(xp2.data,mat_ax_names,mat_ax_values);
+% % xp2.data = Cell_2_MDD(xp2.data,mat_ax_names,mat_ax_values);
 
 % Pack E and I cells together
 src=3;

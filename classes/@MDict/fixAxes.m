@@ -1,7 +1,7 @@
 function obj = fixAxes(obj, optionalFixesFlag)
-% This function forces the MDict axis data to be updated to
+% This function forces the MDD axis data to be updated to
 % match the dimensions of the data structure.
-% The convention of MDict is to follow MATLAB
+% The convention of MDD is to follow MATLAB
 % conventions for dimensionality. Thus, the size(obj.data_pr)
 % command is used to determine the correct number of axes, and
 % axis is adjusted to match, adding or removing dimensions as

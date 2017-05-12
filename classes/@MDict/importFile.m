@@ -6,11 +6,11 @@ function obj = importFile(obj, filePath, dataCol, headerFlag, delimiter)
 %
 % Usage:
 %   As class static method:
-%     obj = MDict.ImportFile(filePath) % uppercase method
-%     obj = MDict.ImportFile(filePath, dataCol, headerFlag, delimiter) % uppercase method
+%     obj = MDD.ImportFile(filePath) % uppercase method
+%     obj = MDD.ImportFile(filePath, dataCol, headerFlag, delimiter) % uppercase method
 % 
 %   As object method:
-%     obj = MDict();
+%     obj = MDD();
 %     obj = obj.importFile(filePath) % lowercase method
 %     obj = obj.importFile(filePath, dataCol, headerFlag, delimiter) % lowercase method
 %

@@ -36,7 +36,7 @@ function varargout = recursiveFunc(xp,function_handles,dimensions,function_argum
     sz = size(xp);
     if length(function_handles) > 1
         
-        xp2 = MDict;
+        xp2 = MDD;
         selection_curr = cell(1,length(sz));
         % Just hardcode in the various cases for dimensionality. It's
         % unlikely they will ever want to go above showing 4D in a single
