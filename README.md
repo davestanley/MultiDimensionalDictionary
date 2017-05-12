@@ -3,7 +3,10 @@ MATLAB MultiDimensional Dictionary class
 
 **Summary**: MDD allows the implementation of multidimensional Python-esque dictionaries in MATLAB.
 
-**Description**: My work-in-progress class for implementing Python-esque dictionaries in MATLAB. This essentially allows you to index matrices and cell arrays using strings.
+**Description**: MDD can be interpreted in several different ways. 
+- A map/dictionary that associates multiple keys with a single value
+- An N-dimensional table (a table is equivalent to an MDD object in 2-dimensions)
+- A matrix or cell array that can be indexed by using strings and regular expressions
 
 **WARNING**: This is a work in progress. The core code is implemented, but documentation is missing. I will be updating it more over the coming months.
 
