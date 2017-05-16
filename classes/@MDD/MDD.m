@@ -633,6 +633,7 @@ classdef MDD
         function obj = permute(obj,order)
             % Like normal permute command, except order can be either an
             % array of numerics, or a cell array of strings (regexps)
+            
             checkDims(obj);
             
             % If order is a cell array of regular expressions, convert to
@@ -653,6 +654,32 @@ classdef MDD
             
             obj.data_pr = permute(obj.data_pr,order2);
             obj.axis_pr = obj.axis_pr(order2);
+        end
+        
+        
+        function obj = shiftdim(obj, n)
+            %   obj = SHIFTDIM(obj, N) shifts the dimensions of X by N.  When N is
+            %   positive, SHIFTDIM shifts the dimensions to the left and wraps the
+            %   N leading dimensions to the end.  When N is negative, SHIFTDIM
+            %   shifts the dimensions to the right and pads with singletons.
+            
+            siz = size(obj);
+            nDims = obj.ndims;
+            if nargin==1
+                n = find(siz~=1,1,'first')-1; % Find leading singleton dimensions
+            elseif n > 0  % Wrapped shift to the left
+                n = rem(n,nDims);
+            end
+            
+            if (n > 0)  % shift to the left and wrap
+                obj = permute(obj,[n+1:nDims,1:n]);
+            elseif ~isempty(n) && n~=0  % Shift to the right (padding with singletons).
+                obj.data_pr = reshape(obj.data,[ones(1,-n),siz]);
+                obj.axis_pr(1-n:-n+nDims) = obj.axis_pr;
+                obj.axis_pr(1:-n) = obj.axisClass;
+                obj = obj.fixAxes;
+            end
+            
         end
         
         
@@ -820,53 +847,55 @@ classdef MDD
         end
         
         
-        function obj = setAxisDefaults(obj,dim)
+        function obj = setAxisDefaults(obj,dims)
             % Sets obj.axis_pr(i) to default values
             
-            % Get desired size of dataset
-            sz_dim = size(obj.data_pr,dim);
-            
-            % If axis doesn't already exist, create it. Otherwise, copy existing.
-            if length(obj.axis_pr) < dim
-                ax_curr = obj.axisClass;
-            else
-                ax_curr = obj.axis_pr(dim);
-            end
-            
-            % Name it if necessary
-            if isempty(ax_curr.name)
-                ax_curr.name = ['Dim ' num2str(dim)];
-            end
-            
-            % If values is empty, add default values.
-            if isempty(ax_curr.values)
-                %ax_curr.values = cellfun(@num2str,num2cell(1:sz(i)),'UniformOutput',0);     % Populate with strings
-                ax_curr.values = 1:sz_dim;                                                   % Populate with numerics
-            else
-                % Otherwise, make sure dimensionality is correct. If not, update it
-                % missing entries with default names.
-                N = length(ax_curr.values);
-                
-                % If too short
-                if N < sz_dim
-                    if isnumeric(ax_curr.values)
-                        for j = (N + 1):sz_dim; ax_curr.values(j) = j; end
-                    elseif iscellstr(ax_curr.values)
-                        for j = (N + 1):sz_dim; ax_curr.values{j} = num2str(j); end
-                    else
-                        error('axis.values must be either type numeric or cell array of strings');
+            for dim = dims % loop over dims
+                % Get desired size of dataset
+                sz_dim = size(obj.data_pr,dim);
+
+                % If axis doesn't already exist, create it. Otherwise, copy existing.
+                if length(obj.axis_pr) < dim
+                    ax_curr = obj.axisClass;
+                else
+                    ax_curr = obj.axis_pr(dim);
+                end
+
+                % Name it if necessary
+                if isempty(ax_curr.name)
+                    ax_curr.name = ['Dim ' num2str(dim)];
+                end
+
+                % If values is empty, add default values.
+                if isempty(ax_curr.values)
+                    %ax_curr.values = cellfun(@num2str,num2cell(1:sz(i)),'UniformOutput',0);     % Populate with strings
+                    ax_curr.values = 1:sz_dim;                                                   % Populate with numerics
+                else
+                    % Otherwise, make sure dimensionality is correct. If not, update it
+                    % missing entries with default names.
+                    N = length(ax_curr.values);
+
+                    % If too short
+                    if N < sz_dim
+                        if isnumeric(ax_curr.values)
+                            for j = (N + 1):sz_dim; ax_curr.values(j) = j; end
+                        elseif iscellstr(ax_curr.values)
+                            for j = (N + 1):sz_dim; ax_curr.values{j} = num2str(j); end
+                        else
+                            error('axis.values must be either type numeric or cell array of strings');
+                        end
+                    end
+
+                    % If too long
+                    if N > sz_dim
+                        %ax_curr.values = ax_curr.values(1:sz(dim));
+                        ax_curr.values = 1:sz_dim;                                                   % Populate with generic numerics
                     end
                 end
-                
-                % If too long
-                if N > sz_dim
-                    %ax_curr.values = ax_curr.values(1:sz(dim));
-                    ax_curr.values = 1:sz_dim;                                                   % Populate with generic numerics
-                end
+
+                % Assign our new axis to the current dimension
+                obj.axis_pr(dim) = ax_curr;
             end
-            
-            % Assign our new axis to the current dimension
-            obj.axis_pr(dim) = ax_curr;
         end
         
     end
