@@ -1,3 +1,6 @@
+%% MDD - MultiDimensional Dictionary class
+% #toimplement documentation
+
 %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % MAIN CLASS DEF % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -58,9 +61,12 @@ classdef MDD
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function obj = MDD(varargin)
             % Default constructor
+            %
             % Usage:
-            % obj = MDD(data, axis_vals, axis_names)
-            % obj = MDD(axis_class, data, axis_vals, axis_names)
+            %   obj = MDD()
+            %   obj = MDD(data) % multidimensional data
+            %   obj = MDD(data, axis_vals, axis_names) % multidimensional or linear data
+            %   obj = MDD(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
             % 
             % Possible input configurations:
             %   1) nargin==0
