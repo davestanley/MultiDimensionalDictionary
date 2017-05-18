@@ -78,6 +78,7 @@ switch lower(ext) % lowercase
             end
             i = i+1;
         end
+        fclose(fid)
         clear fid
     case '.mat'
         % Use importdata to load data
