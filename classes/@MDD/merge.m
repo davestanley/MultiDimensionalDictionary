@@ -40,20 +40,15 @@ if ~isempty(indUnique2)
     end
 end
 
-% Add axes to front up to number merged axes
-% obj1.axis(Nd1+1:nAx) = deal(obj1.axisClass);
-% obj2.axis(Nd2+1:nAx) = deal(obj2.axisClass);
-obj1 = obj1.shiftdim(Nd1-nAx);
-obj2 = obj2.shiftdim(Nd2-nAx);
-    % NOTE: added axes to front since permute didn't work for adding on back
-    % with deal
-    
-% Shift dim so that front added are on back
+% Add axes to front, up to number merged axes
+% then shift dim so that front added are on back
 if nAx > Nd1
+    obj1 = obj1.shiftdim(Nd1-nAx);
     obj1 = obj1.shiftdim(nAx-Nd1);
     obj1.axis(Nd1+1:nAx).name = deal('uniqueAxObj2');
 end
 if nAx > Nd2
+    obj2 = obj2.shiftdim(Nd2-nAx);
     obj2 = obj2.shiftdim(nAx-Nd2);
     obj2.axis(Nd2+1:nAx).name = deal('uniqueAxObj1');
 end
@@ -61,7 +56,9 @@ end
 % Permute so axes match
 permInd = zeros(1, nAx);
 permInd(indInt1) = indInt2;
-permInd( find(permInd == 0, length(indUnique2), 'last') ) = indUnique2;
+if ~isempty(indUnique2)
+    permInd( find(permInd == 0, length(indUnique2), 'last') ) = indUnique2;
+end
 permInd(permInd == 0) = Nd2+1:nAx;
 obj2 = obj2.permute(permInd);
 
@@ -97,9 +94,9 @@ for iAx = 1:nAx
     
     % 2) Expand obj_out axes to take on unique values in obj1 and obj2
     if isnumeric(obj1.axis(iAx).values)
-        obj_out.axis_pr(iAx).values = unique([obj1.axis(iAx).values, obj2.axis(iAx).values], 'sorted'); % add unique values in sorted order
+        obj_out.axis_pr(iAx).values = unique([obj1.axis(iAx).values(:); obj2.axis(iAx).values(:)], 'sorted'); % add unique values in sorted order
     elseif iscellstr(obj1.axis(iAx).values)
-        obj_out.axis_pr(iAx).values = unique([obj1.axis(iAx).values, obj2.axis(iAx).values], 'stable'); % add unique values in merged order
+        obj_out.axis_pr(iAx).values = unique([obj1.axis(iAx).values(:); obj2.axis(iAx).values(:)], 'stable'); % add unique values in merged order
     end
     
     % get indicies for data
@@ -122,6 +119,12 @@ if isnumeric(obj2.data)
     obj_out.data_pr(dataIndObj2{:}) = num2cell(obj2.data);
 else
     obj_out.data_pr(dataIndObj2{:}) = obj2.data;
+end
+
+% Turn cellnum data into numeric
+emptyCells = cellfun(@isempty, obj_out.data_pr);
+if ~any(emptyCells(:)) && iscellnum(obj_out.data_pr)
+    obj_out.data_pr = cell2mat(obj_out.data_pr);
 end
 
 % Combine meta
