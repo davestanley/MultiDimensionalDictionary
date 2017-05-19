@@ -45,15 +45,18 @@ classdef MDDAxis
                 fprintf([temp, '\n'])
             end
         end
-
+        
+        
         function out = getvalues_cellstr(obj)
             % Looks at entry obj.value(i) and returns its output as a
             % cell array of strings
+            
             out = cell(1,length(obj.values));
             for i = 1:length(obj.values)
                 out{i} = num2str(obj.getvalue_noncell(i));
             end
         end
+
 
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
@@ -74,7 +77,7 @@ classdef MDDAxis
 
                     allnames = {obj.name};
                     if iscellstr(S(1).subs)
-                        [selection_out, startIndex] = regex_lookup(allnames, S(1).subs{1});
+                        [selection_out, startIndex] = MDDAxis.regex_lookup(allnames, S(1).subs{1});
                         S(1).subs{1} = selection_out;
                         [varargout{1:nargout}] = builtin('subsref',obj,S,varargin{3:end});
                     else
@@ -96,6 +99,7 @@ classdef MDDAxis
 
     end
     
+    
     methods (Access = protected)
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % PROTECTED FUNCTIONS % % % % % % % % % % %
@@ -105,9 +109,11 @@ classdef MDDAxis
             out = obj.calcAxClasses(obj.values,'values');
         end
 
+        
         function out = getclass_name(obj)
             out = obj.calcAxClasses(obj.name,'name');
         end
+        
         
         function out = calcAxClasses(obj,input,field)
             switch field
@@ -136,6 +142,7 @@ classdef MDDAxis
             end
         end
         
+        
         function out = getvalue_noncell(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
             % numeric, regardless of whether it is actually cell array.
@@ -154,6 +161,7 @@ classdef MDDAxis
             end
         end
 
+        
         function out = getvalue_char(obj,i)
             % Looks at entry obj.value(i) and returns its output as a
             % char array, regardless of what data type it actually is (char array,
@@ -171,44 +179,36 @@ classdef MDDAxis
                 out = num2str(out);
             end
         end
-
         
     end
     
-    methods (Access = private)
-        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % PRIVATE FUNCTIONS % % % % % % % % % % %
-        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+    methods (Static)
         
-
-        
-    end
-
-end
-
-
-
-function [selection_out, startIndex] = regex_lookup(vals, selection)
-    % uses regexp when selection is of the form '/selection/' with
-    % enclosing forward slashes. else uses strfind for substring
-    % matching.
+        function [selection_out, startIndex] = regex_lookup(vals, selection)
+            % uses regexp when selection is of the form '/selection/' with
+            % enclosing forward slashes. else uses strfind for substring
+            % matching.
             
-    if ~iscellstr(vals); error('Axis values must be strings when using regular expressions');
-    end
-    if ~ischar(selection); error('Selection must be string when using regexp');
+            if ~iscellstr(vals); error('Axis values must be strings when using regular expressions');
+            end
+            if ~ischar(selection); error('Selection must be string when using regexp');
+            end
+            
+            if strcmp([selection(1) selection(end)],  '//') % use re
+                selection = selection(2:end-1);% remove slashes
+                
+                startIndex = regexp(vals,selection);
+            else % use strfind
+                startIndex = strfind(vals,selection);
+            end
+            
+            selection_out = logical(~cellfun(@isempty,startIndex));
+            selection_out = find(selection_out);
+            if isempty(selection_out)
+                error('Supplied regex did not match the name of any axis or value');
+            end
+        end
+        
     end
 
-    if strcmp([selection(1) selection(end)],  '//') % use re
-        selection = selection(2:end-1);% remove slashes
-
-        startIndex = regexp(vals,selection);
-    else % use strfind
-        startIndex = strfind(vals,selection);
-    end
-    
-    selection_out = logical(~cellfun(@isempty,startIndex));
-    selection_out = find(selection_out);
-    if isempty(selection_out)
-        error('Supplied regex did not match the name of any axis or value');
-    end
 end

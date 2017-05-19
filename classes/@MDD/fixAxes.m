@@ -41,7 +41,6 @@ if Na > Nd
             fprintf(['Extra values found in axis #' num2str(i) ' ' obj.axis_pr(i).name '. Trimming \n']);
         end
     end
-    
 end
 
 if optionalFixesFlag
