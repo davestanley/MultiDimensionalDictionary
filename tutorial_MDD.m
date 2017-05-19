@@ -12,8 +12,10 @@
 format compact
 
 % Check if in MDD folder
-[parentfolder,currfolder] = fileparts(pwd);
-if ~strcmp(currfolder,'MDD'); error('Should be in MDD folder to run this code.'); end
+if ~exist(fullfile('.','sample_data.mat'), 'file')
+    error('Should be in MDD folder to run this code.')
+end
+
 
 % Add MDD toolbox to Matlab path if needed
 if ~exist('MDD','class')
@@ -134,31 +136,59 @@ clear meta
 % But it is also possible to import a high dimensional matrix alone.
 
 % For example let's say we have a random cell array.
-mydata = xp.data;
+mydata = dat;
 
-% We can import the data as follows.
+% We can import the data 3 different ways:
+%   1) Calling the public method, importData
 xp2 = MDD;
 xp2 = xp2.importData(mydata);
 
-% or one can use a class method without having to make the object first by using
-% an uppercase method name.
-xp2 = MDD.ImportData(mydata);
+%   2) Using a class/static method without having to make the object first by using
+%      an uppercase method name.
+xp2_alt = MDD.ImportData(mydata);
 
-% We didn't supply any axis names/values, so default values were assgined
+%   3) Calling the class constructor directly
+xp2_alt2 = MDD(mydata);
+
+% The resulting objects are equivalent
+isequal(xp2, xp2_alt, xp2_alt2)
+
+%% Importing data with axis values
+% We didn't supply any axis names/values, so default values were assigned
 xp2.printAxisInfo;
 
 % We can instead import axis values along with the data
-ax_vals = xp.exportAxisVals;
-clear xp2
 xp2 = MDD;
-xp2 = xp2.importData(mydata,ax_vals);
+xp2 = xp2.importData(mydata, axis_vals);
 xp2.printAxisInfo
+
+% This double argument interface works for the other two methods as well:
+xp2_alt = MDD.ImportData(mydata, axis_vals);
+xp2_alt2 = MDD(mydata, axis_vals);
+
+% The resulting objects are again equivalent
+isequal(xp2, xp2_alt, xp2_alt2)
+
+% These axis values can be acquired from an object using the exportAxisVals method
+ax_vals = xp2.exportAxisVals;
+
+%% Importing data with axis names
 
 % Axis names can be assigned in this way as well
-ax_names = xp.exportAxisNames;
-xp2 = xp2.importData(mydata,ax_vals,ax_names);
+xp2 = xp2.importData(mydata, axis_vals, axis_names);
 xp2.printAxisInfo
 
+% This triple argument interface also works with the other 2 approaches:
+xp2_alt = MDD.ImportData(mydata, axis_vals, axis_names);
+xp2_alt2 = MDD(mydata, axis_vals, axis_names);
+
+% The resulting objects are yet again equivalent
+isequal(xp2, xp2_alt, xp2_alt2)
+
+% The axis names are accessible from an object via the exportAxisNames method
+ax_names = xp2.exportAxisNames;
+
+clear xp2_alt xp2_alt2
 
 %% Exporting Data to 2D Table
 
@@ -231,7 +261,7 @@ disp(xp.axis('populations'))
 
 % Lastly, you can reference xp.data with the following shorthand
 % (This is the same as xp.data(:,:,1,8). Regular expressions dont work in this mode)
-mydata = xp{:,:,1,8};              
+mydata = xp{:,:,1,8};
 mydata2 = xp.data(:,:,1,8);
 disp(isequal(mydata,mydata2));
 
@@ -320,7 +350,7 @@ close all;
 
 recursiveFunc(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
 
-%% Plot two MDD objects combined
+%% Combine and Plot two MDD objects
 close all;
 clc
 xp3 = xp(2,:,'E','v');
@@ -329,7 +359,17 @@ xp3.printAxisInfo
 xp4 = xp(:,3,'E','v');
 xp4.printAxisInfo
 
+% Notice that xp3 and xp4 are overlapping at
+% Axis 1: E_Iapp (numeric) -> 10
+% Axis 2: I_E_tauD (numeric) -> 15
+
+% Attempt to merge them
 xp5 = merge(xp3,xp4);
+
+% This throws a warning that there is an overlap, and sets xp5 = xp3
+% We will disregard the message by setting the third argument to true, allowing 
+% xp4 to overwrite xp3.
+xp5 = merge(xp3,xp4, true);
 
 dimensions = {[1,2],0};
 figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
@@ -488,9 +528,6 @@ xp2b = xp2.squeezeRegexp('populations'); xp2b.printAxisInfo
 
 %% To implement
 % 
-% 
 % Implement the following:
 % + Make DynaSimPlotExtract more general
 % + Starting work on dsPlot2 - any new requests?
-
-

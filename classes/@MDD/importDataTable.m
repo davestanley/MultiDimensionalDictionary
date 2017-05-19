@@ -1,4 +1,4 @@
-function obj = importDataTable(obj, data_column, axis_val_columns, axis_names)
+function obj = importDataTable(obj, data_column, axis_val_columns, axis_names, overwriteBool)
 %% obj = importDataTable(obj,data_column,axis_val_columns,axis_names)
 %   Purpose:
 %     Imports a 2D table of data and converts it into a high dimensional
@@ -29,6 +29,9 @@ function obj = importDataTable(obj, data_column, axis_val_columns, axis_names)
 %                        See NOTE (3) BELOW.
 %     axis_names - Names associated with each of the M columns of the
 %                  table.
+%     overwriteBool - if false (default), throw error on duplicate entries. 
+%                     if true, use the last duplicate entry.
+%
 %   Notes:
 %         1) We assume the full table is of dimensions NxM+1. Therefore,
 %         data_column, and each of the cells in axis_val_columns, must
@@ -43,6 +46,15 @@ function obj = importDataTable(obj, data_column, axis_val_columns, axis_names)
 %               - cell arrays of character vectors.
 %         They do not need to be all the same (e.g. one column can be
 %         numerics, the other can be a cell array of chars).
+
+if nargin < 5
+    overwriteBool = false;
+end
+
+if ~overwriteBool && MDD.isDuplicateAxisValues(axis_val_columns)
+    error(['Attempting to import overlapping entries. Set overwriteBool=true to',...
+           ' overwrite overlapping entries with the last duplicate entry.'])
+end
 
 % Initialize
 X = data_column;
@@ -110,10 +122,7 @@ for indLinear = 1:lenX
     end
     
     % Add data to sparse cell array or matrix based on subscripts
-    % Note: Need to find a good way for dealing with duplicate
-    % rows. Right now, default behavior is to overwrite
     obj.data_pr(subs{:}) = X(indLinear);
-    
 end
 
 if nargin > 3 && ~isempty(axis_names)
