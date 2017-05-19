@@ -286,7 +286,7 @@ classdef MDD
         end
 
 
-        obj = importDataTable(obj,data_column,axis_val_columns,axis_names)    % Function for importing data in a 2D table format
+        obj = importDataTable(obj,data_column,axis_val_columns,axis_names, overwriteBool)    % Function for importing data in a 2D table format
         
         
         obj = importData(obj,data,axis_vals,axis_names)
@@ -431,12 +431,28 @@ classdef MDD
         obj = packDim(obj,dim_src,dim_target);
         
         
-        function obj_out = merge(obj1,obj2)
+        function obj_out = merge(obj1, obj2, forceMergeBool)
+            % merge - linear merge of 2 MDD objects
+            %
+            % Usage: obj_out = merge(obj1,obj2)
+            %        obj_out = merge(obj1,obj2, forceMergeBool)
+            %
+            % Inputs:
+            %   obj1/2: MDD objects
+            %   forceMergeBool: whether to overwrite obj1 entries with obj2
+            %
+            % NOTE:
             % This might be slow when working with huge matrices. Perhaps do
             % alternate approach for them. This works by linearizing the
             % data in both objects into 1 huge table. Then, it imports the
             % new table data. If have huge sparse matrices this will be
             % slow.
+            
+            % Default args
+            if nargin < 3
+                forceMergeBool = false;
+            end
+            
             names = {obj1.axis_pr.name};
             
             % Merge two objects together
@@ -455,10 +471,22 @@ classdef MDD
                 axl{i} = vertcat(axislabels1{i}(:),axislabels2{i}(:));
             end
             
-            obj_out = obj1.reset;
-            obj_out = importDataTable(obj_out,X,axl);
+            % Check for overlapping entries
+            if ~forceMergeBool
+                if MDD.isDuplicateAxisValues(axl)
+                    warning(['Attempting to merge objects with overlapping entries.',...
+                        ' Set forceMergeBool=1 to overwrite entries in obj1 with those of obj2.',...
+                        ' Returning obj1.'])
+                    obj_out = obj1;
+                    return
+                end
+            end
             
-            obj_out = obj_out.importAxisNames(names);
+            obj_out = obj1.reset;
+            overwriteBool = true;
+            obj_out = importDataTable(obj_out, X, axl, names, overwriteBool);
+            
+%             obj_out = obj_out.importAxisNames(names);
             
             obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
         end
@@ -985,6 +1013,40 @@ classdef MDD
                 error('Supplied regex did not match the name of any axis or value');
             end
             
+        end
+        
+        
+        function duplicateBool = isDuplicateAxisValues(axis_values)
+            % isDuplicateAxisValues - determine if axis values are duplicated.
+            %
+            % Useful for non-spare data, eg with linear import/merge.
+            %
+            % Strategy: turn all axis values into strings. Horizontally
+            % concatenate the strings. See if any non-unique strings.
+            
+            axCellStrHorzCat = cell(size(axis_values{1}, 1), 1);
+            for i = 1:length(axis_values)
+                for j = 1:size(axis_values{i}, 1)
+                    thisVal = axis_values{i}(j);
+                    if iscell(thisVal)
+                        thisVal = thisVal{1};
+                    end
+                    
+                    if isnumeric(thisVal)
+                        axCellStrHorzCat{j} = [axCellStrHorzCat{j} num2str(thisVal)];
+                    elseif ischar(axis_values{i}{j})
+                        axCellStrHorzCat{j} = [axCellStrHorzCat{j} thisVal];
+                    elseif isstring(axis_values{i}{j})
+                        axCellStrHorzCat{j} = [axCellStrHorzCat{j} char(thisVal)];
+                    else
+                        error('Unknown data type')
+                    end
+                end
+            end
+            
+            [~, ind] = unique(axCellStrHorzCat);
+            
+            duplicateBool = length(ind) ~= length(axCellStrHorzCat);
         end
         
         
