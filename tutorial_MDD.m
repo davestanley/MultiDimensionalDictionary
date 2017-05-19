@@ -364,12 +364,12 @@ xp4.printAxisInfo
 % Axis 2: I_E_tauD (numeric) -> 15
 
 % Attempt to merge them
-xp5 = merge(xp3,xp4);
+xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);
 
 % This throws a warning that there is an overlap, and sets xp5 = xp3
 % We will disregard the message by setting the third argument to true, allowing 
 % xp4 to overwrite xp3.
-xp5 = merge(xp3,xp4, true);
+xp5 = merge(xp3,xp4, true); % or xp5 = xp3.merge(xp4, true);
 
 dimensions = {[1,2],0};
 figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);

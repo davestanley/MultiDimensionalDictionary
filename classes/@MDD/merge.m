@@ -1,4 +1,4 @@
-function obj_out = merge(obj1, obj2)
+function obj_out = merge(obj1, obj2, forceMergeBool)
 % merge - multidimensional merge of 2 MDD objects without checking for overlap
 %
 % Usage: obj_out = qmerge(obj1,obj2)
@@ -6,6 +6,15 @@ function obj_out = merge(obj1, obj2)
 %
 % Inputs:
 %   obj1/2: MDD objects
+%   forceMergeBool: whether to overwrite obj1 entries with obj2
+
+% TODO: add support for numeric with nans so that nans are overwritten and not
+% counted
+
+% Default args
+if nargin < 3
+    forceMergeBool = false;
+end
 
 % Get object properties
 Nd1 = ndims(obj1);
@@ -106,6 +115,49 @@ for iAx = 1:nAx
     dataIndObj2{iAx} = dataIndObj2{iAx}';
     
     objOutDataSize(iAx) = length(obj_out.axis_pr(iAx).values);
+end
+
+% Check for overlapping entries
+if ~forceMergeBool
+    % check for overlap in each ax
+    overlapInd = cell(2,nAx);
+    for iAx = 1:nAx
+        [~, overlapInd{1, iAx}, overlapInd{2, iAx}] = intersect(dataIndObj1{iAx}, dataIndObj2{iAx});
+    end
+    
+    % convert data to cell if numeric
+    if isnumeric(obj1.data_pr)
+        obj1.data_pr = num2cell(obj1.data_pr);
+    end
+    if isnumeric(obj2.data)
+        obj2.data_pr = num2cell(obj2.data_pr);
+    end
+    
+    if iscell(obj1.data_pr(overlapInd{1,:}))
+        notEmptyBool1 = ~cellfun(@isempty, obj1.data_pr(overlapInd{1,:}));
+    elseif ~isempty(obj1.data_pr(overlapInd{1,:})) % isnumeric
+        notEmptyBool1 = ~isnan(obj1.data_pr(overlapInd{1,:}));
+    else
+        notEmptyBool1 = false;
+    end
+    
+    if iscell(obj2.data_pr(overlapInd{2,:}))
+        notEmptyBool2 = ~cellfun(@isempty, obj2.data_pr(overlapInd{2,:}));
+    elseif ~isempty(obj2.data_pr(overlapInd{2,:})) % isnumeric
+        notEmptyBool2 = ~isnan(obj2.data_pr(overlapInd{2,:}));
+    else
+        notEmptyBool2 = false;
+    end
+    
+    overlapBool = ( notEmptyBool1 & notEmptyBool2 );
+    
+    if any(overlapBool(:))
+        warning(['Attempting to merge objects with overlapping entries.',...
+                 ' Set forceMergeBool=1 to overwrite entries in obj1 with those of obj2.',...
+                 ' Returning obj1.'])
+        obj_out = obj1;
+        return
+    end
 end
 
 % 3) Fill in data in obj_out from obj1 and obj2

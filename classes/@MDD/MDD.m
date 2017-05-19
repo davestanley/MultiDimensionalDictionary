@@ -431,7 +431,7 @@ classdef MDD
         obj = packDim(obj,dim_src,dim_target);
         
         
-        obj_out = merge(obj1, obj2)
+        obj_out = merge(obj1, obj2, forceMergeBool)
         
         
         function obj_out = linearMerge(obj1, obj2, forceMergeBool)
