@@ -431,8 +431,11 @@ classdef MDD
         obj = packDim(obj,dim_src,dim_target);
         
         
-        function obj_out = merge(obj1, obj2, forceMergeBool)
-            % merge - linear merge of 2 MDD objects
+        obj_out = merge(obj1, obj2)
+        
+        
+        function obj_out = linearMerge(obj1, obj2, forceMergeBool)
+            % linearMerge - linear merge of 2 MDD objects
             %
             % Usage: obj_out = merge(obj1,obj2)
             %        obj_out = merge(obj1,obj2, forceMergeBool)
@@ -453,22 +456,22 @@ classdef MDD
                 forceMergeBool = false;
             end
             
-            names = {obj1.axis_pr.name};
+            ax_names = {obj1.axis_pr.name};
             
             % Merge two objects together
             Nd1 = ndims(obj1);
             obj1 = squeeze(obj1.mergeDims(1:Nd1));
             X1 = obj1.data_pr;
-            axislabels1 = obj1.axis_pr(1).axismeta.premerged_values;
+            axis_vals1 = obj1.axis_pr(1).axismeta.premerged_values;
             
             Nd2 = ndims(obj2);
             obj2 = squeeze(obj2.mergeDims(1:Nd2));
             X2 = obj2.data_pr;
-            axislabels2 = obj2.axis_pr(1).axismeta.premerged_values;
+            axis_vals2 = obj2.axis_pr(1).axismeta.premerged_values;
             
             X = vertcat(X1(:),X2(:));
-            for i = 1:length(axislabels1)
-                axl{i} = vertcat(axislabels1{i}(:),axislabels2{i}(:));
+            for i = 1:length(axis_vals1)
+                axl{i} = vertcat(axis_vals1{i}(:),axis_vals2{i}(:));
             end
             
             % Check for overlapping entries
@@ -484,9 +487,7 @@ classdef MDD
             
             obj_out = obj1.reset;
             overwriteBool = true;
-            obj_out = importDataTable(obj_out, X, axl, names, overwriteBool);
-            
-%             obj_out = obj_out.importAxisNames(names);
+            obj_out = importDataTable(obj_out, X, axl, ax_names, overwriteBool);
             
             obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
         end
