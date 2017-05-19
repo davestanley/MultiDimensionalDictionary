@@ -180,6 +180,9 @@ classdef MDDAxis
             end
         end
         
+    end
+    
+    methods (Static)
         
         function [selection_out, startIndex] = regex_lookup(vals, selection)
             % uses regexp when selection is of the form '/selection/' with
@@ -205,7 +208,6 @@ classdef MDDAxis
                 error('Supplied regex did not match the name of any axis or value');
             end
         end
-
         
     end
 
