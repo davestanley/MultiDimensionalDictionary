@@ -514,23 +514,22 @@ classdef MDD
         
         function obj = alignAxes(obj, obj2)
             % Author: Ben Pittman-Polletta.
-            % #requestexample
+            %
+            % % #requestexample
+            %
+            % Changes:
+            %   - switch to using intersect (Erik Roberts)
             
             obj_axnames = obj.exportAxisNames;
             obj2_axnames = obj2.exportAxisNames;
             
-            if length(obj_axnames) == length(obj2_axnames)
-                no_axes = length(obj_axnames);
-            else
+            if length(obj_axnames) ~= length(obj2_axnames)
                 error(['alignAxes can only be used with two ' class(obj) ' objects having the same axes.'])
             end
             
-            obj_new_axis_order = nan(1, no_axes);
-            for a = 1:no_axes
-                obj_new_axis_order(a) = find(strcmp(obj2_axnames{a}, obj_axnames));
-            end
+            [~, ~, obj_new_axis_order] = intersect(obj2_axnames, obj_axnames, 'stable');
             
-            if any(isnan(obj_new_axis_order))
+            if length(obj_new_axis_order) ~= length(obj_axnames)
                 error(['alignAxes can only be used with two ' class(obj) ' objects having the same axes.'])
             else
                 obj = obj.permute(obj_new_axis_order);
