@@ -1,6 +1,5 @@
 function obj_out = merge(obj1, obj2, forceMergeBool)
 % merge - multidimensional merge of 2 MDD objects without checking for overlap
-% Author: Erik Roberts
 %
 % Usage: obj_out = qmerge(obj1,obj2)
 %        obj_out = qmerge(obj1,obj2, forceMergeBool)
@@ -8,6 +7,8 @@ function obj_out = merge(obj1, obj2, forceMergeBool)
 % Inputs:
 %   obj1/2: MDD objects
 %   forceMergeBool: whether to overwrite obj1 entries with obj2
+%
+% Author: Erik Roberts
 
 % TODO: add support for numeric with nans so that nans are overwritten and not
 % counted

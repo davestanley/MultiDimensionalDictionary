@@ -60,7 +60,7 @@ classdef MDD
         % % % % % % % % % % % CLASS SETUP % % % % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function obj = MDD(varargin)
-            % Default constructor
+            % MDD - Default constructor
             %
             % Usage:
             %   obj = MDD()
@@ -68,7 +68,8 @@ classdef MDD
             %   obj = MDD(data, axis_vals, axis_names) % multidimensional or linear data
             %   obj = MDD(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
             % 
-            % Possible input configurations:
+            % Notes:
+            %   Possible input configurations:
             %   1) nargin==0
             %   2) data for call to importData
             %   3) data for call to importDataTable, when data is a vector
@@ -120,6 +121,7 @@ classdef MDD
         
         function [selection_out, startIndex] = findaxis(obj,str)
             % Returns the index of the axis with name matching str
+            
             allnames = {obj.axis_pr.name};
             try
                 [selection_out, startIndex] = MDD.regex_lookup(allnames, str);
@@ -133,9 +135,7 @@ classdef MDD
         
         
         function [obj2, ro] = valSubset(obj,varargin)
-            % Author: Erik Roberts (iss 18)
-            %
-            % Purpose: get subset based on axis values
+            % valSubset - get subset based on axis values
             %
             % Similar to subset, but for numerics or cellnum, uses actual axis  
             % values, instead of indicies. re on strings behaves as with subset.
@@ -152,7 +152,10 @@ classdef MDD
             %   3) regular expression for strings
             %
             % Outputs: see subset method
+            %
             % Tags: #requestexample
+            %
+            % Author: Erik Roberts (iss 18)
             
             varargin{end+1} = 'numericsAsValuesFlag'; % tells subset to use numerics as values
             
@@ -366,8 +369,9 @@ classdef MDD
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function obj = sortAxis(obj,ax_id,sort_varargin)
-            % Sorts the entries of a specific axis. ax_id can be a regexp
+            % sortAxis - Sorts the entries of a specific axis. ax_id can be a regexp
             % to identify an axis, or simply the axis number {1..ndims}
+            %
             % #needsattention: This function updates axis.values, but it
             % doesn't update any metadata sorted in axis.axismeta
             
@@ -435,7 +439,7 @@ classdef MDD
         
         
         function obj_out = linearMerge(obj1, obj2, forceMergeBool)
-            % linearMerge - linear merge of 2 MDD objects
+            % linearMerge - linear export then import to merge 2 MDD objects
             %
             % Usage: obj_out = merge(obj1,obj2)
             %        obj_out = merge(obj1,obj2, forceMergeBool)
@@ -444,16 +448,23 @@ classdef MDD
             %   obj1/2: MDD objects
             %   forceMergeBool: whether to overwrite obj1 entries with obj2
             %
-            % NOTE:
-            % This might be slow when working with huge matrices. Perhaps do
-            % alternate approach for them. This works by linearizing the
-            % data in both objects into 1 huge table. Then, it imports the
-            % new table data. If have huge sparse matrices this will be
-            % slow.
+            % Notes:
+            % - This has been deprecated. Use MDD merge instead.
+            % - This is slow when working with huge matrices. Use merge instead.
+            % - This works by linearizing the data in both objects into 1 huge table.
+            % Then, it imports the new table data. If using huge sparse matrices
+            % this will be slow.
             
             % Default args
             if nargin < 3
                 forceMergeBool = false;
+            end
+            
+            % Check if axes can be aligned
+            try
+                obj2 = obj2.alignAxes(obj1);
+            catch
+                error(['linearMerge can only be used with two ' class(obj1) ' objects having the same axes.'])
             end
             
             ax_names = {obj1.axis_pr.name};
@@ -471,12 +482,12 @@ classdef MDD
             
             X = vertcat(X1(:),X2(:));
             for i = 1:length(axis_vals1)
-                axl{i} = vertcat(axis_vals1{i}(:),axis_vals2{i}(:));
+                axis_vals_merged{i} = vertcat(axis_vals1{i}(:),axis_vals2{i}(:));
             end
             
             % Check for overlapping entries
             if ~forceMergeBool
-                if MDD.isDuplicateAxisValues(axl)
+                if MDD.isDuplicateAxisValues(axis_vals_merged)
                     warning(['Attempting to merge objects with overlapping entries.',...
                         ' Set forceMergeBool=1 to overwrite entries in obj1 with those of obj2.',...
                         ' Returning obj1.'])
@@ -487,7 +498,7 @@ classdef MDD
             
             obj_out = obj1.reset;
             overwriteBool = true;
-            obj_out = importDataTable(obj_out, X, axl, ax_names, overwriteBool);
+            obj_out = importDataTable(obj_out, X, axis_vals_merged, ax_names, overwriteBool);
             
             obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
         end
@@ -513,9 +524,11 @@ classdef MDD
         
         
         function obj = alignAxes(obj, obj2)
-            % Author: Ben Pittman-Polletta.
+            % alignAxes - permute axes of obj to match order of axes in obj2
             %
             % % #requestexample
+            %
+            % Author: Ben Pittman-Polletta.
             %
             % Changes:
             %   - switch to using intersect (Erik Roberts)
@@ -543,9 +556,8 @@ classdef MDD
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function out = printAxisInfo(obj,showclass)
-            % If no output arguments, prints axis info to the screen. If
-            % output arguments are supplied, returns this information as a
-            % string
+            % printAxisInfo - If no output arguments, prints axis info to the screen. 
+            % If output arguments are supplied, returns this information as a string
             
             if nargin < 2
                 showclass = 1;
@@ -594,9 +606,9 @@ classdef MDD
         varargout = checkDims(obj, optionalChecksFlag);
         
         
-        function obj = squeezeRegexp(obj,ax_name_regexp)
-            % Performs a squeeze operation, but only on the axes whose
-            % names match the supplied regular expression
+        function obj = squeezeRegexp(obj, ax_name_regexp)
+            % squeezeRegexp - Performs a squeeze operation, but only on the axes 
+            % whose names match the supplied regular expression
             
             % Get logical indices of axes matching regexp
             Na = length(obj.axis);
@@ -692,10 +704,15 @@ classdef MDD
         
         
         function obj = shiftdim(obj, n)
-            %   obj = SHIFTDIM(obj, N) shifts the dimensions of X by N.  When N is
-            %   positive, SHIFTDIM shifts the dimensions to the left and wraps the
-            %   N leading dimensions to the end.  When N is negative, SHIFTDIM
-            %   shifts the dimensions to the right and pads with singletons.
+            % SHIFTDIM - shifts the dimensions of X by N.
+            %
+            % When N is positive, SHIFTDIM shifts the dimensions to the left and 
+            % wraps the N leading dimensions to the end.  When N is negative, 
+            % SHIFTDIM shifts the dimensions to the right and pads with singletons.
+            %
+            % Usage: obj = shiftdim(obj, n)
+            %
+            % Author: Erik Roberts
             
             siz = size(obj);
             nDims = obj.ndims;
@@ -738,9 +755,11 @@ classdef MDD
         
         
         function obj = squeeze(obj)
+            % squeeze
+            %
             % This is just like MATLAB's normal squeeze command. However,
             % there is one key difference:
-            % Normally, if squeeze operates on a 1xN matrix, it will leave
+            %   Normally, if squeeze operates on a 1xN matrix, it will leave
             % it as 1xN. This function forces it to always return as Nx1
             
             checkDims(obj);
@@ -777,10 +796,13 @@ classdef MDD
         
         
         function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
-            % Author: Ben Pittman-Polletta.
-            % Creates new axis with specified values, and an identical copy
+            % repmat - Creates new axis with specified values, and an identical copy
             % of the existing MDD object at each value.
+            %
             % #requestexample
+            %
+            % Author: Ben Pittman-Polletta.
+            
             checkDims(obj);
             
             if nargin < 4, new_axis_dim = []; end
@@ -862,7 +884,8 @@ classdef MDD
         
         
         function out = getclass_obj_axis_values(obj)
-            % Returns class type of entries in obj.axis_pr.values
+            % getclass_obj_axis_values - Returns class type of entries in obj.axis_pr.values
+            
             nAx = length(obj.axis_pr);
             out = cell(1,nAx);
             for i = 1:nAx
@@ -872,7 +895,8 @@ classdef MDD
         
         
         function out = getclass_obj_axis_name(obj)
-            % Returns class type of entries in obj.axis_pr.values
+            % getclass_obj_axis_name - Returns class type of entries in obj.axis_pr.values
+            
             nAx = length(obj.axis_pr);
             out = cell(1,nAx);
             for i = 1:nAx
@@ -882,7 +906,7 @@ classdef MDD
         
         
         function obj = setAxisDefaults(obj,dims)
-            % Sets obj.axis_pr(i) to default values
+            % setAxisDefaults - Sets obj.axis_pr(i) to default values
             
             for dim = dims % loop over dims
                 % Get desired size of dataset
@@ -937,7 +961,7 @@ classdef MDD
     
     methods (Static)
         % ** start Import Methods **
-        %   Note: these can be called as static (ie class) methods using
+        %   NOTE: these can be called as static (ie class) methods using
         %   uppercase version or as object methods using lowercsae version
         
         function obj = ImportDataTable(varargin)    % Function for importing data in a 2D table format
@@ -978,7 +1002,8 @@ classdef MDD
         
         
         function output = inheritObj(output,input)
-            % Merges contents of input into output.
+            % inheritObj - Merges contents of input into output.
+            
             C = metaclass(input);
             P = C.Properties;
             for k = 1:length(P)
@@ -990,6 +1015,11 @@ classdef MDD
         
         
         function [selection_out, startIndex] = regex_lookup(vals, selection)
+            % regex_lookup
+            %
+            % Usage: [selection_out, startIndex] = regex_lookup(vals, selection)
+            %
+            % Notes:
             % uses regexp when selection is of the form '/selection/' with
             % enclosing forward slashes. else uses strfind for substring
             % matching.
@@ -1023,6 +1053,8 @@ classdef MDD
             %
             % Strategy: turn all axis values into strings. Horizontally
             % concatenate the strings. See if any non-unique strings.
+            %
+            % Author: Erik Roberts
             
             axCellStrHorzCat = cell(size(axis_values{1}, 1), 1);
             for i = 1:length(axis_values)
