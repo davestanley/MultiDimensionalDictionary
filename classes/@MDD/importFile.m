@@ -1,8 +1,5 @@
 function obj = importFile(obj, filePath, dataCol, headerFlag, delimiter)
-%% importFile
-% Author: Erik Roberts
-%
-% Purpose: import linear data from data file (using importDataTable method)
+%% importFile - overwrite data with tabular data from data file (using importDataTable method)
 %
 % Usage:
 %   As class static method:
@@ -33,7 +30,8 @@ function obj = importFile(obj, filePath, dataCol, headerFlag, delimiter)
 %   delimiter: specify if using a delimiter other than space(' '), comma(','), 
 %              or tab('\t'). see strsplit documentation for delimiter specification.
 %
-%
+% Author: Erik Roberts
+
 % Dev notes:
 %   Possible types of fileInput from plaintext ascii files:
 %   1) struct if numeric with headers

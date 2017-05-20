@@ -1,5 +1,70 @@
 %% MDD - MultiDimensional Dictionary class
-% #toimplement documentation
+%
+% Purpose: MDD allows the implementation of multidimensional Python-esque 
+%          dictionaries in MATLAB.
+%
+% Description: MDD can be interpreted in several different ways:
+%   - A map/dictionary that associates multiple keys with a single value
+%   - An N-dimensional table (a table is equivalent to an MDD object in 2-dimensions)
+%   - A matrix or cell array that can be indexed by using strings and regular expressions
+%
+%
+% Properties (public):
+%   data - Storing the data (multi-dimensional matrix or cell array)
+%   axis - array of MDDAxis classes for each axis. Ndims = ndims(data)
+%
+%
+% Methods (public):
+%   MDD - default constructor
+%   reset - makes object empty, as if called from the constructor with no args
+%
+%   --INDEXING/SEARCHING DATA--
+%   findaxis - returns the index of the axis with name matching str
+%   subset - return object with subset of data
+%   valSubset - get subset based on axis values
+%   axissubset - subset of particular axis
+%   lastNonSingletonDim
+%
+%   --IMPORTING DATA--
+%   importAxisNames - overwrite object's axis names
+%   importAxisValues - overwrite object's axis values
+%   importMeta - overwrite object's axis metadata
+%   importDataTable - overwrite object data with tabular data from variable
+%   importData - overwrite object data with multidimensional data from variable
+%   importFile - overwrite data with tabular data from data file
+%
+%   --EXPORTING DATA--
+%   exportAxisVals - return object's axis values
+%   exportAxisNames - return object's axis names
+%   exportData - return object's data
+%   exportDataTable - return object's data and axes as tabular data
+%
+%   --REARRANGING DATA--
+%   merge - merge 2 MDD objects
+%   mergeDims
+%   sortAxis
+%   alignAxes - permute axes of obj to match order of axes in obj2
+%   packDim2Mat
+%   packDim2Cell
+%   packDim2MDD
+%   packDim
+%   unpackDim2Mat
+%   unpackDim2Cell
+%   unpackDim2MDD
+%   unpackDim
+%
+%   --HOUSEKEEPING--
+%   printAxisInfo - print summary of axis information
+%   fixAxes
+%   checkDims
+%   squeezeRegexp
+%
+%
+% Methods (static):
+%   ImportDataTable
+%   ImportData
+%   ImportFile
+
 
 %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % MAIN CLASS DEF % % % % % % % % % % % % %
@@ -110,6 +175,7 @@ classdef MDD
         
         function [obj] = reset(obj)
             % call object specific-constructor
+            
             obj = feval(str2func(class(obj)));
         end
 
@@ -120,7 +186,7 @@ classdef MDD
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function [selection_out, startIndex] = findaxis(obj,str)
-            % Returns the index of the axis with name matching str
+            % findaxis - Returns the index of the axis with name matching str
             
             allnames = {obj.axis_pr.name};
             try
@@ -164,10 +230,21 @@ classdef MDD
         
         
         function [obj2, ro] = axissubset(obj, axis, values)
-            % Define variables and check that all dimensions are consistent
-            % ro - if regular expressions are used, returns the index
-            % values discovered by the regular expression.
+            % axissubset - subset of particular axis
+            %
+            % Relevance: don't have to specify the values for all other axes
+            %
+            % Usage: [obj2, ro] = axissubset(obj, axis, values)
+            %
+            % Outputs:
+            %   obj: object
+            %   ro: if regular expressions are used, returns the index
+            %       values discovered by the regular expression.
+            %
             % Who wrote this? (#whowrotethis)
+            
+            % Define variables and check that all dimensions are consistent
+            
             % Verify that size of obj is correct
             checkDims(obj);
             
@@ -216,10 +293,12 @@ classdef MDD
         
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        % % % % % % % % % % % % IMPORT DATA  % % % % % % % % % % % % % %
+        % % % % % % % % % % % % IMPORTING DATA  % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function obj = importAxisNames(obj,ax_names)
+            % importAxisNames - overwrite object's axis names
+            %
             % varargin can be a single cell containing a cellstr, or a
             % cellstr.
             
@@ -254,6 +333,8 @@ classdef MDD
         
         
         function obj = importAxisValues(obj,varargin)
+            % importAxisValues - overwrite object's axis values
+            
             % varargin can be a single cell containing cells for each axis, or an argument list for the axes
             
             if nargin < 2 % use default values
@@ -285,6 +366,8 @@ classdef MDD
         
         
         function obj = importMeta(obj,meta_struct)
+            % importMeta - overwrite object's axis metadata
+            
             obj.meta = meta_struct;
         end
 
@@ -298,7 +381,13 @@ classdef MDD
         obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import table data from data file (using importDataTable method)
         
         
+        %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        % % % % % % % % % % % % EXPORTING DATA % % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
         function out = exportAxisVals(obj)
+            % exportAxisVals - return object's axis values
+            
             Na = length(obj.axis);
             out = cell(1,Na);
             for i = 1:Na
@@ -308,6 +397,8 @@ classdef MDD
         
         
         function out = exportAxisNames(obj)
+            % exportAxisNames - return object's axis names
+            
             Na = length(obj.axis);
             out = cell(1,Na);
             for i = 1:Na
@@ -317,11 +408,19 @@ classdef MDD
         
         
         function out = exportData(obj)
+            % exportData - return object's data
+            
             out = obj.data;
         end
         
         
         function [data_column, axis_val_columns, axis_names] = exportDataTable(obj, preview_table, maxRows)
+            % exportDataTable - return object's data and axes as tabular data
+            %
+            % These returned values are such that they coudl be used directly in
+            % importDataTable
+            %
+            % Author: Dave Stanley
             
             if nargin < 2
                 preview_table = false;
@@ -336,16 +435,16 @@ classdef MDD
             axis_names = obj.exportAxisNames;
             
             % Linearize the data into a single 1D object
-            om = obj.mergeDims(1:Nd);
-            om = om.squeeze;
+            linearObj = obj.mergeDims(1:Nd);
+            linearObj = linearObj.squeeze;
             
             % Pull out this linear data
-            data_column = om.data;
+            data_column = linearObj.data;
             
             % Pull out the corresponding axis values for each data entry
             axis_val_columns = cell(1,Nd);
             for i = 1:Nd
-                axis_val_columns{i} = om.axis(1).axismeta.premerged_values{i}(:);
+                axis_val_columns{i} = linearObj.axis(1).axismeta.premerged_values{i}(:);
             end
             
             % Finally, remove any empties caused by sparsity in this matrix
@@ -367,6 +466,15 @@ classdef MDD
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        
+        obj_out = merge(obj1, obj2, forceMergeBool)
+        
+        
+        obj_out = linearMerge(obj1, obj2, forceMergeBool)
+        
+        
+        obj = mergeDims(obj,dims2merge);
+        
         
         function obj = sortAxis(obj,ax_id,sort_varargin)
             % sortAxis - Sorts the entries of a specific axis. ax_id can be a regexp
@@ -412,117 +520,6 @@ classdef MDD
         end
         
         
-        obj = mergeDims(obj,dims2merge);
-        
-        
-        function obj = packDim2Mat(obj,dim_src,dim_target)
-            obj = packDim(obj,dim_src,dim_target);
-        end
-        
-        
-        function obj = packDim2Cell(obj,dim_src,dim_target)
-            % #Toimplement
-            warning('Not yet implemented');
-        end
-        
-        
-        function obj = packDim2MDD(obj,dim_src,dim_target)
-            % #Toimplement
-            warning('Not yet implemented');
-        end
-        
-        
-        obj = packDim(obj,dim_src,dim_target);
-        
-        
-        obj_out = merge(obj1, obj2, forceMergeBool)
-        
-        
-        function obj_out = linearMerge(obj1, obj2, forceMergeBool)
-            % linearMerge - linear export then import to merge 2 MDD objects
-            %
-            % Usage: obj_out = merge(obj1,obj2)
-            %        obj_out = merge(obj1,obj2, forceMergeBool)
-            %
-            % Inputs:
-            %   obj1/2: MDD objects
-            %   forceMergeBool: whether to overwrite obj1 entries with obj2
-            %
-            % Notes:
-            % - This has been deprecated. Use MDD merge instead.
-            % - This is slow when working with huge matrices. Use merge instead.
-            % - This works by linearizing the data in both objects into 1 huge table.
-            % Then, it imports the new table data. If using huge sparse matrices
-            % this will be slow.
-            
-            % Default args
-            if nargin < 3
-                forceMergeBool = false;
-            end
-            
-            % Check if axes can be aligned
-            try
-                obj2 = obj2.alignAxes(obj1);
-            catch
-                error(['linearMerge can only be used with two ' class(obj1) ' objects having the same axes.'])
-            end
-            
-            ax_names = {obj1.axis_pr.name};
-            
-            % Merge two objects together
-            Nd1 = ndims(obj1);
-            obj1 = squeeze(obj1.mergeDims(1:Nd1));
-            X1 = obj1.data_pr;
-            axis_vals1 = obj1.axis_pr(1).axismeta.premerged_values;
-            
-            Nd2 = ndims(obj2);
-            obj2 = squeeze(obj2.mergeDims(1:Nd2));
-            X2 = obj2.data_pr;
-            axis_vals2 = obj2.axis_pr(1).axismeta.premerged_values;
-            
-            X = vertcat(X1(:),X2(:));
-            for i = 1:length(axis_vals1)
-                axis_vals_merged{i} = vertcat(axis_vals1{i}(:),axis_vals2{i}(:));
-            end
-            
-            % Check for overlapping entries
-            if ~forceMergeBool
-                if MDD.isDuplicateAxisValues(axis_vals_merged)
-                    warning(['Attempting to merge objects with overlapping entries.',...
-                        ' Set forceMergeBool=1 to overwrite entries in obj1 with those of obj2.',...
-                        ' Returning obj1.'])
-                    obj_out = obj1;
-                    return
-                end
-            end
-            
-            obj_out = obj1.reset;
-            overwriteBool = true;
-            obj_out = importDataTable(obj_out, X, axis_vals_merged, ax_names, overwriteBool);
-            
-            obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
-        end
-        
-        
-        function obj_new = unpackDim2Mat(obj, dim_src, dim_target, dim_name, dim_values)
-            % #Toimplement
-            obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values);
-        end
-        
-        function obj_new = unpackDim2Cell(obj, dim_src, dim_target, dim_name, dim_values)
-            % #Toimplement
-            warning('Not yet implemented');
-        end
-        
-        function obj_new = unpackDim2MDD(obj, dim_src, dim_target, dim_name, dim_values)
-            % #Toimplement
-            warning('Not yet implemented');
-        end
-        
-        
-        obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values);
-        
-        
         function obj = alignAxes(obj, obj2)
             % alignAxes - permute axes of obj to match order of axes in obj2
             %
@@ -549,14 +546,58 @@ classdef MDD
             end
             
         end
+
         
+        function obj = packDim2Mat(obj,dim_src,dim_target)
+            obj = packDim(obj,dim_src,dim_target);
+        end
+        
+        
+        function obj = packDim2Cell(obj,dim_src,dim_target)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        
+        function obj = packDim2MDD(obj,dim_src,dim_target)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        
+        obj = packDim(obj,dim_src,dim_target);
+
+        
+        function obj_new = unpackDim2Mat(obj, dim_src, dim_target, dim_name, dim_values)
+            % #Toimplement
+            obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values);
+        end
+        
+        
+        function obj_new = unpackDim2Cell(obj, dim_src, dim_target, dim_name, dim_values)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        
+        function obj_new = unpackDim2MDD(obj, dim_src, dim_target, dim_name, dim_values)
+            % #Toimplement
+            warning('Not yet implemented');
+        end
+        
+        
+        obj_new = unpackDim(obj, dim_src, dim_target, dim_name, dim_values);
+             
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % HOUSEKEEPING METHODS % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function out = printAxisInfo(obj,showclass)
-            % printAxisInfo - If no output arguments, prints axis info to the screen. 
+            % printAxisInfo - print summary of axis information
+            %
+            % Notes:
+            % If no output arguments, prints axis info to the screen. 
             % If output arguments are supplied, returns this information as a string
             
             if nargin < 2

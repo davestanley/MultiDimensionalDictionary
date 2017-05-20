@@ -1,5 +1,6 @@
 function obj = importDataTable(obj, data_column, axis_val_columns, axis_names, overwriteBool)
-%% obj = importDataTable(obj,data_column,axis_val_columns,axis_names)
+%% importDataTable - overwrite object data with tabular data from variable
+%
 %   Purpose:
 %     Imports a 2D table of data and converts it into a high dimensional
 %     matrix. The first column in this table specifies the actual data. The

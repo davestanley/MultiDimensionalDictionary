@@ -1,5 +1,5 @@
 function obj_out = merge(obj1, obj2, forceMergeBool)
-% merge - multidimensional merge of 2 MDD objects without checking for overlap
+% merge - merge 2 MDD objects
 %
 % Usage: obj_out = qmerge(obj1,obj2)
 %        obj_out = qmerge(obj1,obj2, forceMergeBool)
@@ -7,6 +7,10 @@ function obj_out = merge(obj1, obj2, forceMergeBool)
 % Inputs:
 %   obj1/2: MDD objects
 %   forceMergeBool: whether to overwrite obj1 entries with obj2
+%
+% Note: The axes may be out of order between the 2 objects. There may be unique 
+% axes to each object, as long as these unique axes only have 1 value. This value
+% will be copied to the output object.
 %
 % Author: Erik Roberts
 

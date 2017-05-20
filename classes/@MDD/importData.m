@@ -1,5 +1,5 @@
 function obj = importData(obj, data, axis_vals, axis_names)
-%% importData - import multidimensional data
+%% importData - overwrite object data with multidimensional data from variable
 
 % Note: functionality can be called from a static (ie class) or object method
 %   obj = ImportData(data,axis_vals,axis_names) % uppercase method
