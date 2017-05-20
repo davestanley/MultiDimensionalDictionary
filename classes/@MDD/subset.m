@@ -30,13 +30,31 @@ end
 
 % Get params to validate that "selection" is the right size
 selection = varargin(:);
+Ns = length(selection);
 Na = length(obj.axis_pr);
 Nd = ndims(obj.data_pr);
+
+% TODO Handle linear indexing
+%   Note: this doesnt work since it just repmat
+% if Ns == 1
+%   selectionLinear = selection;
+%   selection = cell(1,Nd);
+%   [selection{:}] = ind2sub(size(obj.data_pr), selectionLinear{1});
+% end
+
+% Handle vector data
+if Ns == 1 && isvector(obj.data_pr)
+    if isrow(obj.data_pr)
+        selection(1:2) = {[], selection{1}};
+    else % iscolumn
+        selection(1:2) = {selection{1}, []};
+    end
+end
 
 % Fill out selection with empties if too short. For example, say
 % size(obj.data_pr) is MxNx1x1. The user might enter a selection with
 % length(selection) = 2, such as selection = {[A],[B]}. In this
-% case, we convert it from to selection = {[A],[B],[],[]}.
+% case, we convert it to selection = {[A],[B],[],[]}.
 Ns = length(selection);
 if Ns < Na && Ns >= Nd
     selection2 = repmat({[]},1,Na);
