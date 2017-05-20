@@ -131,31 +131,52 @@ if ~forceMergeBool
         [~, overlapInd{1, iAx}, overlapInd{2, iAx}] = intersect(dataIndObj1{iAx}, dataIndObj2{iAx});
     end
     
-    % convert data to cell if numeric
-    if isnumeric(obj1.data_pr)
-        obj1.data_pr = num2cell(obj1.data_pr);
-    end
-    if isnumeric(obj2.data)
-        obj2.data_pr = num2cell(obj2.data_pr);
+    % TODO use commented out code for nan numeric handling
+%     % convert data to cell if numeric
+%     if isnumeric(obj1.data_pr)
+%         obj1.data_pr = num2cell(obj1.data_pr);
+%     end
+%     if isnumeric(obj2.data_pr)
+%         obj2.data_pr = num2cell(obj2.data_pr);
+%     end
+
+    % NOTE use this until implement nan handling. then use above instead
+    % convert data to cell if only 1 is numeric
+    if isnumeric(obj1.data_pr) ~= isnumeric(obj2.data_pr)
+        if isnumeric(obj1.data_pr)
+            obj1.data_pr = num2cell(obj1.data_pr);
+        end
+        if isnumeric(obj2.data_pr)
+            obj2.data_pr = num2cell(obj2.data_pr);
+        end
     end
     
-    if iscell(obj1.data_pr(overlapInd{1,:}))
-        notEmptyBool1 = ~cellfun(@isempty, obj1.data_pr(overlapInd{1,:}));
-    elseif ~isempty(obj1.data_pr(overlapInd{1,:})) % isnumeric
-        notEmptyBool1 = ~isnan(obj1.data_pr(overlapInd{1,:}));
+    % NOTE use this if until implement nan handling. then ditch the if and use
+    % only the else part.
+    if isnumeric(obj1.data_pr) || isnumeric(obj2.data_pr)
+        overlapBool = ~cellfun(@isempty, overlapInd);
+        overlapBool = any(overlapBool(:));
     else
-        notEmptyBool1 = false;
+        % TODO use commented out code for nan numeric handling
+    %     if iscell(obj1.data_pr(overlapInd{1,:}))
+            notEmptyBool1 = ~cellfun(@isempty, obj1.data_pr(overlapInd{1,:}));
+    %     elseif ~isempty(obj1.data_pr(overlapInd{1,:})) % isnumeric
+    %         notEmptyBool1 = ~isnan(obj1.data_pr(overlapInd{1,:}));
+    %     else
+    %         notEmptyBool1 = false;
+    %     end
+
+        % TODO use commented out code for nan numeric handling
+    %     if iscell(obj2.data_pr(overlapInd{2,:}))
+            notEmptyBool2 = ~cellfun(@isempty, obj2.data_pr(overlapInd{2,:}));
+    %     elseif ~isempty(obj2.data_pr(overlapInd{2,:})) % isnumeric
+    %         notEmptyBool2 = ~isnan(obj2.data_pr(overlapInd{2,:}));
+    %     else
+    %         notEmptyBool2 = false;
+    %     end
+
+        overlapBool = ( notEmptyBool1 & notEmptyBool2 );
     end
-    
-    if iscell(obj2.data_pr(overlapInd{2,:}))
-        notEmptyBool2 = ~cellfun(@isempty, obj2.data_pr(overlapInd{2,:}));
-    elseif ~isempty(obj2.data_pr(overlapInd{2,:})) % isnumeric
-        notEmptyBool2 = ~isnan(obj2.data_pr(overlapInd{2,:}));
-    else
-        notEmptyBool2 = false;
-    end
-    
-    overlapBool = ( notEmptyBool1 & notEmptyBool2 );
     
     if any(overlapBool(:))
         warning(['Attempting to merge objects with overlapping entries.',...
