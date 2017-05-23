@@ -16,8 +16,8 @@
 classdef MDDRef < handle & matlab.mixin.Copyable
     
     properties (Access=private)
-        baseObj
-        baseObjClass = MDD
+        valueObj
+        valueObjClass = MDD
     end
     
     properties (Dependent)
@@ -36,20 +36,20 @@ classdef MDDRef < handle & matlab.mixin.Copyable
             %   obj = MDDRef(data) % multidimensional data
             %   obj = MDDRef(data, axis_vals, axis_names) % multidimensional or linear data
             %   obj = MDDRef(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
-            %   obj = MDDRef(baseObjClass, axis_class, data, axis_vals, axis_names) % for subclassing MDD and MDDAxis
-            %   obj = MDDRef(baseObjClass, data, axis_vals, axis_names) % for subclassing MDD
+            %   obj = MDDRef(valueObjClass, axis_class, data, axis_vals, axis_names) % for subclassing MDD and MDDAxis
+            %   obj = MDDRef(valueObjClass, data, axis_vals, axis_names) % for subclassing MDD
             
             if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDD')))
-                obj.baseObjClass = varargin{1};
+                obj.valueObjClass = varargin{1};
                 varargin(1) = [];
             end
             
             if nargin && (isobject(varargin{1}) && isa(varargin{1}, 'MDD'))
-              obj.baseObj = varargin{1};
+              obj.valueObj = varargin{1};
               return
             end
             
-            obj.baseObj = feval(str2func(class(obj.baseObjClass)), varargin{:});
+            obj.valueObj = feval(str2func(class(obj.valueObjClass)), varargin{:});
         end
         
         % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -57,15 +57,15 @@ classdef MDDRef < handle & matlab.mixin.Copyable
         % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function value = get.data(obj)
-            value = obj.baseObj.data;
+            value = obj.valueObj.data;
         end
         
         function varargout = get.axis(obj)
-            [varargout{1:nargout}] = obj.baseObj.axis;
+            [varargout{1:nargout}] = obj.valueObj.axis;
         end
         
         function varargout = get.meta(obj)
-            [varargout{1:nargout}] = obj.baseObj.meta;
+            [varargout{1:nargout}] = obj.valueObj.meta;
         end
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -75,30 +75,30 @@ classdef MDDRef < handle & matlab.mixin.Copyable
             if strcmp(S(1).type, '.') && (strcmp(S(1).subs, 'copy') || strcmp(S(1).subs, 'methods'))
                 [varargout{1:nargout}] = builtin('subsref', obj, S);
             else
-                [varargout{1:nargout}] = builtin('subsref', obj.baseObj, S);
+                [varargout{1:nargout}] = builtin('subsref', obj.valueObj, S);
                 if isa(varargout{1}, 'MDD') && ~strcmp(S(1).type, '()')
-                    obj.baseObj = varargout{1};
+                    obj.valueObj = varargout{1};
                 end
             end
         end
 
         
         function obj = subsasgn(obj, S, value)
-            obj.baseObj = builtin('subsasgn', obj.baseObj, S, value);
+            obj.valueObj = builtin('subsasgn', obj.valueObj, S, value);
         end
         
         
         function value = size(obj)
-            value = size(obj.baseObj);
+            value = size(obj.valueObj);
         end
         
         
         function mObj = methods(obj)
             mObj = builtin('methods', obj);
-            mBaseObj = methods(obj.baseObj);
-            mBaseObj(strcmp(mBaseObj, class(obj.baseObj))) = []; % remove class name
+            mvalueObj = methods(obj.valueObj);
+            mvalueObj(strcmp(mvalueObj, class(obj.valueObj))) = []; % remove class name
             
-            mObj = unique([mObj;mBaseObj]);
+            mObj = unique([mObj;mvalueObj]);
         end
         
     end
