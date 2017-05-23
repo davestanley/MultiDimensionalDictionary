@@ -61,36 +61,49 @@ classdef MDDAxis
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function varargout = subsref(varargin)
-
-%             % Default settings for everything
-%             [varargout{1:nargout}] = builtin('subsref',varargin{:});
-
-            obj = varargin{1};
-            S = varargin{2};
+        function varargout = subsref(obj, S)
+            % Notes:
+            %	Default settings for cell outputs:
+            %	varargout = builtin('subsref', obj, S);
+            %
+            %	Default settings for single non cell outputs:
+            %	varargout = {builtin('subsref', obj, S)};
+            %
+            %	Default settings for multiple outputs:
+            %	[varargout{1:nargout}] = builtin('subsref', obj, S);
+            %
+            %   Only 2 arguments to subsref.
+            %
+            %   S is a struct array with length equal to number of consecutive 
+            %   operations to perform. Order follows the order written/performed, 
+            %   so that the first entry is the closest to the left on the call. 
+            %
+            %   varargout needs to be cell array. Non cell output should  be
+            %   enclosed in cell. Multiple outputs should go into cells.
+            %   Importantly, if length(S) > 1, meaning multiple consecutive
+            %   subsref operations, varargout should equal length of S. Thus,
+            %   one needs to make space for recursive outputs when calling
+            %   builtin again, which takes the form of a cell{:} multiple outputs.
 
             switch S(1).type
 
                 case '()'
-%                     % Default
-%                     [varargout{1:nargout}] = builtin('subsref',varargin{:});
-
                     allnames = {obj.name};
                     if iscellstr(S(1).subs)
-                        [selection_out, startIndex] = MDDAxis.regex_lookup(allnames, S(1).subs{1});
+                        selection_out = MDDAxis.regex_lookup(allnames, S(1).subs{1});
                         S(1).subs{1} = selection_out;
-                        [varargout{1:nargout}] = builtin('subsref',obj,S,varargin{3:end});
+                        varargout = {builtin('subsref',obj,S)};
                     else
                         % Default
-                        [varargout{1:nargout}] = builtin('subsref',varargin{:});
+                        varargout = {builtin('subsref', obj, S)};
                     end
 
                 case '{}'
                     % Default
-                    [varargout{1:nargout}] = builtin('subsref',varargin{:});
+                    varargout = builtin('subsref', obj, S);
                 case '.'
                     % Default
-                    [varargout{1:nargout}] = builtin('subsref',varargin{:});
+                    [varargout{1:nargout}] = builtin('subsref', obj, S);
                 otherwise
                     error('Unknown indexing method. Should never reach this');
             end

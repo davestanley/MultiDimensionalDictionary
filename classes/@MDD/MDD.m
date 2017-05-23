@@ -684,7 +684,7 @@ classdef MDD
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function A = isempty(obj)
-            A = isempty(obj.data_pr);
+            A = builtin('isempty', obj.data_pr);
         end
         
         
@@ -696,7 +696,7 @@ classdef MDD
             
             checkDims(obj);
             
-            [varargout{1:nargout}] = size(obj.data_pr,varargin{:});
+            [varargout{1:nargout}] = builtin('size', obj.data_pr, varargin{:} );
             
             % If function is called in the form sz = size(obj) OR size(obj),
             % return the length of each axis.
@@ -739,7 +739,7 @@ classdef MDD
                 order2 = order;
             end
             
-            obj.data_pr = permute(obj.data_pr,order2);
+            obj.data_pr = builtin('permute', obj.data_pr, order2);
             obj.axis_pr = obj.axis_pr(order2);
         end
         
@@ -796,7 +796,7 @@ classdef MDD
         
         
         function obj = squeeze(obj)
-            % squeeze
+            % SQUEEZE - Remove singleton dimensions
             %
             % This is just like MATLAB's normal squeeze command. However,
             % there is one key difference:
@@ -871,41 +871,49 @@ classdef MDD
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function varargout = subsref(varargin)
+        function varargout = subsref(obj, S)
+            % Notes:
+            %	Default settings for cell outputs:
+            %	varargout = builtin('subsref', obj, S);
+            %
+            %	Default settings for single non cell outputs:
+            %	varargout = {builtin('subsref', obj, S)};
+            %
+            %	Default settings for multiple outputs:
+            %	[varargout{1:nargout}] = builtin('subsref', obj, S);
+            %
+            %   Only 2 arguments to subsref.
+            %
+            %   S is a struct array with length equal to number of consecutive 
+            %   operations to perform. Order follows the order written/performed, 
+            %   so that the first entry is the closest to the left on the call. 
+            %
+            %   varargout needs to be cell array. Non cell output should  be
+            %   enclosed in cell. Multiple outputs should go into cells.
+            %   Importantly, if length(S) > 1, meaning multiple consecutive
+            %   subsref operations, varargout should equal length of S. Thus,
+            %   one needs to make space for recursive outputs when calling
+            %   builtin again, which takes the form of a cell{:} multiple outputs.
+
+            S1 = S(1);
             
-            %             % Default settings for everything
-            %             [varargout{1:nargout}] = builtin('subsref',varargin{:});
-            
-            obj = varargin{1};
-            S = varargin{2};
-            
-            if length(S) == 1               % This discounts cases like obj.subset(1,2,3,4)
-                switch S.type
-                    case '()'
-                        %[varargout{1:nargout}] = builtin('subsref',varargin{:});
-                        %varargout{1} = builtin('subsref',obj.data_pr,S);
-                        
-                        % Convert colon operators to empties, which subset
-                        % uses to denote "take everything"
-                        for i = 1:length(S.subs)
-                            if strcmp(S.subs{i},':')
-                                S.subs{i} = [];
-                            end
-                        end
-                        
-                        varargout{1} = obj.subset(S.subs{:});
-                    case '{}'
-                        %[varargout{1:nargout}] = builtin('subsref',varargin{:});
-                        S2 = S;
-                        S2.type = '()';
-                        [varargout{1:nargout}] = builtin('subsref',obj.data_pr,S2,varargin{3:end});
-                    case '.'
-                        [varargout{1:nargout}] = builtin('subsref',varargin{:});
-                    otherwise
-                        error('Unknown indexing method. Should never reach this.');
-                end
-            else
-                [varargout{1:nargout}] = builtin('subsref',varargin{:});
+            switch S1.type
+                case '()'
+                    obj = obj.subset(S1.subs{:}); % take subset of object
+                    varargout{1} = obj;
+                    if length(S) > 1 % continue subsref with rest of S
+                        [varargout{2:nargout}] = builtin('subsref', obj, S(2:end));
+                    end
+                case '{}'
+                    S(1).type = '()';
+                    if ~iscell(obj.data_pr)
+                        error('Use {} indexing only for cell data.')
+                    end
+                    varargout = builtin('subsref',obj.data_pr,S);
+                case '.'
+                    [varargout{1:nargout}] = builtin('subsref', obj, S);
+                otherwise
+                    error('Unknown indexing method. Should never reach this.');
             end
             
         end

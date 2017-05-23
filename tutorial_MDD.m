@@ -40,26 +40,37 @@ load('sample_data.mat');
 % 3) Population name (excitatory or inhibitory cells - E or I);
 % 4) Name of state variable
 % These are stored in axis_names:
+fprintf('axis_names = ')
 disp(axis_names)
 
 % The possile values that each of these axes can take on are listed in
 % axis_vals. For example, the population axis, axis 3, can be either E or
 %  I for excitatory or inhibitory cells respectively.
+fprintf('axis_vals{3} = ')
 disp(axis_vals{3}')
 
 % Note that the number of entries in axis_vals must 1:1 match up with the 
 % size of dat.
+fprintf('axis_vals = ')
 disp(axis_vals);
+fprintf('size(dat) = ')
 disp(size(dat));
 
 
 % Thus, dat is of the form (E_Iapp, I_E_tauD, population, variable).
 % For example:
 figure; plot(dat{1,1,2,1}); title('Inhibitory (I) cell voltage'); ylabel('Vm'); xlabel('Time (ms)');
+fprintf('E_Iapp parameter value = ')
 disp(axis_vals{1}(1))       % E_Iapp parameter value
+
+fprintf('I_E_tauD parameter value = ')
 disp(axis_vals{2}(1))       % I_E_tauD parameter value
-disp(axis_vals{3}{2})       % Inhibitory cells
-disp(axis_vals{4}{1})       % Voltage, v
+
+fprintf('Inhibitory cells label = ')
+disp(axis_vals{3}{2})       % Inhibitory cells label
+
+fprintf('Voltage label = ')
+disp(axis_vals{4}{1})       % Voltage label
 
 
 %% Import into MDD object
