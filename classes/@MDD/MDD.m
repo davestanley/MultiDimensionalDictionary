@@ -684,7 +684,7 @@ classdef MDD
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function A = isempty(obj)
-            A = isempty(obj.data_pr);
+            A = builtin('isempty', obj.data_pr);
         end
         
         
@@ -696,7 +696,7 @@ classdef MDD
             
             checkDims(obj);
             
-            [varargout{1:nargout}] = size(obj.data_pr,varargin{:});
+            [varargout{1:nargout}] = builtin('size', obj.data_pr, varargin{:} );
             
             % If function is called in the form sz = size(obj) OR size(obj),
             % return the length of each axis.
@@ -739,7 +739,7 @@ classdef MDD
                 order2 = order;
             end
             
-            obj.data_pr = permute(obj.data_pr,order2);
+            obj.data_pr = builtin('permute', obj.data_pr, order2);
             obj.axis_pr = obj.axis_pr(order2);
         end
         
@@ -796,7 +796,7 @@ classdef MDD
         
         
         function obj = squeeze(obj)
-            % squeeze
+            % SQUEEZE - Remove singleton dimensions
             %
             % This is just like MATLAB's normal squeeze command. However,
             % there is one key difference:
