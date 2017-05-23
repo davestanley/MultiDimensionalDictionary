@@ -1,7 +1,7 @@
 %% MDDRef - a copyable handle/reference class wrapper for MDD
 %
 % Purpose: unlike the base MDD class, this class permits...
-%   1) pass-by-value (to avoid copying entire object when passing to functions as arg)
+%   1) pass-by-reference (to avoid copying entire object when passing to functions as arg)
 %   2) event-driven callbacks in a subclass of MDDRef
 %
 % Usage: MDDRef objects have the same interface as MDD objects.
@@ -30,17 +30,9 @@ classdef MDDRef < matlab.mixin.Copyable
             obj.baseObj = MDD(varargin{:});
         end
         
-%         function set.data(obj, value)
-%             obj.baseObj.data = value;
-%         end
-        
         function value = get.data(obj)
             value = obj.baseObj.data;
         end
-        
-%         function set.axis(obj,value)
-%             obj.baseObj.axis = value;
-%         end
         
         function varargout = get.axis(obj)
             [varargout{1:nargout}] = obj.baseObj.axis;
