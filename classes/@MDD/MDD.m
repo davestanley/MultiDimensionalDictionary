@@ -8,6 +8,12 @@
 %   - An N-dimensional table (a table is equivalent to an MDD object in 2-dimensions)
 %   - A matrix or cell array that can be indexed by using strings and regular expressions
 %
+%   Note: MDD is a copyable handle class. This means that the variable assigned
+%   to the object is a reference to the object, not the object itself. This
+%   allows for passing by reference to reduce memory. It also permits calling
+%   methods on the object without having the reassign the object.
+%   #addExamples
+%
 %
 % Properties (public):
 %   data - Storing the data (multi-dimensional matrix or cell array)
@@ -17,6 +23,8 @@
 % Methods (public):
 %   MDD - default constructor
 %   reset - makes object empty, as if called from the constructor with no args
+%   copy - makes copy of the object
+%     Note: normal assigning just copies a reference to the object
 %
 %   --INDEXING/SEARCHING DATA--
 %   findaxis - returns the index of the axis with name matching str
@@ -81,7 +89,7 @@
 % #requestexample - requests an example of implementation of this code in demos_MDD
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-classdef MDD
+classdef MDD < matlab.mixin.Copyable % add `copy` method for shallow copy
     
     properties
         meta = struct; % Metadata about stuff that's stored in data
@@ -103,7 +111,7 @@ classdef MDD
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % Getter and Setters % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        function obj = set.data(obj,value)
+        function set.data(obj,value)
             obj.data_pr = value;
             obj.checkDims;
         end
@@ -112,7 +120,7 @@ classdef MDD
             value = obj.data_pr;
         end
         
-        function obj = set.axis(obj,value)
+        function set.axis(obj,value)
             obj.axis_pr = value;
             obj.checkDims;
         end
@@ -155,25 +163,25 @@ classdef MDD
             
             % (1) default constructor
             obj.axis_pr = repmat(obj.axisClass,1,ndims(obj.data_pr));     % For a 2D matrix
-            obj = obj.fixAxes;
+            obj.fixAxes;
             
             if nargin % (2) or (3) import data
                 % Determine if table or not
                 if nargin > 1 && isvector(varargin{1}) % If Table: axis_vals must exist and data must be a vector
                     lengthsCell = cellfunu(@length,varargin{2});
                     if all(length(varargin{1}) == [lengthsCell{:}]) % If Table: each axis_vals cell contents must be same length as data
-                        obj = obj.importDataTable(varargin{:});
+                        obj.importDataTable(varargin{:});
                     end
                 else % Not table
-                    obj = obj.fixAxes;
-                    obj = obj.importData(varargin{:});
+                    obj.fixAxes;
+                    obj.importData(varargin{:});
                 end
             end
             obj.fixAxes(1);     % Convert any axis vallues that are cellnums to numeric matrices
         end
         
         
-        function [obj] = reset(obj)
+        function obj = reset(obj)
             % call object specific-constructor
             
             obj = feval(str2func(class(obj)));
@@ -296,7 +304,7 @@ classdef MDD
         % % % % % % % % % % % % IMPORTING DATA  % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        function obj = importAxisNames(obj,ax_names)
+        function importAxisNames(obj,ax_names)
             % importAxisNames - overwrite object's axis names
             %
             % varargin can be a single cell containing a cellstr, or a
@@ -328,17 +336,17 @@ classdef MDD
                 end
             end
             
-            obj = obj.fixAxes(1);
+            obj.fixAxes(1);
         end
         
         
-        function obj = importAxisValues(obj,varargin)
+        function importAxisValues(obj,varargin)
             % importAxisValues - overwrite object's axis values
             
             % varargin can be a single cell containing cells for each axis, or an argument list for the axes
             
             if nargin < 2 % use default values
-                obj = obj.fixAxes;
+                obj.fixAxes;
                 return
             end
             
@@ -361,24 +369,24 @@ classdef MDD
                 end
             end
             
-            obj = obj.fixAxes(1);
+            obj.fixAxes(1);
         end
         
         
-        function obj = importMeta(obj,meta_struct)
+        function importMeta(obj,meta_struct)
             % importMeta - overwrite object's axis metadata
             
             obj.meta = meta_struct;
         end
 
 
-        obj = importDataTable(obj,data_column,axis_val_columns,axis_names, overwriteBool)    % Function for importing data in a 2D table format
+        importDataTable(obj,data_column,axis_val_columns,axis_names, overwriteBool)    % Function for importing data in a 2D table format
         
         
-        obj = importData(obj,data,axis_vals,axis_names)
+        importData(obj,data,axis_vals,axis_names)
         
         
-        obj = importFile(obj, filePath, dataCol, headerFlag, delimiter) % import table data from data file (using importDataTable method)
+        importFile(obj, filePath, dataCol, headerFlag, delimiter) % import table data from data file (using importDataTable method)
         
         
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -467,16 +475,16 @@ classdef MDD
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        obj_out = merge(obj1, obj2, forceMergeBool)
+        merge(obj1, obj2, forceMergeBool)
         
         
-        obj_out = linearMerge(obj1, obj2, forceMergeBool)
+        linearMerge(obj1, obj2, forceMergeBool)
         
         
-        obj = mergeDims(obj,dims2merge);
+        mergeDims(obj,dims2merge);
         
         
-        function obj = sortAxis(obj,ax_id,sort_varargin)
+        function sortAxis(obj,ax_id,sort_varargin)
             % sortAxis - Sorts the entries of a specific axis. ax_id can be a regexp
             % to identify an axis, or simply the axis number {1..ndims}
             %
@@ -501,7 +509,7 @@ classdef MDD
             % time.
             if length(ax_id) > 1;
                 for i = 1:length(ax_id);
-                    obj = obj.sortAxis(ax_id(i),sort_varargin{:});
+                    obj.sortAxis(ax_id(i),sort_varargin{:});
                 end
                 return;
             end
@@ -516,11 +524,11 @@ classdef MDD
             
             % Perform the sort on the desired dimension, leaving everything
             % else alone
-            obj = obj.subset(inds{:});
+            obj.subset(inds{:});
         end
         
         
-        function obj = alignAxes(obj, obj2)
+        function alignAxes(obj, obj2)
             % alignAxes - permute axes of obj to match order of axes in obj2
             %
             % % #requestexample
@@ -542,30 +550,30 @@ classdef MDD
             if length(obj_new_axis_order) ~= length(obj_axnames)
                 error(['alignAxes can only be used with two ' class(obj) ' objects having the same axes.'])
             else
-                obj = obj.permute(obj_new_axis_order);
+                obj.permute(obj_new_axis_order);
             end
             
         end
 
         
-        function obj = packDim2Mat(obj,dim_src,dim_target)
-            obj = packDim(obj,dim_src,dim_target);
+        function packDim2Mat(obj,dim_src,dim_target)
+            packDim(obj,dim_src,dim_target);
         end
         
         
-        function obj = packDim2Cell(obj,dim_src,dim_target)
+        function packDim2Cell(obj,dim_src,dim_target)
             % #Toimplement
             warning('Not yet implemented');
         end
         
         
-        function obj = packDim2MDD(obj,dim_src,dim_target)
+        function packDim2MDD(obj,dim_src,dim_target)
             % #Toimplement
             warning('Not yet implemented');
         end
         
         
-        obj = packDim(obj,dim_src,dim_target);
+        packDim(obj,dim_src,dim_target);
 
         
         function obj_new = unpackDim2Mat(obj, dim_src, dim_target, dim_name, dim_values)
@@ -641,13 +649,13 @@ classdef MDD
         end
         
         
-        obj = fixAxes(obj, optionalFixesFlag);
+        fixAxes(obj, optionalFixesFlag);
         
         
         varargout = checkDims(obj, optionalChecksFlag);
         
         
-        function obj = squeezeRegexp(obj, ax_name_regexp)
+        function squeezeRegexp(obj, ax_name_regexp)
             % squeezeRegexp - Performs a squeeze operation, but only on the axes 
             % whose names match the supplied regular expression
             
@@ -667,13 +675,13 @@ classdef MDD
             inds_remain = ~inds_to_squeeze;
             inds_remain = find(inds_remain);
             inds_to_squeeze = find(inds_to_squeeze);
-            obj = obj.permute([inds_remain,inds_to_squeeze]); % (Put dimensions to keep to be first
+            obj.permute([inds_remain,inds_to_squeeze]); % (Put dimensions to keep to be first
             
             % Lastly, remove them from obj.axis
             obj.axis_pr = obj.axis_pr(1:max(length(inds_remain),2));    % (Should not ever trim down to less than 2, due rule RE keeping things as matrices)
             
             % Run fixAxes, just incase!
-            obj = obj.fixAxes;
+            obj.fixAxes;
             obj.checkDims;
             
         end
@@ -717,7 +725,7 @@ classdef MDD
         end
         
         
-        function obj = permute(obj,order)
+        function permute(obj,order)
             % Like normal permute command, except order can be either an
             % array of numerics, or a cell array of strings (regexps)
             
@@ -744,14 +752,14 @@ classdef MDD
         end
         
         
-        function obj = shiftdim(obj, n)
+        function shiftdim(obj, n)
             % SHIFTDIM - shifts the dimensions of X by N.
             %
             % When N is positive, SHIFTDIM shifts the dimensions to the left and 
             % wraps the N leading dimensions to the end.  When N is negative, 
             % SHIFTDIM shifts the dimensions to the right and pads with singletons.
             %
-            % Usage: obj = shiftdim(obj, n)
+            % Usage: shiftdim(obj, n)
             %
             % Author: Erik Roberts
             
@@ -764,18 +772,18 @@ classdef MDD
             end
             
             if (n > 0)  % shift to the left and wrap
-                obj = permute(obj,[n+1:nDims,1:n]);
+                permute(obj,[n+1:nDims,1:n]);
             elseif ~isempty(n) && n~=0  % Shift to the right (padding with singletons).
                 obj.data_pr = reshape(obj.data,[ones(1,-n),siz]);
                 obj.axis_pr(1-n:-n+nDims) = obj.axis_pr;
                 obj.axis_pr(1:-n) = obj.axisClass;
-                obj = obj.fixAxes;
+                obj.fixAxes;
             end
             
         end
         
         
-        function obj = ipermute(obj,order)
+        function ipermute(obj,order)
             checkDims(obj);
             inverseorder(order) = 1:numel(order);
             obj.data_pr = permute(obj.data_pr,inverseorder);
@@ -783,7 +791,7 @@ classdef MDD
         end
         
         
-        function obj = transpose(obj)
+        function transpose(obj)
             checkDims(obj);
             Nd = ndims(obj.data_pr);
             
@@ -795,7 +803,7 @@ classdef MDD
         end
         
         
-        function obj = squeeze(obj)
+        function squeeze(obj)
             % SQUEEZE - Remove singleton dimensions
             %
             % This is just like MATLAB's normal squeeze command. However,
@@ -831,12 +839,12 @@ classdef MDD
             end
             
             % Make sure everything is good before returning.
-            obj = obj.fixAxes;
+            obj.fixAxes;
             checkDims(obj);
         end
         
         
-        function obj_out = repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
+        function repmat(obj, new_axis_values, new_axis_name, new_axis_dim)
             % repmat - Creates new axis with specified values, and an identical copy
             % of the existing MDD object at each value.
             %
@@ -860,10 +868,10 @@ classdef MDD
             
             repmat_size = [ones(1, obj.lastNonSingletonDim) length(new_axis_values)];
             
-            obj_out = obj;
-            obj_out.data = cellfun(@(x) repmat(x, repmat_size), obj.data, 'UniformOutput', false);
+            obj_copy = obj.copy;
+            obj.data = cellfun(@(x) repmat(x, repmat_size), obj_copy.data, 'UniformOutput', false);
             
-            obj_out = obj_out.unpackDim(obj.lastNonSingletonDim + 1, new_axis_dim, new_axis_name, new_axis_values);
+            obj.unpackDim(obj_copy.lastNonSingletonDim + 1, new_axis_dim, new_axis_name, new_axis_values);
             
         end
         
@@ -899,7 +907,7 @@ classdef MDD
             
             switch S1.type
                 case '()'
-                    obj = obj.subset(S1.subs{:}); % take subset of object
+                    obj.subset(S1.subs{:}); % take subset of object
                     varargout{1} = obj;
                     if length(S) > 1 % continue subsref with rest of S
                         [varargout{2:nargout}] = builtin('subsref', obj, S(2:end));
@@ -954,7 +962,7 @@ classdef MDD
         end
         
         
-        function obj = setAxisDefaults(obj,dims)
+        function setAxisDefaults(obj,dims)
             % setAxisDefaults - Sets obj.axis_pr(i) to default values
             
             for dim = dims % loop over dims
@@ -1018,7 +1026,7 @@ classdef MDD
             obj = MDD();
             
             % call object method
-            obj = importDataTable(obj, varargin{:});
+            importDataTable(obj, varargin{:});
         end
         
         
@@ -1027,7 +1035,7 @@ classdef MDD
             obj = MDD();
             
             % call object method
-            obj = importData(obj, varargin{:});
+            importData(obj, varargin{:});
         end
         
         
@@ -1036,7 +1044,7 @@ classdef MDD
             obj = MDD();
             
             % call object method
-            obj = importFile(obj, varargin{:});
+            importFile(obj, varargin{:});
         end
         % ** end Import Methods **
     end
