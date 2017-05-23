@@ -17,6 +17,7 @@ classdef MDDRef < matlab.mixin.Copyable
     
     properties (Access=private)
         baseObj
+        baseObjClass = MDD
     end
     
     properties (Dependent)
@@ -25,12 +26,28 @@ classdef MDDRef < matlab.mixin.Copyable
     end
     
     methods
-        %         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        %         % % % % % % % % % % % Getter and Setters % % % % % % % % % % % %
-        %         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function obj = MDDRef(varargin)
-            obj.baseObj = MDD(varargin{:});
+          % MDDRef - Default constructor
+            %
+            % Usage:
+            %   obj = MDDRef()
+            %   obj = MDDRef(data) % multidimensional data
+            %   obj = MDDRef(data, axis_vals, axis_names) % multidimensional or linear data
+            %   obj = MDDRef(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
+            %   obj = MDDRef(baseObjClass, axis_class, data, axis_vals, axis_names) % for subclassing MDD and MDDAxis
+            %   obj = MDDRef(baseObjClass, data, axis_vals, axis_names) % for subclassing MDD
+            
+            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDD')))
+                obj.baseObjClass = varargin{1};
+                varargin(1) = [];
+            end
+            
+            obj.baseObj = feval(str2func(class(obj.baseObjClass)), varargin{:});
         end
+        
+        % % % % % % % % % % % % % % % % % % % % % % % % % % %
+        % % % % % % % % % % % Getters % % % % % % % % % % % %
+        % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
         function value = get.data(obj)
             value = obj.baseObj.data;
