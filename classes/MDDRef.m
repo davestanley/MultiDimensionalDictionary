@@ -42,7 +42,7 @@ classdef MDDRef < matlab.mixin.Copyable
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         function varargout = subsref(obj, S)
-            if strcmp(S(1).type, '.') && strcmp(S(1).subs, 'copy')
+            if strcmp(S(1).type, '.') && (strcmp(S(1).subs, 'copy') || strcmp(S(1).subs, 'methods'))
                 [varargout{1:nargout}] = builtin('subsref', obj, S);
             else
                 [varargout{1:nargout}] = builtin('subsref', obj.baseObj, S);
@@ -51,9 +51,17 @@ classdef MDDRef < matlab.mixin.Copyable
                 end
             end
         end
-        
+
         function obj = subsasgn(obj, S, value)
             obj.baseObj = builtin('subsasgn', obj.baseObj, S, value);
+        end
+        
+        function mObj = methods(obj)
+            mObj = builtin('methods', obj);
+            mBaseObj = methods(obj.baseObj);
+            mBaseObj(strcmp(mBaseObj, class(obj.baseObj))) = []; % remove class name
+            
+            mObj = unique([mObj;mBaseObj]);
         end
         
     end
