@@ -9,6 +9,8 @@
 % Note: Due to the wrapper, tab completion show the available MDD methods. 
 %       However, those methods are still accessible when used.
 %
+% Author: Erik Roberts
+%
 % See also: MDD
 
 classdef MDDRef < matlab.mixin.Copyable
