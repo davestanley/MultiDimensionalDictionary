@@ -537,6 +537,40 @@ xp2b = xp2.squeezeRegexp('var'); xp2b.printAxisInfo
 xp2b = xp2.squeezeRegexp('I_E_tauD'); xp2b.printAxisInfo
 xp2b = xp2.squeezeRegexp('populations'); xp2b.printAxisInfo
 
+%% MDDRef
+% MDD is matlab value class. This means it is passed by value. This can cause
+% considerable memory overhead for large objects.  A solution is to use MDDRef,
+% a handle wrapper class for MDD. It permits passing by reference and the use
+% of event-driven callbacks. Thus, MDDRef is more similar to the behavior of
+% python dictionaries. Passing MDDRef as a function argument will pass the
+% object itself, not a copy of the object. MDDRef has the same interface as a
+% normal MDD object. The only difference is that the MDD methods will not be
+% accessible via tab-completion, but they are available if called. A hacky solution 
+% is to make an empty MDD object with the same name minus one letter, use it to 
+% tab complete, and then add the letter back.
+
+xp7 = MDDRef(xp); % copy xp and convert it to handle object
+xp7Ref = xp7; % assignment makes reference, not copy
+xp7Copy = xp7.copy;
+
+fprintf('size(xp7) = %s\n', num2str(size(xp7)))
+fprintf('size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
+fprintf('size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
+
+xp7Ref = xp7Ref.subset(1:2,1,1,1:4); % use ref to modify original xp7
+fprintf('Take subset of xp7Ref\n')
+
+fprintf('new size(xp7) = %s\n', num2str(size(xp7)))
+fprintf('new size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
+fprintf('new size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
+
+% Notice that the copy, xp7Copy, is not modified since it points to a copy of the
+% xp7 object. However, modifying the reference xp7Ref modified the original object,
+% xp7, since both point to the same object.
+
+% Read more about value vs. reference classes here:
+%   https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html
+
 %% To implement
 % 
 % Implement the following:

@@ -13,7 +13,7 @@
 %
 % See also: MDD
 
-classdef MDDRef < matlab.mixin.Copyable
+classdef MDDRef < handle & matlab.mixin.Copyable
     
     properties (Access=private)
         baseObj
@@ -23,6 +23,7 @@ classdef MDDRef < matlab.mixin.Copyable
     properties (Dependent)
         data
         axis
+        meta
     end
     
     methods
@@ -31,6 +32,7 @@ classdef MDDRef < matlab.mixin.Copyable
             %
             % Usage:
             %   obj = MDDRef()
+            %   obj = MDDRef(mddObj) % convert MDD value object to MDDRef handle object
             %   obj = MDDRef(data) % multidimensional data
             %   obj = MDDRef(data, axis_vals, axis_names) % multidimensional or linear data
             %   obj = MDDRef(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
@@ -40,6 +42,11 @@ classdef MDDRef < matlab.mixin.Copyable
             if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDD')))
                 obj.baseObjClass = varargin{1};
                 varargin(1) = [];
+            end
+            
+            if nargin && (isobject(varargin{1}) && isa(varargin{1}, 'MDD'))
+              obj.baseObj = varargin{1};
+              return
             end
             
             obj.baseObj = feval(str2func(class(obj.baseObjClass)), varargin{:});
@@ -57,6 +64,10 @@ classdef MDDRef < matlab.mixin.Copyable
             [varargout{1:nargout}] = obj.baseObj.axis;
         end
         
+        function varargout = get.meta(obj)
+            [varargout{1:nargout}] = obj.baseObj.meta;
+        end
+        
         %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         % % % % % % % % % % % OVERLOADED OPERATORS % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -71,9 +82,16 @@ classdef MDDRef < matlab.mixin.Copyable
             end
         end
 
+        
         function obj = subsasgn(obj, S, value)
             obj.baseObj = builtin('subsasgn', obj.baseObj, S, value);
         end
+        
+        
+        function value = size(obj)
+            value = size(obj.baseObj);
+        end
+        
         
         function mObj = methods(obj)
             mObj = builtin('methods', obj);

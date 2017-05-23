@@ -85,10 +85,6 @@
 
 classdef MDD
     
-    properties
-        meta = struct; % Metadata about stuff that's stored in data
-    end
-    
     properties (Access = private) % private so that subclass can override
         data_pr        % Storing the actual data (multi-dimensional matrix or cell array)
         axis_pr        % 1xNdims - array of MDDAxis classes for each axis. Ndims = ndims(data)
@@ -98,6 +94,10 @@ classdef MDD
     properties (Dependent)
         data
         axis
+    end
+        
+    properties
+        meta = struct; % Metadata about stuff that's stored in data
     end
     
     
