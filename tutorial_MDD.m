@@ -2,6 +2,13 @@
 % % % % % % % % % % % % % % MDD Tutorial % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % Developer notes:
+% I am adding the following hash tags to the code as a way of marking
+% things that need to be done / investigated.
+% #tofix- These lines produce an error
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 %% % % % % % % % % % % % % % % MDD Setup % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -550,6 +557,10 @@ xp2b = xp2.squeezeRegexp('populations'); xp2b.printAxisInfo
 % tab complete, and then add the letter back.
 
 xp7 = MDDRef(xp); % copy xp and convert it to handle object
+    % Dave: This behavior is a bit counter-intuitive to me. If xp7 is a
+    % pointer to xp, I would expect modifying xp7 to also modify xp. But it looks
+    % like we're copying xp first, and then creating the pointer all in one
+    % step. Is this correct? 
 xp7Ref = xp7; % assignment makes reference, not copy
 xp7Copy = xp7.copy;
 
