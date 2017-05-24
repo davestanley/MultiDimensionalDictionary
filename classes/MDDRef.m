@@ -76,8 +76,10 @@ classdef MDDRef < handle & matlab.mixin.Copyable
                 [varargout{1:nargout}] = builtin('subsref', obj, S);
             else
                 [varargout{1:nargout}] = builtin('subsref', obj.valueObj, S);
-                if isa(varargout{1}, 'MDD') && ~strcmp(S(1).type, '()')
-                    obj.valueObj = varargout{1};
+                if nargout > 1 % Otherwise, commands like xp7.printAxisInfo, with no return value, will error.
+                    if isa(varargout{1}, 'MDD') && ~strcmp(S(1).type, '()')
+                        obj.valueObj = varargout{1};
+                    end
                 end
             end
         end
