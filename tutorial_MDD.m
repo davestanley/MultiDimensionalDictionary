@@ -582,6 +582,16 @@ fprintf('new size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 % Read more about value vs. reference classes here:
 %   https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html
 
+xp7 = MDDRef(myMDDSubclass);        % Produces error; #tofix; seems to have to do with line: varargin(1) = []
+
+%% Subclassing examples
+
+sc = myMDDSubclass;
+scAxis = myMDDAxisSubclass;
+scRef = myMDDRefSubclass;       % Produces error; #tofix
+
+
+
 %% To implement
 % 
 % Implement the following:
