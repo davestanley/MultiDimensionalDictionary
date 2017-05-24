@@ -920,14 +920,14 @@ classdef MDD
             
         end
         
-        function obj = subsasgn(obj, S, value)
-            % Enable direct assigning to data
-            if any(strcmp({S.type}, '.') & strcmp({S.subs}, 'data'))
-                obj = builtin('subsasgn', obj, S, value);
-            else
-                obj.data_pr = builtin('subsasgn', obj.data, S, value);
-            end
-        end
+%         function obj = subsasgn(obj, S, value)
+%             % Enable direct assigning to data
+%             if any(strcmp({S.type}, '.') & strcmp({S.subs}, 'data'))
+%                 obj = builtin('subsasgn', obj, S, value);
+%             else
+%                 obj.data_pr = builtin('subsasgn', obj.data, S, value);
+%             end
+%         end
     end
     
     %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
