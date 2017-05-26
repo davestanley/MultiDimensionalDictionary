@@ -469,7 +469,7 @@ classdef MDD
         % % % % % % % % % % % REARRANGING DATA % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        obj_out = merge(obj1, obj2, forceMergeBool)
+        obj_out = merge(obj1, obj2, forceMergeBool, debug_on)
         
         
         obj_out = linearMerge(obj1, obj2, forceMergeBool)

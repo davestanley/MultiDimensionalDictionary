@@ -1,12 +1,15 @@
-function obj_out = merge(obj1, obj2, forceMergeBool)
+function obj_out = merge(obj1, obj2, forceMergeBool, debugBool)
 % merge - merge 2 MDD objects
 %
 % Usage: obj_out = qmerge(obj1,obj2)
 %        obj_out = qmerge(obj1,obj2, forceMergeBool)
+%        obj_out = qmerge(obj1,obj2, forceMergeBool, debugBool)
 %
 % Inputs:
 %   obj1/2: MDD objects
 %   forceMergeBool: whether to overwrite obj1 entries with obj2
+%   debugBool: runs a quick debug, comparing the output of merge and
+%             linearMerge, providing stats on computation times.
 %
 % Note: The axes may be out of order between the 2 objects. There may be unique 
 % axes to each object, as long as these unique axes only have 1 value. This value
@@ -21,6 +24,12 @@ function obj_out = merge(obj1, obj2, forceMergeBool)
 if nargin < 3
     forceMergeBool = false;
 end
+
+if nargin < 4
+    debugBool = false;
+end
+
+tstart = tic;
 
 % Get object properties
 Nd1 = ndims(obj1);
@@ -208,5 +217,19 @@ end
 
 % Combine meta
 obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
+
+
+telapsed = toc(tstart);
+
+if debugBool
+    tstart2 = tic;
+    obj_out2 = linearMerge(obj1,obj2,forceMergeBool);
+    telapsed2 = toc(tstart2);
+    if ~isequal(obj_out,obj_out2)
+        warning('Merge and linearMerge produced different results');
+    end
+    fprintf('Elapsed time for MDD.merge:       %g (sec)\nElapsed time for MDD.linearMerge: %g (sec)\n',telapsed, telapsed2);
+
+end
 
 end
