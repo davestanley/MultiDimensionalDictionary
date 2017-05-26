@@ -207,7 +207,8 @@ classdef MDD
             %
             % Similar to subset, but for numerics or cellnum, uses actual axis  
             % values, instead of indicies. re on strings behaves as with subset.
-            % also have new notation for expressions.
+            % also have new notation for expressions. If the requested
+            % values are not found, will return error.
             %
             % Inputs:
             %   Types of input for each axis (each comma-separated argument):

@@ -106,7 +106,23 @@ if numericsAsValuesFlag
             if strcmp('cellnum', axClasses{i})
                 thisAxVals = [thisAxVals{:}]; % convert to numeric array
             end
-            [~, selection{i}] = intersect(thisAxVals, selection{i});
+            if ~isempty(selection{i})
+                % Find which axis value intersects with the values provided
+                % in selection.
+                [~, temp] = intersect(thisAxVals, selection{i});
+                
+                % If no matches, throw out an error
+                if isempty(temp)
+                    if length(selection{i}) > 1
+                        selection_str = ['{' num2str(selection{i}) '}'];
+                    else
+                        selection_str = num2str(selection{i});
+                    end
+                    error(['Queried values ' selection_str ' not found in axis #' num2str(i) ': ' obj.axis_pr(i).name '.']);
+                end
+                selection{i} = temp;
+            end
+            
         end
     end
 end
@@ -133,7 +149,7 @@ for i = 1:Ns
             tokens = tokens{1}; % enter outer cell
             tokens = regexprep(tokens, '\s',''); % remove whitespace
             tokens = tokens(~cellfun(@isempty, tokens)); % remove empty tokens
-            if ~all(cellfun(@isempty, cellfunu(@str2num, tokens)))
+            if ~all(cellfun(@isempty, cellfun(@str2num, tokens,'UniformOutput',0)))
                 tokens = {[tokens{:}]}; % cat since single expression got split up
             end
             lhsBool = isstrprop(cellfun(@(x) x(1), tokens, 'uniform', false), 'digit');
