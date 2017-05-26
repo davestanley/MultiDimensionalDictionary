@@ -60,5 +60,10 @@ obj_out = obj1.reset;
 overwriteBool = true;
 obj_out = importDataTable(obj_out, X, axis_vals_merged, ax_names, overwriteBool);
 
+% Combine meta
+id = 'catstruct:DuplicatesFound';
+warning('off',id);
 obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
+warning('on',id)
+
 end

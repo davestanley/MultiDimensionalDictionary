@@ -216,8 +216,10 @@ if ~any(emptyCells(:)) && iscellnum(obj_out.data_pr)
 end
 
 % Combine meta
+id = 'catstruct:DuplicatesFound';
+warning('off',id);
 obj_out = obj_out.importMeta(catstruct(obj1.meta, obj2.meta));
-
+warning('on',id)
 
 telapsed = toc(tstart);
 
