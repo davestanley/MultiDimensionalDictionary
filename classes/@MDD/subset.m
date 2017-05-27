@@ -30,12 +30,34 @@ else
     numericsAsValuesFlag = false;
 end
 
+
 % Get params to validate that "selection" is the right size
 selection = varargin(:);
+
+% First, make sure that number of selections supplied matches the number of 
+% dimensions of obj. (E.g. length(selection) == ndims(obj) must be true) 
+[obj, selection] = fix_selection(obj,selection,numericsAsValuesFlag);    % Note: In certain circumstances, this function modifies obj and obj.data!
+
+% Now that selection is properly formatted, call the core subset function
+[obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag);
+
+if debug_mode
+    warning('Implement this');
+end
+
+end
+
+
+
+function [obj, selection] = fix_selection(obj,selection,numericsAsValuesFlag)
+% This function makes sure that the number of selections supplied by the
+% user matches the number of axes in obj. If not, they do not match, it
+% attempts to correct (e.g. thorugh assuming linear indices) or throws an
+% error if this fails.
+
 Ns = length(selection);
 Na = length(obj.axis_pr);
 Nd = ndims(obj.data_pr);
-
 
 % Handle vector data
 if Ns == 1 && isvector(obj.data_pr)
@@ -156,20 +178,14 @@ if Ns ~= Na
     error(['Number of inputs must match dimensionality of ' class(obj) '.data']);
 end
 
-% Now that subset is properly formatted, call the core function
-[obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag);
-
-if debug_mode
-    warning('Implement this');
-end
 
 end
 
 
-function [selection, ro] = convert_selection_2_subscripts(obj,selection,numericsAsValuesFlag)
-% This function handles the conversion of selection from containing
-% strings, values, etc to containing subscript values (e.g. subscripts as
-% ind2sub would output).
+function [selection, ro] = selection2sub(obj,selection,numericsAsValuesFlag)
+% Each cell in selection can contain strings, numerics, logical indices,
+% etc. This converts them all to numerical subscripts (e.g. subscripts
+% as defined in MATLAB's ind2sub function)
 
 ro = {};
 
@@ -272,11 +288,15 @@ function [obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag)
 
 sz = size(obj);
 Ns = length(selection);
-[subs, ro] = convert_selection_2_subscripts(obj,selection,numericsAsValuesFlag);
 
+% First, converts selection (which can be in any of the accepted formats)
+% to being MATLAB subscripts (as in ind2sub)
+[subs, ro] = selection2sub(obj,selection,numericsAsValuesFlag);
+
+% Now that we are dealing with subscripts, we can proceed to slice up the
+% data and the axes
 
 % Initialize
-
 obj2 = obj;             % Create new class of same type as original
 obj2 = obj2.reset;
 obj2.meta = obj.meta;
