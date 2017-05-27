@@ -131,7 +131,8 @@ elseif (Ns < Nd)            % Fewer selections than there are dimensions in obj.
     % case we will use linear indexing.
     % 2) Otherwise, we just replicate sl and use it for all remaining axes
     % (this might error!)
-    if isnumeric(sl) && ~numericsAsValuesFlag
+    if (isnumeric(sl) || islogical(sl)) && ~numericsAsValuesFlag
+        
         sz_dat = size(obj.data_pr);
         Ndat = numel(obj.data_pr);
         dim_dat = ndims(obj.data_pr);
@@ -152,7 +153,8 @@ elseif (Ns < Nd)            % Fewer selections than there are dimensions in obj.
                                         
         % Finally, figure out the new set of subscripts that are still used in
         % obj.data_pr. Select only these.
-        [subs{Ns:Nd}] = ind2sub(sz_dat(Ns:Nd),sl);
+        if islogical(sl); sl = find(sl); end     % (ind2sub, later, produces undesired behavior when feeding logical indices...)
+        [subs{Ns:Nd}] = ind2sub(sz_dat(Ns:Nd),sl);       
 
         selection_new = repmat({':'},1,Na);     % Take everything by default
         for i = Ns:Nd

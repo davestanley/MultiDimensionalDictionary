@@ -253,7 +253,6 @@ xp3.printAxisInfo
 
 % Scripting and indexing works just like with normal matrices and cell.
 % arrays. Axis labels are updated appropriately.
-clc
 xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp.subset([],[],1,8), which was the old way
                                     % of pulling data subsets. Note that [] and : are equivalent.
 xp4.printAxisInfo
@@ -275,7 +274,10 @@ xp5.printAxisInfo
 % If only one input is provided, then it is assumed to be a linear index.
 xp5 = xp([142:144]);      % Take the last 3 entries in the data.
 xp5b = xp(1:3,3,2,8);     % This produces the same result.
+li = false(1,144); li(142:144) = true;
+xp5c = xp(li);            % Using logical indexing also produces the same result.
 disp(isequal(xp5,xp5b));
+disp(isequal(xp5,xp5c));
 
 % Linear indicing also works in conjunction with other forms of indexing;
 % leading indices are treated normally and the last index 
@@ -287,7 +289,7 @@ xp5 = xp_temp('E','/v/',1:9);        % Take inds 1-9 in the last 2 dimensions
 xp5b = xp_temp('E','/v/',1:3,1:3);   % Taking a 1x1x3x3 produces the same result
 xp5c = xp_temp('E','/v/',1:end);    % "end" does not yet work
 disp(isequal(xp5,xp5b));
-disp(isequal(xp5,xp5c));
+%disp(isequal(xp5,xp5c));
 
 % Can also reference a given axis based on its index number or based on its
 % name
