@@ -165,13 +165,15 @@ end
 
 end
 
-function [obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag)
+
+function [selection, ro] = convert_selection_2_subscripts(obj,selection,numericsAsValuesFlag)
+% This function handles the conversion of selection from containing
+% strings, values, etc to containing subscript values (e.g. subscripts as
+% ind2sub would output).
 
 ro = {};
 
 Ns = length(selection);
-Na = length(obj.axis_pr);
-Nd = ndims(obj.data_pr);
 
 % Replace any ':' entries in selection with []. Empty
 % entries code for taking all entries along a dimension; ':' is
@@ -264,6 +266,15 @@ for i = 1:Ns
     if selection{i} > sz(i); error('Selection index exceeds dimensions'); end
 end
 
+end
+
+function [obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag)
+
+sz = size(obj);
+Ns = length(selection);
+[subs, ro] = convert_selection_2_subscripts(obj,selection,numericsAsValuesFlag);
+
+
 % Initialize
 
 obj2 = obj;             % Create new class of same type as original
@@ -274,16 +285,16 @@ obj2.meta = obj.meta;
 % convert empty cells to code for full range.
 for i = 1:Ns
     
-    if isempty(selection{i})
-        selection{i} = 1:sz(i);
+    if isempty(subs{i})
+        subs{i} = 1:sz(i);
     end
     
     obj2.axis_pr(i) = obj.axis_pr(i);       % Import axis information
-    obj2.axis_pr(i).values = obj.axis_pr(i).values(selection{i});   % Overwrite values field; leave everything else the same.
+    obj2.axis_pr(i).values = obj.axis_pr(i).values(subs{i});   % Overwrite values field; leave everything else the same.
 end
 
 % Update the data
-obj2.data_pr = obj.data_pr(selection{:});
+obj2.data_pr = obj.data_pr(subs{:});
 
 % Corrects number of axes. The above code automatically
 % converts obj.data_pr from MxNx1x1 to MxN, whereas axis will stay
