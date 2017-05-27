@@ -303,7 +303,32 @@ disp(isequal(mydata,mydata2));
 clear mydata mydata2 xp4 xp5 xp5b xp_temp
 
 
-%% Advanced subscripting and indexing
+%% Advanced subscripting and indexing (valSubset)
+
+% Inputs:
+    %   Types of input for each axis (each comma-separated argument):
+    %   1) numeric or cellnum containing the values
+    %   2) logical expression in string using comparators: <, >, <=, >=, ==
+    %       a) comparator with number, eg '<3' or '== 2.2'
+    %       b) comparator with letter, eg 'x <= 2' or '3.2 > Y'
+    %       c) 2 comparators with letter, space, or _ separator
+    %          eg '1 < x <= 2.2' or '5 >= Z > 1' or '<2 >=4.1' or '> 1_<= 5'
+    %   3) regular expression for strings
+    
+% You can query numeric axes in a similar way as for strings using
+% MDD.valSubset(). There are several approaches:
+
+% 1) numeric or cellnum containing the values
+xp2 = xp.valSubset(10,10,:,:); xp2.printAxisInfo
+
+% 2) logical expression in string using comparators: <, >, <=, >=, ==
+%   a) comparator with number:
+    xp2 = xp.valSubset('>5','==10',:,:); xp2.printAxisInfo
+%   b) comparator with letter:
+    xp2 = xp.valSubset('x>5','y==10',:,:); xp2.printAxisInfo
+%   c) 2 comparators with letter, space, or _ separator
+    xp2 = xp.valSubset('3 < x < 11','>8 <=11',:,:); xp2.printAxisInfo
+    xp2 = xp.valSubset('3 < x < 11','>8_<=11',:,:); xp2.printAxisInfo
 
 % Permute so char array axes are first
 xp_temp = xp.permute([3,4,1,2]);
