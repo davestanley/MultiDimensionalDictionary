@@ -143,9 +143,9 @@ elseif (Ns < Nd)            % Handle linear indexing
         
     else 
         selection_new = repmat({':'},1,Na);     % Take everything by default
-        selection_new(Ns:Nd) = sl;              % Use selection(end) for all remaining unspecified dimensions.
-        warning(['Number of inputs supplied is less than dimensionality of ' class(obj) '.data and selection(end) cannot be linearized.']);
-        fprintf(['Assuming all remaining inputs are equal to selection(end) = ' num2str(sl) '\n']);
+        selection_new(Ns:Nd) = repmat({sl},1,Nd-Ns+1);              % Use selection(end) for all remaining unspecified dimensions.
+        %warning(['Number of inputs supplied is less than dimensionality of ' class(obj) '.data and selection(end) cannot be linearized.']);
+        %fprintf(['Assuming all remaining inputs are equal to selection(end) = ' num2str(sl) '\n']);
         selection = selection_new;
     end
 

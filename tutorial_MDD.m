@@ -273,8 +273,8 @@ xp5 = xp(:,:,1,'/_s$/');
 xp5.printAxisInfo
 
 % If only one input is provided, then it is assumed to be a linear index.
-xp5 = xp(1:3,3,2,8);     % Take the last row in the data...
-xp5b = xp([142:144]);    % This produces the same result
+xp5 = xp([142:144]);      % Take the last 3 entries in the data.
+xp5b = xp(1:3,3,2,8);     % This produces the same result.
 disp(isequal(xp5,xp5b));
 
 % Linear indicing also works in conjunction with other forms of indexing;
@@ -283,8 +283,8 @@ xp_temp = xp.permute([3,4,1,2]);    % Permute so char array axes are first
 xp_temp.printAxisInfo;
 
 % Compare some different methods
-xp5 = xp_temp('E','/v/',1:3,1:3);   % Take a 1x1x3x3
-xp5b = xp_temp('E','/v/',1:9);      % Same as above
+xp5 = xp_temp('E','/v/',1:9);        % Take inds 1-9 in the last 2 dimensions
+xp5b = xp_temp('E','/v/',1:3,1:3);   % Taking a 1x1x3x3 produces the same result
 xp5c = xp_temp('E','/v/',1:end);    % "end" does not yet work
 disp(isequal(xp5,xp5b));
 disp(isequal(xp5,xp5c));
@@ -300,7 +300,28 @@ mydata = xp{:,:,1,8}; warning('Depreciated! #tofix'); % #tofix
 mydata2 = xp.data(:,:,1,8);
 disp(isequal(mydata,mydata2));
 
-clear mydata mydata2 xp4 xp5 xp_temp
+clear mydata mydata2 xp4 xp5 xp5b xp_temp
+
+
+%% Advanced subscripting and indexing
+
+% Permute so char array axes are first
+xp_temp = xp.permute([3,4,1,2]);
+xp_temp.printAxisInfo;
+
+% Can supply fewer than 4 subscripts to valSubset. In this case, it just reuses the final
+% value supplied.
+xp5 = xp_temp.valSubset('E','v',10);                 % Take only values equal to 10 in the last 2 dimensions
+xp5b = xp_temp.valSubset('E','v','x==10','x==10');   % Same as above
+xp5b = xp_temp('E','v',2,2);
+disp(isequal(xp5,xp5b));
+
+% Likewise for strings
+xp5 = xp(1,1,'E');
+xp5b = xp(1,1,'E','E');
+disp(isequal(xp5,xp5b));
+
+clear mydata mydata2 xp4 xp5 xp5b xp_temp
 
 
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 
