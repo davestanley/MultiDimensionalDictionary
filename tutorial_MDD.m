@@ -249,16 +249,16 @@ xp3 = MDD.ImportDataTable(data_column, axis_val_columns, axis_names); % uppercas
 xp3.printAxisInfo
 
 
-%% MDD Indexing
+%% MDD Subscripts and Indexing
 
-% Indexing works just like with normal matrices and cell arrays and axis
-% labels are updated appropriately.
+% Scripting and indexing works just like with normal matrices and cell.
+% arrays. Axis labels are updated appropriately.
 clc
 xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp.subset([],[],1,8), which was the old way
                                     % of pulling data subsets. Note that [] and : are equivalent.
 xp4.printAxisInfo
 
-% Similarly, can index axis values using substring matching (via strfind internally)
+% Similarly, can query axis values using substring matching (via strfind internally)
 % Pull out sodium mechs only
 xp5 = xp(:,:,1,'iNa');
 xp5.printAxisInfo
@@ -272,6 +272,23 @@ xp5.printAxisInfo
 xp5 = xp(:,:,1,'/_s$/');
 xp5.printAxisInfo
 
+% If only one input is provided, then it is assumed to be a linear index.
+xp5 = xp(1:3,3,2,8);     % Take the last row in the data...
+xp5b = xp([142:144]);    % This produces the same result
+disp(isequal(xp5,xp5b));
+
+% Linear indicing also works in conjunction with other forms of indexing;
+% leading indices are treated normally and the last index 
+xp_temp = xp.permute([3,4,1,2]);    % Permute so char array axes are first
+xp_temp.printAxisInfo;
+
+% Compare some different methods
+xp5 = xp_temp('E','/v/',1:3,1:3);   % Take a 1x1x3x3
+xp5b = xp_temp('E','/v/',1:9);      % Same as above
+xp5c = xp_temp('E','/v/',1:end);    % "end" does not yet work
+disp(isequal(xp5,xp5b));
+disp(isequal(xp5,xp5c));
+
 % Can also reference a given axis based on its index number or based on its
 % name
 disp(xp.axis(4))
@@ -279,11 +296,11 @@ disp(xp.axis('populations'))
 
 % Lastly, you can reference xp.data with the following shorthand
 % (This is the same as xp.data(:,:,1,8). Regular expressions dont work in this mode)
-mydata = xp{:,:,1,8};
+mydata = xp{:,:,1,8}; warning('Depreciated! #tofix'); % #tofix
 mydata2 = xp.data(:,:,1,8);
 disp(isequal(mydata,mydata2));
 
-clear mydata mydata2 xp4 xp5
+clear mydata mydata2 xp4 xp5 xp_temp
 
 
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 

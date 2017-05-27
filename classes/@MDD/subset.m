@@ -19,6 +19,8 @@ function [obj2, ro] = subset(obj,varargin)
 % Verify that size of obj is correct
 checkDims(obj);
 
+debug_mode = false;
+
 % Check for numericsAsValuesFlag
 if ischar(varargin{end}) && strcmp(varargin{end}, 'numericsAsValuesFlag')
     numericsAsValuesFlag = true; % tells subset to use numerics as values
@@ -46,7 +48,7 @@ end
 
 % Fix selection if improperly specified
 Ns = length(selection);
-if Ns < Na && Ns >= Nd              %     Nd <= Ns < Ns     (more axes than selections)
+if Ns < Na && Ns >= Nd              %     Nd <= Ns < Na     (more axes than selections)
     % Fill out selection with empties if too short. For example, say
     % size(obj.data_pr) is MxNx1x1. The user might enter a selection with
     % length(selection) = 2, such as selection = {[A],[B]}. In this
@@ -71,40 +73,82 @@ elseif Ns > Na                  % Na < Ns       (Ns too large)
         error(['Index exceeds dimensions of ' class(obj) '.data']);
     end
     selection = selection(1:Na);
-elseif (Ns < Na) && all(cellfun(@isnumeric,selection) | strcmp(selection,':')) % Handle linear indexing - only works if all inputs are numeric or colons!
-    % Revert to linear indexing if selection is too short and numerics are
-    % supplied (#todo - need to let this work with non-numerics as well)
-    
-    % Figure out what the linear indices are.
+elseif (Ns < Nd)            % Handle linear indexing
+    % If Ns < Nd (e.g. number of selections supplied is less than the
+    % number of dimensions of the data matrix), we will assume that the
+    % LAST selection supplied is a linear index and represents all
+    % remaining dimensions. This is how MATLAB handles
+    % linear indexing of normal matrices as well. For example, try the
+    % following: 
+    %   temp = 1:125;
+    %   temp = reshape(temp,[5,5,5]);
+    %   temp(5,5,2)
+    %   temp(5,10)
+    %   temp(50)
+    % MDD will follow this behavior.
     % Note that if size(obj) is MxNxL, selection can be MxNL (where NL = N times L). 
-    sz_dat = size(obj.data_pr);
-    Ndat = numel(obj.data_pr);
-    inds = linearize_inds(selection,sz_dat,Ndat);
-   
-    % Get rid of all except the chosen data
-    if iscell(obj.data_pr)
-        data_new = cell(Ndat,1);
+    
+    % First, run obj.subset() as normal for everything but the LAST
+    % selection supplied. For the last selection and the remaining unspecified
+    % dimensions, take everything. We will deal with these later. 
+    % If Ns == 1, then just keep obj as is.
+    if Ns > 1
+        selection_part = repmat({':'},1,Na);
+        selection_part(1:Ns-1) = selection(1:Ns-1);
+        [obj, ro] = subset_core(obj,selection_part, numericsAsValuesFlag);
+        
+        % Mark the entries in selection we've already completed with selection_part
+        % with a colon operators, since they are done.
+        selection(1:Ns-1) = repmat({':'},1,Ns-1);
     else
-        data_new = zeros(Ndat,1);
-    end
-    data_new(inds) = obj.data_pr(inds);
-    data_new = reshape(data_new,sz_dat);
-    obj.data_pr = data_new;         % data_new will have the same dimensions as obj.data
-                                    % But will have zeros / empties
-                                    % for all entries except the selected data.
-    
-                                    
-    % Finally, figure out the new set of subscripts that are still used in
-    % obj.data_pr. Select only these.
-    dim_dat = ndims(obj.data_pr);
-    [subs{1:dim_dat}] = ind2sub(sz_dat,inds);
-    
-    selection_new = repmat({':'},1,Na);
-    for i = 1:length(subs)
-        selection_new{i} = unique(subs{i});
+        % Unchanged
     end
     
-    selection = selection_new;
+    sl = selection{Ns};    % The linear portion of selection
+    
+    % Now, we deal with the linear index portion of the selection. Two
+    % cases: 1) sl is numeric and numericsAsValuesFlag is false, in which 
+    % case we will use linear indexing.
+    % 2) Otherwise, we just replicate sl and use it for all remaining axes
+    % (this might error!)
+    if isnumeric(sl) && ~numericsAsValuesFlag
+        sz_dat = size(obj.data_pr);
+        Ndat = numel(obj.data_pr);
+        dim_dat = ndims(obj.data_pr);
+        
+        inds = linearize_inds(selection,sz_dat,Ndat);
+        
+        % Get rid of all except the chosen data
+        if iscell(obj.data_pr)
+            data_new = cell(Ndat,1);
+        else
+            data_new = zeros(Ndat,1);
+        end
+        data_new(inds) = obj.data_pr(inds);
+        data_new = reshape(data_new,sz_dat);
+        obj.data_pr = data_new;         % data_new will have the same dimensions as obj.data
+                                        % But will have zeros / empties
+                                        % for all entries except the selected data.
+                                        
+        % Finally, figure out the new set of subscripts that are still used in
+        % obj.data_pr. Select only these.
+        [subs{Ns:Nd}] = ind2sub(sz_dat(Ns:Nd),sl);
+
+        selection_new = repmat({':'},1,Na);     % Take everything by default
+        for i = Ns:Nd
+            selection_new{i} = unique(subs{i}); % For the linearized dimensions, figure out which indices to keep; drop everything else.
+        end
+
+        selection = selection_new;
+        
+    else 
+        selection_new = repmat({':'},1,Na);     % Take everything by default
+        selection_new(Ns:Nd) = sl;              % Use selection(end) for all remaining unspecified dimensions.
+        warning(['Number of inputs supplied is less than dimensionality of ' class(obj) '.data and selection(end) cannot be linearized.']);
+        fprintf(['Assuming all remaining inputs are equal to selection(end) = ' num2str(sl) '\n']);
+        selection = selection_new;
+    end
+
 end
 
 
@@ -117,10 +161,15 @@ end
 % Now that subset is properly formatted, call the core function
 [obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag);
 
+if debug_mode
+    warning('Implement this');
+end
 
 end
 
 function [obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag)
+
+ro = {};
 
 Ns = length(selection);
 Na = length(obj.axis_pr);
@@ -169,7 +218,6 @@ if numericsAsValuesFlag
     end
 end
 
-ro = {};
 re = '([\d.]*\s*[<>=]{0,2})\s*[a-z_A-Z]?\s*([<>=]{0,2}\s*[\d.]*)';
 for i = 1:Ns
     if ischar(selection{i})
