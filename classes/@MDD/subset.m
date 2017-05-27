@@ -48,7 +48,7 @@ end
 
 % Fix selection if improperly specified
 Ns = length(selection);
-if Ns < Na && Ns >= Nd              %     Nd <= Ns < Na     (more axes than selections)
+if Ns < Na && Ns >= Nd              %     Nd <= Ns < Na     (more axes than selections, but still enough to fully query obj.data)
     % Fill out selection with empties if too short. For example, say
     % size(obj.data_pr) is MxNx1x1. The user might enter a selection with
     % length(selection) = 2, such as selection = {[A],[B]}. In this
@@ -73,9 +73,8 @@ elseif Ns > Na                  % Na < Ns       (Ns too large)
         error(['Index exceeds dimensions of ' class(obj) '.data']);
     end
     selection = selection(1:Na);
-elseif (Ns < Nd)            % Handle linear indexing
-    % If Ns < Nd (e.g. number of selections supplied is less than the
-    % number of dimensions of the data matrix), we will assume that the
+elseif (Ns < Nd)            % Fewer selections than there are dimensions in obj.data. In this case, use linear indexing.
+    % In this case we will assume that the
     % LAST selection supplied is a linear index and represents all
     % remaining dimensions. This is how MATLAB handles
     % linear indexing of normal matrices as well. For example, try the
@@ -86,7 +85,6 @@ elseif (Ns < Nd)            % Handle linear indexing
     %   temp(5,10)
     %   temp(50)
     % MDD will follow this behavior.
-    % Note that if size(obj) is MxNxL, selection can be MxNL (where NL = N times L). 
     
     % First, run obj.subset() as normal for everything but the LAST
     % selection supplied. For the last selection and the remaining unspecified
