@@ -44,22 +44,24 @@ if Ns == 1 && isvector(obj.data_pr)
     end
 end
 
-% Fill out selection with empties if too short. For example, say
-% size(obj.data_pr) is MxNx1x1. The user might enter a selection with
-% length(selection) = 2, such as selection = {[A],[B]}. In this
-% case, we convert it to selection = {[A],[B],[],[]}.
+% Fix selection if improperly specified
 Ns = length(selection);
 if Ns < Na && Ns >= Nd              %     Nd <= Ns < Ns     (more axes than selections)
+    % Fill out selection with empties if too short. For example, say
+    % size(obj.data_pr) is MxNx1x1. The user might enter a selection with
+    % length(selection) = 2, such as selection = {[A],[B]}. In this
+    % case, we convert it to selection = {[A],[B],[],[]}.
     selection2 = repmat({[]},1,Na);
     selection2(1:Ns) = selection;
     selection = selection2;
     clear selection2
 
-% Trim back selection if too long. If size(obj.data_pr) is MxN,
-% it is okay for selection to be {5,3,Y,Z} as long as Y and Z
-% are either empty (:) or ones. If they are anything else,
-% return error!
+
 elseif Ns > Na                  % Na < Ns       (Ns too large)
+    % Trim back selection if too long. If size(obj.data_pr) is MxN,
+    % it is okay for selection to be {5,3,Y,Z} as long as Y and Z
+    % are either empty (:) or ones. If they are anything else,
+    % return error!
     % Make sure extra selection entries are either "1" or []
     selection_extra = selection(Na+1:end);
     are_empties = cellfun(@isempty,selection_extra);
@@ -69,6 +71,8 @@ elseif Ns > Na                  % Na < Ns       (Ns too large)
     end
     selection = selection(1:Na);
 elseif (Ns < Na) && all(cellfun(@isnumeric,selection) | strcmp(selection,':')) % Handle linear indexing - only works if all inputs are numeric or colons!
+    % Revert to linear indexing if selection is too short and numerics are
+    % supplied (#todo - need to let this work with non-numerics as well)
     
     % Figure out what the linear indices are.
     % Note that if size(obj) is MxNxL, selection can be MxNL (where NL = N times L). 
