@@ -66,7 +66,8 @@ elseif Ns > Na                  % Na < Ns       (Ns too large)
     selection_extra = selection(Na+1:end);
     are_empties = cellfun(@isempty,selection_extra);
     are_ones = cellfun(@(s) s == 1, selection_extra);
-    if any(~(are_empties | are_ones))      % If any of the extra selections are NOT either empty or one's...
+    are_colons = strcmp(selection_extra,':');
+    if any(~(are_empties | are_ones | are_colons))      % If any of the extra selections are NOT either empty or one's...
         error(['Index exceeds dimensions of ' class(obj) '.data']);
     end
     selection = selection(1:Na);
