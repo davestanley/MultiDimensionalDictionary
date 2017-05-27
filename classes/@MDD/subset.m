@@ -34,13 +34,6 @@ Ns = length(selection);
 Na = length(obj.axis_pr);
 Nd = ndims(obj.data_pr);
 
-% TODO Handle linear indexing
-%   Note: this doesnt work since it just repmat
-% if Ns == 1
-%   selectionLinear = selection;
-%   selection = cell(1,Nd);
-%   [selection{:}] = ind2sub(size(obj.data_pr), selectionLinear{1});
-% end
 
 % Handle vector data
 if Ns == 1 && isvector(obj.data_pr)
@@ -56,19 +49,17 @@ end
 % length(selection) = 2, such as selection = {[A],[B]}. In this
 % case, we convert it to selection = {[A],[B],[],[]}.
 Ns = length(selection);
-if Ns < Na && Ns >= Nd
+if Ns < Na && Ns >= Nd              %     Nd <= Ns < Ns     (more axes than selections)
     selection2 = repmat({[]},1,Na);
     selection2(1:Ns) = selection;
     selection = selection2;
     clear selection2
-end
 
 % Trim back selection if too long. If size(obj.data_pr) is MxN,
 % it is okay for selection to be {5,3,Y,Z} as long as Y and Z
 % are either empty (:) or ones. If they are anything else,
 % return error!
-Ns = length(selection);
-if Ns > Na
+elseif Ns > Na                  % Na < Ns       (Ns too large)
     % Make sure extra selection entries are either "1" or []
     selection_extra = selection(Na+1:end);
     are_empties = cellfun(@isempty,selection_extra);
@@ -77,7 +68,58 @@ if Ns > Na
         error(['Index exceeds dimensions of ' class(obj) '.data']);
     end
     selection = selection(1:Na);
+elseif (Ns < Na) && all(cellfun(@isnumeric,selection) | strcmp(selection,':')) % Handle linear indexing - only works if all inputs are numeric or colons!
+    
+    % Figure out what the linear indices are.
+    % Note that if size(obj) is MxNxL, selection can be MxNL (where NL = N times L). 
+    sz_dat = size(obj.data_pr);
+    Ndat = numel(obj.data_pr);
+    inds = linearize_inds(selection,sz_dat,Ndat);
+   
+    % Get rid of all except the chosen data
+    if iscell(obj.data_pr)
+        data_new = cell(Ndat,1);
+    else
+        data_new = zeros(Ndat,1);
+    end
+    data_new(inds) = obj.data_pr(inds);
+    data_new = reshape(data_new,sz_dat);
+    obj.data_pr = data_new;         % data_new will have the same dimensions as obj.data
+                                    % But will have zeros / empties
+                                    % for all entries except the selected data.
+    
+                                    
+    % Finally, figure out the new set of subscripts that are still used in
+    % obj.data_pr. Select only these.
+    dim_dat = ndims(obj.data_pr);
+    [subs{1:dim_dat}] = ind2sub(sz_dat,inds);
+    
+    selection_new = repmat({':'},1,Na);
+    for i = 1:length(subs)
+        selection_new{i} = unique(subs{i});
+    end
+    
+    selection = selection_new;
 end
+
+
+% If Ns is still wrong dimensions, return error
+Ns = length(selection);
+if Ns ~= Na
+    error(['Number of inputs must match dimensionality of ' class(obj) '.data']);
+end
+
+% Now that subset is properly formatted, call the core function
+[obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag);
+
+
+end
+
+function [obj2, ro] = subset_core(obj,selection, numericsAsValuesFlag)
+
+Ns = length(selection);
+Na = length(obj.axis_pr);
+Nd = ndims(obj.data_pr);
 
 % Replace any ':' entries in selection with []. Empty
 % entries code for taking all entries along a dimension; ':' is
@@ -90,11 +132,6 @@ for i = 1:length(selection)
     end
 end
 
-% If Ns is still wrong dimensions, return error
-Ns = length(selection);
-if Ns ~= Na
-    error(['Number of inputs must match dimensionality of ' class(obj) '.data']);
-end
 
 axClasses = getclass_obj_axis_values(obj);
 
@@ -202,5 +239,16 @@ obj2.data_pr = obj.data_pr(selection{:});
 % as MxNx1x1 (e.g. length of 4). Thus, fixAxes corrects this.
 % This should no longer be necessary!!!
 % obj2 = fixAxes(obj2);
+
+end
+
+
+function inds = linearize_inds(selection,sz_dat,Ndat)
+
+    
+    master_inds = 1:Ndat;
+    master_inds = reshape(master_inds,sz_dat);
+    inds = master_inds(selection{:});
+    inds = inds(:);
 
 end
