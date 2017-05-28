@@ -21,7 +21,7 @@ function hxp = xp_PlotData (xp, op)
     xp = xp.squeezeRegexp('Dim');
     
     % Convert xp to DynaSim data struct
-    data = ds.MDD2ds(xp);
+    data = ds.mdd2ds(xp);
     
     % Remove NaNs introduced due to packing
     for i = 1:length(data)

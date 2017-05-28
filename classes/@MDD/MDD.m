@@ -161,12 +161,22 @@ classdef MDD
             
             if nargin % (2) or (3) import data
                 % Determine if table or not
+                isdatatable = false;
                 if nargin > 1 && isvector(varargin{1}) % If Table: axis_vals must exist and data must be a vector
                     lengthsCell = cellfunu(@length,varargin{2});
-                    if all(length(varargin{1}) == [lengthsCell{:}]) % If Table: each axis_vals cell contents must be same length as data
-                        obj = obj.importDataTable(varargin{:});
+                    % If Table: each axis_vals cell contents must be same length as data. There
+                    % should also be at least 2 columns because otherwise this could just be a vector
+                    % input.
+                    if length(varargin{2}) > 1      % At least 2 columns
+                        if all(length(varargin{1}) == [lengthsCell{:}]); isdatatable = true;    % Length of each column must match length of data.
+                        end
                     end
-                else % Not table
+                end
+
+                % Execute the import.
+                if isdatatable
+                    obj = obj.importDataTable(varargin{:});
+                else
                     obj = obj.fixAxes;
                     obj = obj.importData(varargin{:});
                 end
@@ -410,10 +420,18 @@ classdef MDD
         end
         
         
-        function out = exportData(obj)
+        function [data, axis_values, axis_names] = exportData(obj)
             % exportData - return object's data
             
-            out = obj.data;
+            data = obj.data;
+            
+            if nargout > 1
+                axis_values = obj.exportAxisVals;
+            end
+
+            if nargout > 2
+                axis_names = obj.exportAxisNames;
+            end
         end
         
         
@@ -1107,29 +1125,35 @@ classdef MDD
         end
         
         
-        function duplicateBool = isDuplicateAxisValues(axis_values)
+        function duplicateBool = isDuplicateAxisValues(axis_val_columns)
             % isDuplicateAxisValues - determine if axis values are duplicated.
             %
             % Useful for non-spare data, eg with linear import/merge.
+            % Assumes we are working with axis columns from a 2D table
+            % (e.g. importDataTable, exportDataTable)
             %
             % Strategy: turn all axis values into strings. Horizontally
             % concatenate the strings. See if any non-unique strings.
             %
             % Author: Erik Roberts
+
+            axis_lengths = cellfunu(@length,axis_val_columns);
+            if ~all(mode([axis_lengths{:}]) == [axis_lengths{:}]); error('All cells in axis_vals_columns must be equal in length'); end
+
             
-            axCellStrHorzCat = cell(size(axis_values{1}, 1), 1);
-            for i = 1:length(axis_values)
-                for j = 1:size(axis_values{i}, 1)
-                    thisVal = axis_values{i}(j);
+            axCellStrHorzCat = cell(size(axis_val_columns{1}, 1), 1);
+            for i = 1:length(axis_val_columns)
+                for j = 1:size(axis_val_columns{i}, 1)
+                    thisVal = axis_val_columns{i}(j);
                     if iscell(thisVal)
                         thisVal = thisVal{1};
                     end
                     
                     if isnumeric(thisVal)
                         axCellStrHorzCat{j} = [axCellStrHorzCat{j} num2str(thisVal)];
-                    elseif ischar(axis_values{i}{j})
+                    elseif ischar(axis_val_columns{i}{j})
                         axCellStrHorzCat{j} = [axCellStrHorzCat{j} thisVal];
-                    elseif isstring(axis_values{i}{j})
+                    elseif isstring(axis_val_columns{i}{j})
                         axCellStrHorzCat{j} = [axCellStrHorzCat{j} char(thisVal)];
                     else
                         error('Unknown data type')

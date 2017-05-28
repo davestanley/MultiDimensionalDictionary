@@ -12,12 +12,18 @@ obj = obj.fixAxes;
 if nargin > 2 && ~isempty(axis_vals)
     if ~iscell(axis_vals); error('axis_vals must be a cell array.'); end
     
-    % Handle vector data
-    if length(axis_vals) == 1 && ismatrix(obj)% #checkthis
-        vecDim = cellfun(@length,obj.exportAxisVals) == length(axis_vals{1});
-        axis_vals{vecDim} = axis_vals{1}; % move axis_vals to right dim
-        axis_vals{~vecDim} = 1; % set other dim to 1
+    
+    % Handle scalar or vector data - obj.data_pr can be 1x1, Mx1 or 1xM.
+    % Make sure axis_vals lines up appropriately
+    if length(axis_vals) == 1 && isscalar(obj.data_pr)
+        % do nothing
+    elseif length(axis_vals) == 1 && isrow(obj.data_pr)
+        axis_vals{2} = axis_vals{1};
+        axis_vals{1} = 1;
+    elseif length(axis_vals) == 1 && iscolumn(obj.data_pr)
+        % do nothing
     end
+
     
     for i = 1:length(axis_vals)
         obj.axis_pr(i).values = axis_vals{i};

@@ -52,11 +52,6 @@ if nargin < 5
     overwriteBool = false;
 end
 
-if ~overwriteBool && MDD.isDuplicateAxisValues(axis_val_columns)
-    error(['Attempting to import overlapping entries. Set overwriteBool=true to',...
-           ' overwrite overlapping entries with the last duplicate entry.'])
-end
-
 % Initialize
 X = data_column;
 axlinear = axis_val_columns;
@@ -77,6 +72,19 @@ for k = 1:Ndims
     axLinearFormat{k} = MDD.calcClasses(axlinear{k}, 'axis_values');
 end
 if any(strcmp(axLinearFormat,'unknown')) || isempty(axlinear); error('Cells in axis_val_columns must be a numeric array, cell array of numerics, or cell array of chars'); end
+
+% Error checking - length of each axis_val_column must be equal to the
+% length of data_column (e.g. the number of rows in the table must be
+% uniform across all columns)
+axis_lengths = cellfunu(@length,axis_val_columns);
+if ~all(length(data_column) == [axis_lengths{:}]); error('ImportDataTable failed - all cells in axis_vals must have length equal to length(data)'); end
+
+
+if ~overwriteBool && MDD.isDuplicateAxisValues(axis_val_columns)
+    error(['Attempting to import overlapping entries. Set overwriteBool=true to',...
+           ' overwrite overlapping entries with the last duplicate entry.'])
+end
+
 
 % Set up xp.axis_pr
 sz = zeros(1, Ndims);
