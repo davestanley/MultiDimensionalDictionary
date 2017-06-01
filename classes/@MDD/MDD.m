@@ -88,6 +88,9 @@ classdef MDD
     properties (Access = private) % private so that subclass can override
         data_pr        % Storing the actual data (multi-dimensional matrix or cell array)
         axis_pr        % 1xNdims - array of MDDAxis classes for each axis. Ndims = ndims(data)
+    end
+    
+    properties(GetAccess=private, SetAccess=immutable) % set once
         axisClass = MDDAxis
     end
     

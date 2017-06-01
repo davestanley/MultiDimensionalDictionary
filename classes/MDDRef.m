@@ -17,6 +17,9 @@ classdef MDDRef < handle & matlab.mixin.Copyable
     
     properties (Access=private)
         valueObj
+    end
+    
+    properties(GetAccess=private, SetAccess=immutable) % set once
         valueObjClass = MDD
     end
     
