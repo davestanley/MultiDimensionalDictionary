@@ -486,7 +486,7 @@ clear xp2 xp3 xp4 xp5
 
 % Start by taking a smaller subset of the original xp object.
 % xp2 = xp.subset(2,2,[],[1,3,5:8]);      % Selection based on index locations
-xp2 = xp.subset(2,2,:,'/(v|^i||ISYN$)/');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp.subset(2,2,:,'/(v|^i||ISYN$)/');  % Using regular expression that effectively selects everything except the _s terms ("^" - beginning with; "$" - ending with)
 xp2 = xp2.squeeze;
 xp2.printAxisInfo;
 
@@ -550,7 +550,7 @@ xp4.printAxisInfo;
 %% Use packDim to average across cells
 
 xp2 = xp;
-xp2 = xp(:,:,:,'v');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp(:,:,:,'v');    % Using regular expression string
 xp2 = xp2.squeeze;
 %
 % Average across all cells
@@ -577,7 +577,7 @@ figl; recursiveFunc(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{
 % See also plotting material by Hadley Wickham
 
 % First, pull out synaptic current variables
-xp2 = xp(:,:,:,'/(ISYN$)/');  % Same thing as above using regular expression. Selects everything except the _s terms. "^" - beginning with; "$" - ending with
+xp2 = xp(:,:,:,'/(ISYN$)/');  % Using regular expression ("$" - ending with)
 xp2.printAxisInfo;
 
 % Second, put this into matrix form, so we can average over them
