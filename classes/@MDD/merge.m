@@ -1,9 +1,9 @@
 function obj_out = merge(obj1, obj2, forceMergeBool, debugBool)
 % merge - merge 2 MDD objects
 %
-% Usage: obj_out = qmerge(obj1,obj2)
-%        obj_out = qmerge(obj1,obj2, forceMergeBool)
-%        obj_out = qmerge(obj1,obj2, forceMergeBool, debugBool)
+% Usage: obj_out = merge(obj1,obj2)
+%        obj_out = merge(obj1,obj2, forceMergeBool)
+%        obj_out = merge(obj1,obj2, forceMergeBool, debugBool)
 %
 % Inputs:
 %   obj1/2: MDD objects
