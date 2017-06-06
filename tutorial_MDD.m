@@ -621,11 +621,7 @@ xp2b = xp2.squeezeRegexp('populations'); xp2b.printAxisInfo
 % is to make an empty MDD object with the same name minus one letter, use it to 
 % tab complete, and then add the letter back.
 
-xp7 = MDDRef(xp); % copy xp and convert it to handle object
-    % Dave: This behavior is a bit counter-intuitive to me. If xp7 is a
-    % pointer to xp, I would expect modifying xp7 to also modify xp. But it looks
-    % like we're copying xp first, and then creating the pointer all in one
-    % step. Is this correct? 
+xp7 = MDDRef(xp); % copy xp and convert it to a handle object
 xp7Ref = xp7; % assignment makes reference, not copy
 xp7Copy = xp7.copy;
 
@@ -633,12 +629,12 @@ fprintf('size(xp7) = %s\n', num2str(size(xp7)))
 fprintf('size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
 fprintf('size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 
-xp7Ref = xp7Ref.subset(1:2,1,1,1:4); % use ref to modify original xp7
 fprintf('Take subset of xp7Ref\n')
+xp7Ref = xp7Ref.subset(1:2,1,1,1:4); % use ref to modify original xp7
 
-fprintf('new size(xp7) = %s\n', num2str(size(xp7)))
-fprintf('new size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
-fprintf('new size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
+fprintf('current size(xp7) = %s\n', num2str(size(xp7))) % #tofix
+fprintf('current size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
+fprintf('current size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 
 % Notice that the copy, xp7Copy, is not modified since it points to a copy of the
 % xp7 object. However, modifying the reference xp7Ref modified the original object,
@@ -647,13 +643,12 @@ fprintf('new size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 % Read more about value vs. reference classes here:
 %   https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html
 
-xp7 = MDDRef(myMDDSubclass);        % Produces error; #tofix; seems to have to do with line: varargin(1) = []
-
 %% Subclassing examples
 
-sc = myMDDSubclass;
+scMDD = myMDDSubclass;
 scAxis = myMDDAxisSubclass;
-scRef = myMDDRefSubclass;       % Produces error; #tofix
+scMDDRef = myMDDRefSubclass;
+refMDD = myMDDRefSubclass(myMDDSubclass);       % Produces error; #tofix
 
 
 

@@ -152,7 +152,7 @@ classdef MDD
             
             % (4) Check if axisClass overwritten by first arg
             nargin = length(varargin);
-            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDDAxis')))
+            if nargin && (isobject(varargin{1}) && isa(varargin{1}, 'MDDAxis'))
                 obj.axisClass = varargin{1};
                 varargin(1) = [];
                 nargin = length(varargin);
