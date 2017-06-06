@@ -645,10 +645,10 @@ fprintf('current size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 
 %% Subclassing examples
 
-scMDD = myMDDSubclass;
-scAxis = myMDDAxisSubclass;
-scMDDRef = myMDDRefSubclass;
-refMDD = myMDDRefSubclass(myMDDSubclass);       % Produces error; #tofix
+scMDD = myMDDSubclass; % value object
+scMDDref = MDDRef(myMDDSubclass); % reference object
+scAxis = myMDDAxisSubclass; 
+scMDDRef = myMDDRefSubclass; % reference object
 
 
 
