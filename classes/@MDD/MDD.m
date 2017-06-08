@@ -617,12 +617,16 @@ classdef MDD
         % % % % % % % % % % % HOUSEKEEPING METHODS % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
         
-        function out = printAxisInfo(obj,showclass)
+        function out = printAxisInfo(obj, showclass, debugBool)
             % printAxisInfo - print summary of axis information
             %
             % Notes:
             % If no output arguments, prints axis info to the screen. 
             % If output arguments are supplied, returns this information as a string
+            
+            if nargin < 3
+              debugBool = false;
+            end
             
             if nargin < 2
                 showclass = 1;
@@ -657,7 +661,7 @@ classdef MDD
             
             % Lastly output a summary of dimensionality comparing MDD.axis_pr
             % and MDD.data_pr. These should match up.
-            if nargout == 0
+            if nargout == 0 && debugBool
                 fprintf('For Dev:\n')
                 fprintf(['  MDD.axis_pr size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
                 fprintf(['  MDD.data_pr size: [' num2str(size(obj.data_pr)) ']\n']);
