@@ -1132,7 +1132,7 @@ classdef MDD
         end
         
         
-        function duplicateBool = isDuplicateAxisValues(axis_val_columns)
+        function [duplicateBool, dv, idv] = isDuplicateAxisValues(axis_val_columns)
             % isDuplicateAxisValues - determine if axis values are duplicated.
             %
             % Useful for non-spare data, eg with linear import/merge.
@@ -1142,6 +1142,13 @@ classdef MDD
             % Strategy: turn all axis values into strings. Horizontally
             % concatenate the strings. See if any non-unique strings.
             %
+            % Outputs:
+            % duplicateBool: true if duplicates present; false otherwise
+            % dv: if duplicates are present, returns a string representation of the
+            %     duplicattes
+            % idv: returns the index of the original duplicate rows in
+            %      axis_val_columns.
+            %
             % Author: Erik Roberts
 
             axis_lengths = cellfunu(@length,axis_val_columns);
@@ -1149,18 +1156,18 @@ classdef MDD
 
             
             axCellStrHorzCat = cell(size(axis_val_columns{1}, 1), 1);
-            for i = 1:length(axis_val_columns)
-                for j = 1:size(axis_val_columns{i}, 1)
-                    thisVal = axis_val_columns{i}(j);
+            for idv = 1:length(axis_val_columns)
+                for j = 1:size(axis_val_columns{idv}, 1)
+                    thisVal = axis_val_columns{idv}(j);
                     if iscell(thisVal)
                         thisVal = thisVal{1};
                     end
                     
                     if isnumeric(thisVal)
                         axCellStrHorzCat{j} = [axCellStrHorzCat{j} num2str(thisVal)];
-                    elseif ischar(axis_val_columns{i}{j})
+                    elseif ischar(axis_val_columns{idv}{j})
                         axCellStrHorzCat{j} = [axCellStrHorzCat{j} thisVal];
-                    elseif isstring(axis_val_columns{i}{j})
+                    elseif isstring(axis_val_columns{idv}{j})
                         axCellStrHorzCat{j} = [axCellStrHorzCat{j} char(thisVal)];
                     else
                         error('Unknown data type')
@@ -1171,6 +1178,9 @@ classdef MDD
             [~, ind] = unique(axCellStrHorzCat);
             
             duplicateBool = length(ind) ~= length(axCellStrHorzCat);
+            
+            duplicate_val_inds = setxor(ind,1:length(axCellStrHorzCat));
+            dv = axCellStrHorzCat(duplicate_val_inds);
         end
         
         
