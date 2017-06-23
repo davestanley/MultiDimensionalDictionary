@@ -50,14 +50,14 @@ nAx = length(indInt1) + length(indUnique1) + length(indUnique2);
 
 % Confirm that unique axis names only have 1 value
 if ~isempty(indUnique1)
-    for k = indUnique1
+    for k = indUnique1(:)'
         if length(axis_vals1{k}) ~= 1
             error('Non-unique axis has more than 1 value')
         end
     end
 end
 if ~isempty(indUnique2)
-    for k = indUnique2
+    for k = indUnique2(:)'
         if length(axis_vals2{k}) ~= 1
             error('Non-unique axis has more than 1 value')
         end
