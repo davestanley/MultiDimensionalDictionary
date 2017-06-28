@@ -261,9 +261,6 @@ classdef MDD
             
             % Define variables and check that all dimensions are consistent
             
-            % Verify that size of obj is correct
-            checkDims(obj);
-            
             % Find axis if axis.name is given.
             if ischar(axis)
                 dim_string = axis;
@@ -702,7 +699,6 @@ classdef MDD
             
             % Run fixAxes, just incase!
             obj = obj.fixAxes;
-            obj.checkDims;
             
         end
         
@@ -722,8 +718,6 @@ classdef MDD
             % of obj.axis_pr rather than obj.data_pr. This has the effect of
             % returning 1's if length(obj.axis_pr) > ndims(obj.data_pr)
             
-            checkDims(obj);
-            
             [varargout{1:nargout}] = builtin('size', obj.data_pr, varargin{:} );
             
             % If function is called in the form sz = size(obj) OR size(obj),
@@ -740,7 +734,6 @@ classdef MDD
         
         
         function Nd = ndims(obj)
-            checkDims(obj);
             Nd = length(obj.axis_pr);
         end
         
@@ -748,8 +741,6 @@ classdef MDD
         function obj = permute(obj,order)
             % Like normal permute command, except order can be either an
             % array of numerics, or a cell array of strings (regexps)
-            
-            checkDims(obj);
             
             % If order is a cell array of regular expressions, convert to
             % indices
@@ -804,7 +795,6 @@ classdef MDD
         
         
         function obj = ipermute(obj,order)
-            checkDims(obj);
             inverseorder(order) = 1:numel(order);
             obj.data_pr = permute(obj.data_pr,inverseorder);
             obj.axis_pr = obj.axis_pr(inverseorder);
@@ -812,7 +802,6 @@ classdef MDD
         
         
         function obj = transpose(obj)
-            checkDims(obj);
             Nd = ndims(obj.data_pr);
             
             if Nd > 2; error('Can only transpose data with at most 2 dimensions');
@@ -830,8 +819,6 @@ classdef MDD
             % there is one key difference:
             %   Normally, if squeeze operates on a 1xN matrix, it will leave
             % it as 1xN. This function forces it to always return as Nx1
-            
-            checkDims(obj);
             
             % If data is bigger than a matrix, squeeze out dimensions that
             % are of size 1.
@@ -860,7 +847,6 @@ classdef MDD
             
             % Make sure everything is good before returning.
             obj = obj.fixAxes;
-            checkDims(obj);
         end
         
         
@@ -871,8 +857,6 @@ classdef MDD
             % #requestexample
             %
             % Author: Ben Pittman-Polletta.
-            
-            checkDims(obj);
             
             if nargin < 4, new_axis_dim = []; end
             

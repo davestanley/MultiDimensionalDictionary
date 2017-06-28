@@ -27,8 +27,6 @@ if nargin < 3
     dim_target = last_non_singleton + 1;
 end
 
-checkDims(obj);
-
 % Make sure that obj.data_pr is a cell array
 if ~iscell(obj.data_pr); error('MDD.data must be a cell array.'); end
 
