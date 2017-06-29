@@ -932,7 +932,7 @@ classdef MDD
                     if ~iscell(obj.data_pr)
                         error('Use {} indexing only for cell data.')
                     end
-                    varargout = builtin('subsref',obj.data_pr,S);
+                    varargout = builtin('subsref', obj.data_pr, S);
                 case '.'
                     [varargout{1:nargout}] = builtin('subsref', obj, S);
                 otherwise
