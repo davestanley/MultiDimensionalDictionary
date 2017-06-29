@@ -9,7 +9,7 @@ function obj_out = mean_over_axis(obj, axis_dim, op) % axis_dim, function_handle
     if isempty(op), op = struct; end;
     
     op = struct_addDef(op,'function_handle',@nanmean);
-    op = struct_addDef(op,'function_arguments',{});
+    % op = struct_addDef(op,'function_arguments',{});
     
     % if nargin < 3, function_handle = []; end
     % 
@@ -37,7 +37,11 @@ function obj_out = mean_over_axis(obj, axis_dim, op) % axis_dim, function_handle
     
     %% Taking mean.
     
-    op.function_arguments{end + 1} = mean_dim;
+    if isfield(op, 'function_arguments')
+        op.function_arguments{end + 1} = mean_dim;   
+    else
+        op.function_arguments = {mean_dim};
+    end
     
     obj_out.data = cellfun(@(x) feval(op.function_handle, x, op.function_arguments{:}), obj_out.data, 'UniformOutput', 0);
     
