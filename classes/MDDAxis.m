@@ -92,7 +92,7 @@ classdef MDDAxis
                     if iscellstr(S(1).subs)
                         selection_out = MDDAxis.regex_lookup(allnames, S(1).subs{1});
                         S(1).subs{1} = selection_out;
-                        varargout = {builtin('subsref',obj,S)};
+                        varargout = {builtin('subsref', obj, S)};
                     else
                         % Default
                         varargout = {builtin('subsref', obj, S)};

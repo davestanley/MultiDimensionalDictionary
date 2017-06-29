@@ -93,10 +93,7 @@ xp = xp.importData(dat,axis_vals,axis_names);
 
 % MDD objects are essentially cell arrays (or matricies), but with the
 % option to index using strings instead of just integers. 
-% Thus, they are analogous to dictionaries in Python.
-% (This core functionality is implemented by the multidimensional
-% dictionaries (MDD), which MDD inherits, and to which MDD adds
-% plotting functionality.)
+% Thus, they are analogous to dictionaries in Python.=
 disp(xp);
 
 
@@ -128,7 +125,7 @@ xp.axis(1).axismeta
 xp.printAxisInfo
 
 % xp.meta stores meta data for use by the user as they see fit.
-% Here we will add some custom info to xp.metadata. This can be whatever
+% Here we will add some custom info to xp.meta. This can be whatever
 % you want. Here, I will use this to provide information about what is
 % stored in each of the matrices in the xp.data cell array. (Alternatively,
 % we could also make each of these matrices an MDD object!)
@@ -227,7 +224,7 @@ xp.exportDataTable(true, 5); % printing 5 rows to screen
 
 %% Importing Data from 2D Table
 
-% As mentioned before, multi-dimensional data is often represented in 2D table form, 
+% As mentioned above, multi-dimensional data is often represented in 2D table form, 
 % with 1 column representing the data, and other columns representing parameters 
 % associated with the data. MDD can import this 2D data, as we generated
 % previously.
@@ -257,12 +254,16 @@ xp4 = xp(:,:,1,8);                  % ## Update - This does the same thing as xp
                                     % of pulling data subsets. Note that [] and : are equivalent.
 xp4.printAxisInfo
 
-% Similarly, can query axis values using substring matching (via strfind internally)
-% Pull out sodium mechs only
+% Similarly, we can select axis values using substring matching (via strfind internally)
+% Pull out sodium mechs for E cells only
 xp5 = xp(:,:,1,'iNa');
 xp5.printAxisInfo
 
-% Pull out synaptic state variables
+% If we only want to specify the values for a single axis, we can use axisSubset.
+xp5 = xp.axisSubset('variables', 'iNa');
+xp5.printAxisInfo
+
+% Pull out synaptic state variables for E cells.
 xp5 = xp(:,:,1,'_s');
 xp5.printAxisInfo
 
@@ -271,16 +272,31 @@ xp5.printAxisInfo
 xp5 = xp(:,:,1,'/_s$/');
 xp5.printAxisInfo
 
+% Pull out all synaptic state variables.
+xp5 = xp.axisSubset('variables', '_s');
+xp5.printAxisInfo
+
 % If only one input is provided, then it is assumed to be a linear index.
 xp5 = xp([142:144]);      % Take the last 3 entries in the data.
-xp5b = xp(1:3,3,2,8);     % This produces the same result.
+xp5b = xp(1:3,3,2,8);     % This produces the same result. Note that MDD 
+                          % objects are "column major" - i.e., the last
+                          % axis is run over first when the object is
+                          % linearized.
 li = false(1,144); li(142:144) = true;
 xp5c = xp(li);            % Using logical indexing also produces the same result.
 disp(isequal(xp5,xp5b));
 disp(isequal(xp5,xp5c));
 
-% Linear indicing also works in conjunction with other forms of indexing;
-% leading indices are treated normally and the last index 
+clear xp5 xp5b xp5c
+
+% Linear indexing also works in conjunction with other forms of indexing;
+% leading indices are treated normally and the remaining indices are
+% linearized and indexed into.
+xp6 = xp(3, 3, 1:2, 8);
+xp6a = xp(3, 3, 15:16);
+disp(isequal(xp6, xp6a));
+
+% It's also easy to permute the axis order.
 xp_temp = xp.permute([3,4,1,2]);    % Permute so char array axes are first
 xp_temp.printAxisInfo;
 
@@ -291,21 +307,16 @@ xp5c = xp_temp('E','/v/',1:end);    % "end" does not yet work
 disp(isequal(xp5,xp5b));
 %disp(isequal(xp5,xp5c));
 
-% Can also reference a given axis based on its index number or based on its
-% name
-disp(xp.axis(4))
-disp(xp.axis('populations'))
-
 % Lastly, you can reference xp.data with the following shorthand
 % (This is the same as xp.data(:,:,1,8). Regular expressions dont work in this mode)
-mydata = xp{:,:,1,8}; warning('Depreciated! #tofix'); % #tofix
+mydata = xp{:,:,1,8}; warning('Deprecated! #tofix'); % #tofix
 mydata2 = xp.data(:,:,1,8);
 disp(isequal(mydata,mydata2));
 
 clear mydata mydata2 xp4 xp5 xp5b xp_temp
 
-
 %% Advanced subscripting and indexing (valSubset)
+%#todo: allow axisSubset to take comparators, etc.
 
 % Inputs:
     %   Types of input for each axis (each comma-separated argument):
@@ -412,7 +423,9 @@ clc
 xp4 = xp(1:2,1:2,:,6:7);
 xp4.printAxisInfo
 
-dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};       % Note - we can also use a mixture of strings and index locations to specify dimensions. Dimension "0" corresponds to data.
+dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};
+% Note - we can also use a mixture of strings and index locations to
+% specify dimensions. Dimension "0" corresponds to data.
 
 % Note that here we will supply a function argument. This tells the second
 % subplot command to write its output to the axis as an RGB image, rather than
@@ -430,8 +443,14 @@ close all;
 % Another option is to use @xp_subplot_grid_adaptive, which will plot the data using axes in
 % descending order of the size of the axis values, and plot remaining
 % combinations of axis values across figures.
+xp5 = xp(:, :, :, 'v');
+recursiveFunc(xp5,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:3,0});
 
-recursiveFunc(xp4,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:4,0});
+% The order of axes can be specified with a function argument.
+xp5.printAxisInfo
+xp_subplot_grid_argument = {'populations', 'E_Iapp', 'I_E_tauD'};
+function_arguments = {{xp_subplot_grid_argument}, {}};
+recursiveFunc(xp5,{@xp_subplot_grid_adaptive,@xp_matrix_imagesc},{1:3,0},function_arguments);
 
 %% Combine and Plot two MDD objects
 close all;
@@ -528,7 +547,7 @@ ylabel('Cells');
 xlabel(xp2.axis(2).name); 
 set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
 
-%% Method unpackDim (undoing packDims)
+%% Method unpackDim (undoing packDim)
 % When packDim is applied to an MDD object, say to pack dimension 3, the
 % information from the packed axis is stored in the MDDAxis
 % matrix_dim_3, a field of xp3.meta.
@@ -541,20 +560,92 @@ xp4 = xp3.unpackDim(dest, src);
 xp4.printAxisInfo;
 
 % Unless new axis info is provided, that is.
-xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names'); % The values can also be left empty, as in xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', []);
+xp4 = xp3.unpackDim(dest, src, 'New_Axis_Name'); % The values can also be left empty, as in xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', []);
 xp4.printAxisInfo;
 
-xp4 = xp3.unpackDim(dest, src, 'New_Axis_Names', {'One','Two','Three','Four','Five','Six'});
+xp4 = xp3.unpackDim(dest, src, 'New_Axis_Name', {'One','Two','Three','Four','Five','Six'});
 xp4.printAxisInfo;
 
-%% Use packDim to average across cells
+%% Use mean_over_axis to average over synaptic currents
 
-xp2 = xp;
+% First, pull out synaptic current variables
+xp2 = xp.axisSubset('variables','/(ISYN$)/');  % Using regular expression ("$" - ending with)
+xp2.printAxisInfo;
+
+% Second, put this into matrix form, so we can average over them...
+xp3 = xp2.packDim(4,3);
+% ... and use cellfun.
+xp3.data = cellfun(@(x) nanmean(x, 3), xp3.data, 'UniformOutput', false);
+
+% Alternatively, all this can be done in one line using the library
+% function mean_over_axis.
+xp3a = mean_over_axis(xp2, 'variables');
+
+disp(isequal(xp3.data, xp3a.data));
+
+% The only difference between these two methods is that mean_over_axis
+% removes the meta field matrix_dim_3 and the axis Dim_4 left behind by packDim.
+disp('xp3 axes:')
+disp(xp3.exportAxisNames)
+disp('xp3a axes:')
+disp(xp3a.exportAxisNames)
+disp('xp3.meta = ')
+disp(xp3.meta)
+disp('xp3a.meta = ')
+disp(xp3a.meta)
+
+% Plot 
+recursiveFunc(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
+
+%% Using unpackDim & mean_over_axis to average across cells
+
 xp2 = xp(:,:,:,'v');    % Using regular expression string
 xp2 = xp2.squeeze;
-%
+
 % Average across all cells
 xp2.data = cellfun(@(x) mean(x,2), xp2.data,'UniformOutput',0);
+
+% If we use unpackDim to unpack cell identity into its own axis...
+xp2a = xp.unpackDim(2, [], 'Cell'); % By default, unpackDim creates a new axis in dimension 1.
+
+% ... then taking the mean can be done with mean_over_axis.
+xp2b = mean_over_axis(xp2a, 'Cell');
+xp2b = xp2b(:, :, :, 'v');
+xp2b = xp2b.squeeze;
+
+disp(isequal(xp2, xp2b));
+
+% Pack E and I cells together
+src=3;
+dest=2;
+xp2 = xp2.packDim(src,dest);
+
+% Plot 
+figl; recursiveFunc(xp2,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+
+% mean_over_axis can take an options structure with fields function_handle
+% and function_arguments to apply other summary statistics across a given
+% axis.
+mean_options.function_handle = @nanmedian;
+xp2c = mean_over_axis(xp2a, 'Cell', mean_options);
+
+% Pack & plot.
+xp2c = xp2c.packDim(src, dest); 
+xp2c = xp2c.squeeze; 
+xp2c = xp2c.axisSubset('variables', 'v');
+figl; recursiveFunc(xp2c,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+
+% Note that @nanstd has a second argument which we must specify to be
+% empty; only the dimension over which the summary function is applied is
+% specified internally by mean_over_axis (as the last argument to 
+% the function options.function_handle).
+mean_options.function_handle = @nanstd; mean_options.function_arguments = {[]};
+xp2d = mean_over_axis(xp2a, 'Cell', mean_options);
+
+% Pack & Plot.
+xp2d = xp2d.packDim(src, dest);
+xp2d = xp2d.squeeze;
+figl; recursiveFunc(xp2d,{@xp_subplot_grid_adaptive,@xp_matrix_basicplot},{1:3,[]},{{},{}});
 
 % % Convert xp2.data from a matrix into an MDD object as well. This is
 % % useful for keeping track of axis names. 
@@ -563,42 +654,12 @@ xp2.data = cellfun(@(x) mean(x,2), xp2.data,'UniformOutput',0);
 % 
 % % xp2.data = Cell_2_MDD(xp2.data,mat_ax_names,mat_ax_values);
 
-% Pack E and I cells together
-src=3;
-dest=2;
-xp3 = xp2.packDim(src,dest);
-
-
-% Plot 
-figl; recursiveFunc(xp3,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
-
-%% Use packDim to average over synaptic currents
-% Analogous to cell2mat
-% See also plotting material by Hadley Wickham
-
-% First, pull out synaptic current variables
-xp2 = xp(:,:,:,'/(ISYN$)/');  % Using regular expression ("$" - ending with)
-xp2.printAxisInfo;
-
-% Second, put this into matrix form, so we can average over them
-xp3 = xp2.packDim(4,3);
-disp(xp3.data)              % xp3.data is now 3D, with the 3rd dim denoting synaptic current
-xp3 = xp3.squeeze;
-xp3.printAxisInfo;
-
-% Average across membrane currents
-xp3.data = cellfun(@(x) nanmean(x,3), xp3.data,'UniformOutput',0);
-
-% Plot 
-recursiveFunc(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
-
 %% Test mergeDims
 % Analogous to Reshape.
 
 % This command combines two (or more) dimensions into a single dimension.
 xp2 = xp.mergeDims([3,4]);
 xp2.printAxisInfo;
-
 
 %% Advanced testing
 clear xp2 xp3 xp4 xp5 xp6
@@ -621,11 +682,7 @@ xp2b = xp2.squeezeRegexp('populations'); xp2b.printAxisInfo
 % is to make an empty MDD object with the same name minus one letter, use it to 
 % tab complete, and then add the letter back.
 
-xp7 = MDDRef(xp); % copy xp and convert it to handle object
-    % Dave: This behavior is a bit counter-intuitive to me. If xp7 is a
-    % pointer to xp, I would expect modifying xp7 to also modify xp. But it looks
-    % like we're copying xp first, and then creating the pointer all in one
-    % step. Is this correct? 
+xp7 = MDDRef(xp); % copy xp and convert it to a handle object
 xp7Ref = xp7; % assignment makes reference, not copy
 xp7Copy = xp7.copy;
 
@@ -633,12 +690,12 @@ fprintf('size(xp7) = %s\n', num2str(size(xp7)))
 fprintf('size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
 fprintf('size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 
-xp7Ref = xp7Ref.subset(1:2,1,1,1:4); % use ref to modify original xp7
 fprintf('Take subset of xp7Ref\n')
+xp7Ref = xp7Ref.subset(1:2,1,1,1:4); % use ref to modify original xp7
 
-fprintf('new size(xp7) = %s\n', num2str(size(xp7)))
-fprintf('new size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
-fprintf('new size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
+fprintf('current size(xp7) = %s\n', num2str(size(xp7))) % #tofix
+fprintf('current size(xp7Ref) = %s\n', num2str(size(xp7Ref)))
+fprintf('current size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 
 % Notice that the copy, xp7Copy, is not modified since it points to a copy of the
 % xp7 object. However, modifying the reference xp7Ref modified the original object,
@@ -647,13 +704,12 @@ fprintf('new size(xp7Copy) = %s\n', num2str(size(xp7Copy)))
 % Read more about value vs. reference classes here:
 %   https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html
 
-xp7 = MDDRef(myMDDSubclass);        % Produces error; #tofix; seems to have to do with line: varargin(1) = []
-
 %% Subclassing examples
 
-sc = myMDDSubclass;
-scAxis = myMDDAxisSubclass;
-scRef = myMDDRefSubclass;       % Produces error; #tofix
+scMDD = myMDDSubclass; % value object
+scMDDref = MDDRef(myMDDSubclass); % reference object
+scAxis = myMDDAxisSubclass; 
+scMDDRef = myMDDRefSubclass; % reference object
 
 
 

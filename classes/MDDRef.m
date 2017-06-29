@@ -34,25 +34,29 @@ classdef MDDRef < handle & matlab.mixin.Copyable
           % MDDRef - Default constructor
             %
             % Usage:
-            %   obj = MDDRef()
-            %   obj = MDDRef(mddObj) % convert MDD value object to MDDRef handle object
-            %   obj = MDDRef(data) % multidimensional data
-            %   obj = MDDRef(data, axis_vals, axis_names) % multidimensional or linear data
-            %   obj = MDDRef(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
-            %   obj = MDDRef(valueObjClass, axis_class, data, axis_vals, axis_names) % for subclassing MDD and MDDAxis
-            %   obj = MDDRef(valueObjClass, data, axis_vals, axis_names) % for subclassing MDD
-            
-            if nargin && (isobject(varargin{1}) && any(strcmp(superclasses(varargin{1}), 'MDD')))
-                obj.valueObjClass = varargin{1};
-                varargin(1) = [];
-            end
+            %   1) obj = MDDRef()
+            %   2) obj = MDDRef(mddObj) % convert MDD value object to MDDRef handle object
+            %   3) obj = MDDRef(data) % multidimensional data
+            %   4) obj = MDDRef(data, axis_vals, axis_names) % multidimensional or linear data
+            %   5) obj = MDDRef(axis_class, data, axis_vals, axis_names) % for subclassing MDDAxis
+            %   6) obj = MDDRef(valueObjClass, data, axis_vals, axis_names) % for subclassing MDD
             
             if nargin && (isobject(varargin{1}) && isa(varargin{1}, 'MDD'))
-              obj.valueObj = varargin{1};
-              return
+                obj.valueObjClass = varargin{1};
+                
+                % case 2
+                if nargin == 1
+                  obj.valueObj = varargin{1};
+                end
+                
+                % case 6
+                varargin(1) = []; % remove mddObj
             end
             
-            obj.valueObj = feval(str2func(class(obj.valueObjClass)), varargin{:});
+            % cases 0, 3-6
+            if isempty(obj.valueObj)
+              obj.valueObj = feval(str2func(class(obj.valueObjClass)), varargin{:});
+            end
         end
         
         % % % % % % % % % % % % % % % % % % % % % % % % % % %
