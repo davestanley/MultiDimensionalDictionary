@@ -91,17 +91,23 @@ function hxp = xp_subplot_grid (xp, op)
             end
             
             % Do labels for rows
-            if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if its not an empty axis
+            if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if it's not an empty axis
                 rowstr = setup_axis_labels(xp.axis(1));
                 hxp.hcurr.rowtitles(rowstr);
             end
             
             % Do labels for columns
-            if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
+            if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if it's not an empty axis
                 colstr = setup_axis_labels(xp.axis(2));
                 hxp.hcurr.coltitles(colstr);
             end
             
+            % Do labels for x-axis.
+            if ~isempty(xp.meta.datainfo(1).name)
+                xlabels = cell(size(xp.axis(2).getvalues_cellstr));
+                xlabels(:) = {xp.meta.datainfo(1).name};
+                hxp.hcurr.coltitles(xlabels, 'bottom');
+            end
             
             if display_mode == 1
                 
