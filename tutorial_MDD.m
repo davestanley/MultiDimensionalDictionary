@@ -351,8 +351,9 @@ xp_temp.printAxisInfo;
 % value supplied.
 xp5 = xp_temp.valSubset('E','v',10);                 % Take only values equal to 10 in the last 2 dimensions
 xp5b = xp_temp.valSubset('E','v','x==10','x==10');   % Same as above
-xp5b = xp_temp('E','v',2,2);
 disp(isequal(xp5,xp5b));
+xp5c = xp_temp('E','v',2,2);
+disp(isequal(xp5,xp5c));
 
 % Likewise for strings
 xp5 = xp(1,1,'E');
@@ -365,10 +366,14 @@ clear mydata mydata2 xp4 xp5 xp5b xp_temp
 %% % % % % % % % % % % % % % % PLOTTING EXAMPLES % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
+
+% MDD uses a method called recursiveFunc to arrange and plot the data
+% stored in an MDD object. In this section, we'll show several examples of
+% how to use recursiveFunc. Tip: don't try to understand what recursiveFunc
+% is doing - instead, try putting break points in the various function
+% handles to get an idea of how this command works.
+
 %% Plot 2D data
-% Tip: don't try to understand what recursiveFunc is doing - instead, try
-% putting break points in the various function handles to see how this
-% command works.
 close all;
 
 % Pull out a 2D subset of the data
@@ -476,6 +481,95 @@ xp5 = merge(xp3,xp4, true); % or xp5 = xp3.merge(xp4, true);
 dimensions = {[1,2],0};
 figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
 
+%% % % % % % % % % % % % % % DATA ANALYSIS EXAMPLES % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+% As its name implies, recursiveFunc can be used to do more than plot the
+% data in an MDD object. Since any series of functions can be passed to
+% recursiveFunc to evaluate on different dimensions of an MDD object,
+% recursiveFunc is also a powerful tool for data analysis.
+
+%% Apply function to each cell.
+% As we've seen, since the data in an MDD object is a cell array, cellfun
+% can be used to apply a function to the contents of each cell, and the
+% output can then be assigned to a new MDD object. However, recursiveFunc
+% can be used to simplify this process.
+
+% Here, we'll use pmtm, a Matlab builtin function implementing a multitaper
+% spectral estimation algorithm, which takes as its fourth argument the
+% sampling frequency (1000 Hz for this simulated data).
+
+clear xp2 xp3 xp4 xp5
+xp2 = xp(:, :, 'E', 'v');
+
+% To pass the output of a function performed on each cell into a new MDD
+% object, the library function pass_values must be passed to recursiveFunc
+% as a first function handle. Also, since we want to execute the function
+% pmtm on the data, not the xp object itself, we pass a second
+% function handle, apply_to_data. apply_to_data takes a first argument
+% which is a function handle (the function we want to apply to the data),
+% followed by a variable number of arguments which are passed to the
+% function after xp.data.
+ 
+function_handles = {@xp_pass_values, @apply_to_data};
+dimensions = {1:2, 0};
+function_arguments = {{},{@pmtm, [],[], 1000}};
+xp2_hat = recursiveFunc(xp2, function_handles, dimensions, function_arguments);
+
+% xp_pass_values removes xp.meta.datainfo, but we can add a new datainfo
+% MDDAxis.
+[~, frequencies] = pmtm(xp2.data{1}, [], [], 1000);
+datainfo(1:2) = MDDAxis;
+datainfo(1).name = 'Freq. (Hz)';
+datainfo(1).values = frequencies;
+datainfo(2).name = 'cells';
+datainfo(2).values = [];
+xp2_hat.meta.datainfo = datainfo;
+
+matrixplot_options.yscale = 'log';
+% Note that we can pass options yscale and xscale to xp_matrix_basicplot to
+% change the scaling from linear to logarithmic or exponential.
+figl; recursiveFunc(xp2_hat,{@xp_subplot_grid,@xp_matrix_basicplot},{1:2, 0},{{},{matrixplot_options}});
+
+% If we want to plot the mean, instead of using cellfun or unpackDim &
+% mean_over_axis (see below), we can use recursiveFunc.
+xp2_hat_bar = recursiveFunc(xp2_hat, {@xp_pass_values, @apply_to_data}, {1:2, 0}, {{},{@nanmean, 2}});
+xp2_hat_bar.meta.datainfo = datainfo;
+figl; recursiveFunc(xp2_hat_bar,{@xp_subplot_grid,@xp_matrix_basicplot},{1:2, 0},{{},{matrixplot_options}});
+
+%% Apply function to each cell in parallel.
+% With large MDD objects, it can offer a significant speedup to apply
+% functions parallelly. The library function xp_parfor loops over all cells
+% in xp.data, and in combination with apply_to_data allows you to apply any
+% function to the contents of all cells in parallel.
+
+function_handles = {@xp_parfor, @apply_to_data};
+dimensions = {1:2, 0};
+function_arguments = {{},{@pmtm, [],[], 1000}};
+xp2_hat_a = recursiveFunc(xp2, function_handles, dimensions, function_arguments);
+xp2_hat_a.meta.datainfo = datainfo;
+disp(isequal(xp2_hat, xp2_hat_a))
+
+%% Apply function that takes in a non-scalar MDD.
+% Another possibility is to write a function that takes in a non-scalar MDD
+% and returns some data. For example, the library function xp_compare_2D
+% takes in a 1x2 object mdd, and uses a t-test (default) to compare the
+% contents of mdd.data{1} to the contents of mdd.data{2}, treating rows as
+% variables and columns as observations.
+xp3 = xp(:, :, :, 'v');
+xp3_hat = recursiveFunc(xp3, function_handles, {1:3, 0}, function_arguments);
+xp3_hat.meta.datainfo = datainfo;
+xp4 = recursiveFunc(xp3_hat, {@xp_pass_values, @xp_compare_2D}, {1:2, 3});
+xp4.printAxisInfo;
+xp4.data
+% Here, the first column contains Booleans giving the value of the test
+% xp.data{1} > xp.data{2}, and the second column contains Booleans giving
+% the value of the test xp.data{2} > xp.data{1}, for each frequency.
+
+% Both comparisons and plots are packaged into the function
+% xp_comparison_plot_2D.
+comparison_plot_options.scale = {'linear', 'log'};
+figl; recursiveFunc(xp3_hat, {@xp_subplot_grid_adaptive, @xp_comparison_plot_2D}, {1:2, 3}, {{},{comparison_plot_options}});
 
 %% % % % % % % % % % % % % % % ADVANCED MDD / MDD USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 

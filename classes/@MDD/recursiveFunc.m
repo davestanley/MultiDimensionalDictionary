@@ -1,5 +1,5 @@
 
-function varargout = recursiveFunc_2(xp,function_handles,dimensions,function_arguments)
+function varargout = recursiveFunc(xp,function_handles,dimensions,function_arguments)
 %% varargout = recursivePlot(xp,function_handles,dimensions,function_arguments)
 %     Purpose: Takes in multidimensional data and a set of function handles for
 %     plotting. Function handles operate on low-dimensional subspaces. 
