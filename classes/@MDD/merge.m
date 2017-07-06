@@ -164,7 +164,7 @@ if ~forceMergeBool
     % only the else part.
     if isnumeric(obj1.data_pr) || isnumeric(obj2.data_pr)
         overlapBool = ~cellfun(@isempty, overlapInd);
-        overlapBool = any(overlapBool(:));
+        overlapBool = all(any(overlapBool));
     else
         % TODO use commented out code for nan numeric handling
     %     if iscell(obj1.data_pr(overlapInd{1,:}))
