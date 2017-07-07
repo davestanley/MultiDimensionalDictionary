@@ -8,6 +8,30 @@ classdef MDDAxis
     end
 
     methods
+      
+        function obj = MDDAxis(varargin)
+            % MDDAxis - constructor
+            %
+            % Usage:
+            %   obj = MDDAxis()
+            %   obj = MDDAxis(axis_vals)
+            %   obj = MDDAxis(axis_vals, axis_name)
+            %   obj = MDDAxis(axis_vals, axis_name, axismeta)
+            
+            if nargin > 0 && ~isempty(varargin{1})
+                obj.name = varargin{1};
+            end
+            
+            if nargin > 1 && ~isempty(varargin{2})
+                obj.values = varargin{2};
+            end
+            
+            if nargin > 2 && ~isempty(varargin{3})
+                obj.axismeta = varargin{3};
+            end
+        end
+      
+        
         function out = printAxisInfo(obj,show_class)
             if nargin < 2
                 show_class = 1;
@@ -110,7 +134,7 @@ classdef MDDAxis
 
         end
 
-    end
+    end % public methods
     
     
     methods (Access = protected)
@@ -193,7 +217,8 @@ classdef MDDAxis
             end
         end
         
-    end
+    end % protected methods
+    
     
     methods (Static)
         
@@ -222,6 +247,6 @@ classdef MDDAxis
             end
         end
         
-    end
+    end % static methods
 
 end
