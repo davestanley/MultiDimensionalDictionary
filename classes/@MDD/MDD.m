@@ -320,12 +320,39 @@ classdef MDD
         % % % % % % % % % % % % IMPORTING DATA  % % % % % % % % % % % %
         % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-        function obj = importAxisNames(obj,ax_names)
+        function obj = importAxes(obj, ax_names, axis_vals, axis_axismeta)
+            if nargin<2
+                ax_names = [];
+            end
+            if nargin<3
+                axis_vals = [];
+            end
+            if nargin<4
+                axis_axismeta = [];
+            end
+            
+            if ~isempty(ax_names)
+                obj = importAxisNames(obj,ax_names);
+            end
+            
+            if ~isempty(axis_vals)
+                obj = importAxisValues(obj,axis_vals);
+            end
+            
+            if ~isempty(axis_axismeta)
+                obj = importAxisMeta(obj,axis_axismeta);
+            end
+        end
+        
+        
+        function obj = importAxisNames(obj,varargin)
             % importAxisNames - overwrite object's axis names
             %
             % varargin can be a single cell containing a cellstr, or a
             % cellstr.
 
+            ax_names = varargin;
+            
             Nd = ndims(obj.data_pr);
             Na = length(obj.axis_pr);
 
@@ -358,8 +385,9 @@ classdef MDD
 
         function obj = importAxisValues(obj,varargin)
             % importAxisValues - overwrite object's axis values
-
-            % varargin can be a single cell containing cells for each axis, or an argument list for the axes
+            % 
+            % varargin can be a single cell containing cells for each axis, or 
+            % an argument list for the axes
 
             if nargin < 2 % use default values
                 obj = obj.fixAxes;
@@ -376,7 +404,7 @@ classdef MDD
             end
 
             if length(axis_vals) > Na
-                error('Mismatch between number of axis_values supplied and number of axes in object.')
+                error('Mismatch between number of axis values supplied and number of axes in object.')
             end
 
             for i = 1:length(axis_vals)
@@ -387,10 +415,37 @@ classdef MDD
 
             obj = obj.fixAxes(1);
         end
+        
+        
+        function obj = importAxisMeta(obj,varargin)
+            % importAxisMeta - overwrite object's axis metadata
+            % 
+            % varargin can be a single cell containing cells for each axis, or 
+            % an argument list for the axes
+            
+            axis_axismeta = varargin;
+
+            Nd = ndims(obj.data_pr);
+            Na = length(obj.axis_pr);
+            
+            if nargin == 2 && iscell(axis_axismeta{1})
+                axis_axismeta = axis_axismeta{1};
+            end
+            
+            if length(axis_axismeta) > Na
+                error('Mismatch between number of axis metadata supplied and number of axes in object.')
+            end
+            
+            for i = 1:length(axis_axismeta)
+                if ~isempty(axis_axismeta{i})
+                    obj.axis_pr(i).axismeta = axis_axismeta{i};
+                end
+            end
+        end
 
 
         function obj = importMeta(obj,meta_struct)
-            % importMeta - overwrite object's axis metadata
+            % importMeta - overwrite object's metadata
 
             obj.meta = meta_struct;
         end
