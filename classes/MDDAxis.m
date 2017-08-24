@@ -11,12 +11,12 @@ classdef MDDAxis
       
         function obj = MDDAxis(varargin)
             % MDDAxis - constructor
-            %
+            % #todo perhaps change this to be consistent with MDD.
             % Usage:
             %   obj = MDDAxis()
-            %   obj = MDDAxis(axis_vals)
-            %   obj = MDDAxis(axis_vals, axis_name)
-            %   obj = MDDAxis(axis_vals, axis_name, axismeta)
+            %   obj = MDDAxis(axis_name)
+            %   obj = MDDAxis(axis_name, axis_vals)
+            %   obj = MDDAxis(axis_name, axis_vals, axismeta)
             
             if nargin > 0 && ~isempty(varargin{1})
                 obj.name = varargin{1};
