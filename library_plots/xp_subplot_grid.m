@@ -44,6 +44,8 @@ function hxp = xp_subplot_grid (xp, op)
     % Remove underscores from legend1
     if iscellstr(legend1)
         legend1b = cellfunu(@(s) strrep(s,'_',' '),legend1);
+    else
+        legend1b = legend1;
     end
     
     % Parameters
