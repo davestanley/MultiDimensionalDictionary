@@ -41,6 +41,9 @@ function hxp = xp_subplot_grid (xp, op)
         xp = xp.transpose;
     end
     
+    % Remove underscores from legend1
+    legend1b = cellfunu(@(s) strrep(s,'_',' '),legend1);
+    
     % Parameters
     %subplot_grid_options = {'no_zoom'};
     subplot_grid_options = {};
@@ -70,9 +73,9 @@ function hxp = xp_subplot_grid (xp, op)
                     c=c+1;
                     hxp.hcurr.set_gca(c);
                     hxp.hsub{i,j} = xp.data{i,j}();
-                    if i == 1 && j == 1 && ~isempty(legend1)
+                    if i == 1 && j == 1 && ~isempty(legend1b)
                         % Place a legend in the 1st subplot
-                        legend(legend1{1:min(end,op.max_legend)});
+                        legend(legend1b{1:min(end,op.max_legend)});
                     end
                     if i == 1 && j == 1 && do_colorbar
                         colorbar;
