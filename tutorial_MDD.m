@@ -485,6 +485,7 @@ xp6 = xp(:,:,'E','v');
 figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix_imagesc},dimensions);
 
 
+
 %% % % % % % % % % % % % % % % ADVANCED MDD / MDD USAGE % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -720,7 +721,63 @@ scAxis = myMDDAxisSubclass;
 scMDDRef = myMDDRefSubclass; % reference object
 
 
-%% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % % 
+%% Merging unlike axes (obj.unifyAxes)
+
+close all;
+clc
+
+% Take two completely disjoint MDD objects
+xp3 = xp(2,2,'E','/^v|^i/');         % all values beginning with v or i (lowercase)
+xp3 = xp3.squeeze;
+xp3.printAxisInfo
+
+
+xp4 = xp(2,2,:,'iNa_m');
+xp4 = xp4.squeeze;
+xp4.printAxisInfo
+
+% Note that xp3 has only axis 'variables' and xp4 has only axis
+% 'populations'. Thus, a normal merge will fail because there the axes don't
+% match
+% xp5 = merge(xp3,xp4, true); % (Produces error)
+% 
+% Instead, unify the axes first. This makes assumptions about what values
+% to assign to each new axis introduced (may not be correct).
+% 
+% This command adds an axis called 'populations' to xp3
+xp3 = unifyAxes(xp3,xp4,true); xp3 = xp3.squeezeRegexp('Dim');
+xp3.printAxisInfo
+
+
+% This command adds an axis called 'variables' to xp4
+xp4 = unifyAxes(xp4,xp3,true); xp4 = xp4.squeezeRegexp('Dim'); xp4.printAxisInfo
+
+% Note that xp4 now has the axis variables, whereas it didn't before.
+% However, by default, unifyAxis assigns to this axis the first value from
+% xp3. This value is 'v', but xp4 originally held the variable 'iNa_m'.
+% Hence, we need to rename it:
+xp4.axis(2).values{1} = 'iNa_m';
+
+% Unfortunately there is no way around this manual correction, as the
+% information was lost in the above steps. Hence, use unifyAxes wisely!
+
+% At last, we can do the merge
+%xp3 = xp3.alignAxes(xp4);
+xp5 = merge(xp3,xp4,true,true);
+
+
+% Plot the result.
+dimensions = {[1,2],0};
+figl; recursiveFunc(xp5,{subplot_handle,@xp_matrix},dimensions);
+
+% Compare this to the original data.
+xp6 = xp(2,2,:,'/^v|^i/'); xp6 = squeeze(xp6); xp6 = permute(xp6,[2,1]);
+figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix},dimensions);
+
+
+
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 
