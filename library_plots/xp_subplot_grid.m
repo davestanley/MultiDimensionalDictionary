@@ -19,6 +19,7 @@ function hxp = xp_subplot_grid (xp, op)
     op = struct_addDef(op,'max_legend',20);
     op = struct_addDef(op,'force_rowvect',false);
     op = struct_addDef(op,'zlims',[]);
+    op = struct_addDef(op,'autosuppress_interior_tics',false);
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file 
@@ -29,6 +30,7 @@ function hxp = xp_subplot_grid (xp, op)
     legend1 = op.legend1;
     do_colorbar = op.do_colorbar;
     zlims = op.zlims;               % This might be used for setting the colorbar limits (clims), but cannot get it working with subplot_grid
+    autosuppress_interior_tics = op.autosuppress_interior_tics;
     
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)
@@ -86,11 +88,11 @@ function hxp = xp_subplot_grid (xp, op)
                         %hsg.colorbar;
                         %hsg.colorbar([],zlims);
                     end
-                    if j ~= 1
+                    if j ~= 1 && autosuppress_interior_tics
                         set(gca,'YTickLabel','');
                         ylabel('');
                     end
-                    if i ~= N1
+                    if i ~= N1 && autosuppress_interior_tics
                         set(gca,'XTickLabel','');
                         xlabel('');
                     end
