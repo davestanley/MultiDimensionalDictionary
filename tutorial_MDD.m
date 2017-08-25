@@ -478,12 +478,11 @@ xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);
 xp5 = merge(xp3,xp4, true); % or xp5 = xp3.merge(xp4, true);
 
 dimensions = {[1,2],0};
-figl; recursiveFunc(xp5,{@xp_subplot,@xp_matrix},dimensions);
+figl; recursiveFunc(xp5,{subplot_handle,@xp_matrix_imagesc},dimensions);
 
 % Original full dataset
 xp6 = xp(:,:,'E','v');
-figl; recursiveFunc(xp6,{@xp_subplot,@xp_matrix},dimensions);
-
+figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix_imagesc},dimensions);
 
 
 %% % % % % % % % % % % % % % % ADVANCED MDD / MDD USAGE % % % % % % % 
@@ -719,6 +718,48 @@ scMDD = myMDDSubclass; % value object
 scMDDref = MDDRef(myMDDSubclass); % reference object
 scAxis = myMDDAxisSubclass; 
 scMDDRef = myMDDRefSubclass; % reference object
+
+
+%% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+
+%% Combine and Plot two MDD objects (Advanced, for debugging)
+% This is like the above example for merge, except it uses some weird
+% orderings to more rigorously challenge merge.
+close all;
+clc
+xp3 = xp(2,2,'E',[3,1,2]);
+temp = MDDAxis('Singleton1',{'val1'}); xp3.axis(end+1) = temp;
+xp3.printAxisInfo
+
+xp4 = xp(2,2,:,[2,4]);
+xp4 = xp4.permute([4,1,2,3]);
+temp = MDDAxis('Singleton2',[3]); xp4.axis(end+1) = temp;
+xp4.printAxisInfo
+
+% Notice that xp3 and xp4 are overlapping in places. Also notice that we've
+% permuted the axes and added a few singletons axes. This should not affect
+% the merge, since they are singleton dimensions. 
+
+% Attempt to merge them
+xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);
+
+% This throws a warning that there is an overlap, and sets xp5 = xp3
+% We will disregard the message by setting the third argument to true, allowing 
+% xp4 to overwrite xp3.
+xp5 = merge(xp3,xp4, true, true); % or xp5 = xp3.merge(xp4, true);
+xp5b = merge(xp4,xp3, true, true); % or xp5 = xp3.merge(xp4, true);
+xp5 = squeeze(xp5);
+
+% Now plot the merged dataset
+dimensions = {[1,2],0};
+figl; recursiveFunc(xp5,{subplot_handle,@xp_matrix_imagesc},dimensions);
+
+% And compare this to the original.
+xp6 = xp(2,2,:,[3,1,2,4]);
+xp6 = squeeze(xp6);
+figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix_imagesc},dimensions);
 
 
 
