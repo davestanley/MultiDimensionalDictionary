@@ -124,9 +124,9 @@ for iAx = 1:nAx
     end
     
     % get indicies for data
-    [~, dataIndObj1{iAx}] = intersect(obj_out.axis_pr(iAx).values, obj1.axis(iAx).values);
+    [~, ~, dataIndObj1{iAx}] = intersect(obj1.axis(iAx).values,obj_out.axis_pr(iAx).values, 'stable');  % This returns the axis values of obj1 in their original order and then finds the indices of obj_out that correspond to these values.
     dataIndObj1{iAx} = dataIndObj1{iAx}';
-    [~, dataIndObj2{iAx}] = intersect(obj_out.axis_pr(iAx).values, obj2.axis(iAx).values);
+    [~, ~, dataIndObj2{iAx}] = intersect( obj2.axis(iAx).values, obj_out.axis_pr(iAx).values,'stable');
     dataIndObj2{iAx} = dataIndObj2{iAx}';
     
     objOutDataSize(iAx) = length(obj_out.axis_pr(iAx).values);
@@ -197,6 +197,7 @@ if ~forceMergeBool
 end
 
 % 3) Fill in data in obj_out from obj1 and obj2
+% #tofix - this is going to be very slow for large matrices!
 obj_out.data_pr = cell(objOutDataSize);
 if isnumeric(obj1.data)
     obj_out.data_pr(dataIndObj1{:}) = num2cell(obj1.data);
