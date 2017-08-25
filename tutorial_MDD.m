@@ -29,6 +29,10 @@ if ~exist('MDD','class')
   addpath(genpath(pwd));
 end
 
+% Set up some global parameters used everywhere
+op = struct; op.subplotzoom_enabled = false;
+subplot_handle = @(xp) xp_subplot_grid(xp,op);
+
 
 %% Load some sample data
 
@@ -377,7 +381,7 @@ xp4 = xp(:,:,'E','v');
 xp4.printAxisInfo
 
 % Set up plotting arguments
-function_handles = {@xp_subplot_grid,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
+function_handles = {subplot_handle,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}};                % Specifies which axes of xp each function handle
                                                                 % will operate on. Note that dimension 'data' refers to the 
                                                                 % the contents of each element in xp.data (e.g. the matrix of
@@ -402,7 +406,7 @@ xp4.printAxisInfo
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -412,7 +416,7 @@ recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimen
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 %% Plot 4D data
 
@@ -474,7 +478,12 @@ xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);
 xp5 = merge(xp3,xp4, true); % or xp5 = xp3.merge(xp4, true);
 
 dimensions = {[1,2],0};
-figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+figl; recursiveFunc(xp5,{@xp_subplot,@xp_matrix},dimensions);
+
+% Original full dataset
+xp6 = xp(:,:,'E','v');
+figl; recursiveFunc(xp6,{@xp_subplot,@xp_matrix},dimensions);
+
 
 
 %% % % % % % % % % % % % % % % ADVANCED MDD / MDD USAGE % % % % % % % 
@@ -595,7 +604,7 @@ disp('xp3a.meta = ')
 disp(xp3a.meta)
 
 % Plot 
-recursiveFunc(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
+recursiveFunc(xp3,{@xp_handles_newfig,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
 
 %% Using unpackDim & mean_over_axis to average across cells
 
@@ -621,7 +630,7 @@ dest=2;
 xp2 = xp2.packDim(src,dest);
 
 % Plot 
-figl; recursiveFunc(xp2,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+figl; recursiveFunc(xp2,{subplot_handle,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 % mean_over_axis can take an options structure with fields function_handle
 % and function_arguments to apply other summary statistics across a given
@@ -633,7 +642,7 @@ xp2c = mean_over_axis(xp2a, 'Cell', mean_options);
 xp2c = xp2c.packDim(src, dest); 
 xp2c = xp2c.squeeze; 
 xp2c = xp2c.axisSubset('variables', 'v');
-figl; recursiveFunc(xp2c,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+figl; recursiveFunc(xp2c,{subplot_handle,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 % Note that @nanstd has a second argument which we must specify to be
 % empty; only the dimension over which the summary function is applied is
