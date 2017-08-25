@@ -236,6 +236,7 @@ classdef MDD
             % Outputs: see subset method
             %
             % Tags: #requestexample
+            % #todo - rename to subsetVals for consistency
             %
             % Author: Erik Roberts (iss 18)
 
@@ -258,6 +259,7 @@ classdef MDD
             %       values discovered by the regular expression.
             %
             % Tags: #todo - allow to take expressions as in valSubset. 
+            %       #todo - rename to subsetAxis for consistency
             % 
             % Example: 
             % % Set up some random data
