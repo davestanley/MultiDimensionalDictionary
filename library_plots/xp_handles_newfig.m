@@ -87,7 +87,7 @@ function hxp = xp_handles_newfig (xp, op)
             end
             
             set(hxp.hcurr(i),'PaperPositionMode','auto');
-            tic; print(hxp.hcurr(i),'-dpng',['-r' num2str(op.save_res)],'-opengl',fullfile(foldername,filename));toc
+            tic; print(hxp.hcurr(i),'-dpng',['-r' num2str(op.save_res)],fullfile(foldername,filename));toc
             close(hxp.hcurr(i));
         end
         
