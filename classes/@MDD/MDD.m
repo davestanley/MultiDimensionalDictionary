@@ -1160,8 +1160,13 @@ classdef MDD
                     ax_curr = obj.axis_pr(dim);
                 end
 
-                % Name it if necessary
+                % Name it if necessary - apply default name
                 if isempty(ax_curr.name)
+                    ax_curr.name = ['Dim '];
+                end
+                
+                % If using default name, update dimension number
+                if regexp(ax_curr.name,'^Dim ')
                     ax_curr.name = ['Dim ' num2str(dim)];
                 end
 
