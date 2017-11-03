@@ -236,6 +236,7 @@ classdef MDD
             % Outputs: see subset method
             %
             % Tags: #requestexample
+            % #todo - rename to subsetVals for consistency
             %
             % Author: Erik Roberts (iss 18)
 
@@ -258,6 +259,22 @@ classdef MDD
             %       values discovered by the regular expression.
             %
             % Tags: #todo - allow to take expressions as in valSubset. 
+            %       #todo - rename to subsetAxis for consistency
+            % 
+            % Example: 
+            % % Set up some random data
+            % xp = MDD(randn(3,3),{{'val1','val2','val3'},4:6},{'A','B'});
+            % xp.printAxisInfo
+            %     % Axis Size: [3  3]
+            %     % Axis 1: A (cellstr) -> val1, val2, val3
+            %     % Axis 2: B (numeric) -> 4, 5, 6
+            % 
+            % % Take the subset
+            % xp = xp.axisSubset('A','val2');
+            % xp.printAxisInfo
+            %     % Axis Size: [1  3]
+            %     % Axis 1: A (cellstr) -> val2
+            %     % Axis 2: B (numeric) -> 4, 5, 6
             %
             % Author: Ben Pittman-Polletta
 
@@ -633,6 +650,92 @@ classdef MDD
             end
 
         end
+        
+        function obj = unifyAxes(obj,obj2,verbose_flag)
+            %     Purpose: Takes input obj and adds to it any axes that are present in
+            %     obj2.
+            % 
+            %     Forms:
+            %         obj = unifyAxes(obj,obj2)
+            %         obj = unifyAxes(obj,obj2,verbose_flag)
+            % 
+            %     Inputs:
+            %       obj,obj2                      : MDD structures
+            %       verbose_flag                  : boolean flag for verbose feedback
+            % 
+            %     Outputs:
+            %       obj                           : MDD structure
+            % 
+            %     Tip: the following commands will ensure obj and obj2 share the same
+            %     set of axes (e.g. the union of axes in both objects).
+            %           obj1 = unifyAxes(obj1,obj2)
+            %           obj2 = unifyAxes(obj2,obj1);
+            %
+            %     Warning:
+            %       Since obj contains no information about where its data
+            %       lies the new axes, values will be assigned at random
+            %       (sampled from the values in obj2). These might need to
+            %       be updated later - use with care! See Algorithm below
+            %       for more details.
+            % 
+            %     Algorithm:
+            %       For each axis in obj2, determins if there is a corresponding axis
+            %       is missing from obj. If it is appends this axis to obj.axis and
+            %       assigns the first value present in obj. Specifically, the update is
+            %       update is:
+            %                obj.axis(end+1).name = obj2.axis(ind_missing).name
+            %                obj.axis(end+1).values = obj2.axis(ind_missing).values(1).
+            %             where:
+            %               ind_missing is the index corresponding to the
+            %                   axis that obj is missing.
+            % 
+            %     % Example:
+            %     obj = MDD(randn(3,3),{{'val1','val2','val3'},4:6},{'A','B'});
+            %     obj.printAxisInfo
+            %         % Axis Size: [3  3]
+            %         % Axis 1: A (cellstr) -> val1, val2, val3
+            %         % Axis 2: B (numeric) -> 4, 5, 6
+            % 
+            %     obj2 = MDD(randn([3,3,3]),{{'val1','val2','val3'},4:6,{3,4,5}},{'A','B','C'});
+            %     obj2.printAxisInfo
+            %         % Axis Size: [3  3  3]
+            %         % Axis 1: A (cellstr) -> val1, val2, val3
+            %         % Axis 2: B (numeric) -> 4, 5, 6
+            %         % Axis 3: C (numeric) -> 3, 4, 5
+            % 
+            %     obj = unifyAxes(obj,obj2);
+            %     obj.printAxisInfo
+            % 
+            %     obj.printAxisInfo
+            %     Axis Size: [3  3  1]
+            %     Axis 1: A (cellstr) -> val1, val2, val3
+            %     Axis 2: B (numeric) -> 4, 5, 6
+            %     Axis 3: C (numeric) -> 3
+            %
+            % 
+            %     Author: David Stanley, Boston University, 2017
+            % 
+            
+            if nargin < 3; verbose_flag = false; end
+            
+            an1 = obj.exportAxisNames;
+            %av1 = obj.exportAxisVals;
+            an2 = obj2.exportAxisNames;
+            av2 = obj2.exportAxisVals;
+            
+            [~, ia, ib] = setxor(an1,an2);
+            
+            for i = 1:length(ib)
+                curr_name = an2{ib(i)};
+                curr_vals = av2{ib(i)}(1);
+                obj.axis(end+1) = MDDAxis;
+                obj.axis(end).name = curr_name;
+                obj.axis(end).values = curr_vals;
+                if verbose_flag; fprintf('Axis %s present in obj2, but missing in obj. Appending singleton axis %s \n', curr_name, curr_name);
+                end
+            end
+            
+        end
 
 
         function obj = packDim2Mat(obj,dim_src,dim_target)
@@ -698,8 +801,10 @@ classdef MDD
             if nargout > 0
                 out = '';
             end
-
-            fprintf(['Axis Size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
+            
+            if nargout == 0
+                fprintf(['Axis Size: [' num2str(cellfun(@length,{obj.axis_pr.values})) ']\n']);
+            end
 
             for i = 1:length(obj.axis_pr)
                 out1 = obj.axis_pr(i).printAxisInfo(showclass);
@@ -1055,8 +1160,13 @@ classdef MDD
                     ax_curr = obj.axis_pr(dim);
                 end
 
-                % Name it if necessary
+                % Name it if necessary - apply default name
                 if isempty(ax_curr.name)
+                    ax_curr.name = ['Dim '];
+                end
+                
+                % If using default name, update dimension number
+                if regexp(ax_curr.name,'^Dim ')
                     ax_curr.name = ['Dim ' num2str(dim)];
                 end
 

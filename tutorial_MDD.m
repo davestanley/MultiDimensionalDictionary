@@ -29,6 +29,10 @@ if ~exist('MDD','class')
   addpath(genpath(pwd));
 end
 
+% Set up some global parameters used everywhere
+op = struct; op.subplotzoom_enabled = false;
+subplot_handle = @(xp) xp_subplot_grid(xp,op);
+
 
 %% Load some sample data
 
@@ -382,7 +386,7 @@ xp4 = xp(:,:,'E','v');
 xp4.printAxisInfo
 
 % Set up plotting arguments
-function_handles = {@xp_subplot_grid,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
+function_handles = {subplot_handle,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}};                % Specifies which axes of xp each function handle
                                                                 % will operate on. Note that dimension 'data' refers to the 
                                                                 % the contents of each element in xp.data (e.g. the matrix of
@@ -407,7 +411,7 @@ xp4.printAxisInfo
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -417,7 +421,7 @@ recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimen
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 %% Plot 4D data
 
@@ -479,7 +483,12 @@ xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);
 xp5 = merge(xp3,xp4, true); % or xp5 = xp3.merge(xp4, true);
 
 dimensions = {[1,2],0};
-figl; recursiveFunc(xp5,{@xp_subplot_grid,@xp_matrix_imagesc},dimensions);
+figl; recursiveFunc(xp5,{subplot_handle,@xp_matrix_imagesc},dimensions);
+
+% Original full dataset
+xp6 = xp(:,:,'E','v');
+figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix_imagesc},dimensions);
+
 
 %% % % % % % % % % % % % % % DATA ANALYSIS EXAMPLES % % % % % % % % % % % % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -689,7 +698,7 @@ disp('xp3a.meta = ')
 disp(xp3a.meta)
 
 % Plot 
-recursiveFunc(xp3,{@xp_handles_newfig,@xp_subplot_grid,@xp_matrix_basicplot},{[3],[1,2],[0]});
+recursiveFunc(xp3,{@xp_handles_newfig,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
 
 %% Using unpackDim & mean_over_axis to average across cells
 
@@ -715,7 +724,7 @@ dest=2;
 xp2 = xp2.packDim(src,dest);
 
 % Plot 
-figl; recursiveFunc(xp2,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+figl; recursiveFunc(xp2,{subplot_handle,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 % mean_over_axis can take an options structure with fields function_handle
 % and function_arguments to apply other summary statistics across a given
@@ -727,7 +736,7 @@ xp2c = mean_over_axis(xp2a, 'Cell', mean_options);
 xp2c = xp2c.packDim(src, dest); 
 xp2c = xp2c.squeeze; 
 xp2c = xp2c.axisSubset('variables', 'v');
-figl; recursiveFunc(xp2c,{@xp_subplot_grid,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
+figl; recursiveFunc(xp2c,{subplot_handle,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 % Note that @nanstd has a second argument which we must specify to be
 % empty; only the dimension over which the summary function is applied is
@@ -804,6 +813,104 @@ scMDD = myMDDSubclass; % value object
 scMDDref = MDDRef(myMDDSubclass); % reference object
 scAxis = myMDDAxisSubclass; 
 scMDDRef = myMDDRefSubclass; % reference object
+
+
+%% Merging unlike axes (obj.unifyAxes)
+
+close all;
+clc
+
+% Take two completely disjoint MDD objects
+xp3 = xp(2,2,'E','/^v|^i/');         % all values beginning with v or i (lowercase)
+xp3 = xp3.squeeze;
+xp3.printAxisInfo
+
+
+xp4 = xp(2,2,:,'iNa_m');
+xp4 = xp4.squeeze;
+xp4.printAxisInfo
+
+% Note that xp3 has only axis 'variables' and xp4 has only axis
+% 'populations'. Thus, a normal merge will fail because there the axes don't
+% match
+% xp5 = merge(xp3,xp4, true); % (Produces error)
+% 
+% Instead, unify the axes first. This makes assumptions about what values
+% to assign to each new axis introduced (may not be correct).
+% 
+% This command adds an axis called 'populations' to xp3
+xp3 = unifyAxes(xp3,xp4,true); xp3 = xp3.squeezeRegexp('Dim');
+xp3.printAxisInfo
+
+
+% This command adds an axis called 'variables' to xp4
+xp4 = unifyAxes(xp4,xp3,true); xp4 = xp4.squeezeRegexp('Dim'); xp4.printAxisInfo
+
+% Note that xp4 now has the axis variables, whereas it didn't before.
+% However, by default, unifyAxis assigns to this axis the first value from
+% xp3. This value is 'v', but xp4 originally held the variable 'iNa_m'.
+% Hence, we need to rename it:
+xp4.axis(2).values{1} = 'iNa_m';
+
+% Unfortunately there is no way around this manual correction, as the
+% information was lost in the above steps. Hence, use unifyAxes wisely!
+
+% At last, we can do the merge
+%xp3 = xp3.alignAxes(xp4);
+xp5 = merge(xp3,xp4,true,true);
+
+
+% Plot the result.
+dimensions = {[1,2],0};
+figl; recursiveFunc(xp5,{subplot_handle,@xp_matrix},dimensions);
+
+% Compare this to the original data.
+xp6 = xp(2,2,:,'/^v|^i/'); xp6 = squeeze(xp6); xp6 = permute(xp6,[2,1]);
+figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix},dimensions);
+
+
+
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+
+%% Combine and Plot two MDD objects (Advanced, for debugging)
+% This is like the above example for merge, except it uses some weird
+% orderings to more rigorously challenge merge.
+close all;
+clc
+xp3 = xp(2,2,'E',[3,1,2]);
+temp = MDDAxis('Singleton1',{'val1'}); xp3.axis(end+1) = temp;
+xp3.printAxisInfo
+
+xp4 = xp(2,2,:,[2,4]);
+xp4 = xp4.permute([4,1,2,3]);
+temp = MDDAxis('Singleton2',[3]); xp4.axis(end+1) = temp;
+xp4.printAxisInfo
+
+% Notice that xp3 and xp4 are overlapping in places. Also notice that we've
+% permuted the axes and added a few singletons axes. This should not affect
+% the merge, since they are singleton dimensions. 
+
+% Attempt to merge them
+xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);
+
+% This throws a warning that there is an overlap, and sets xp5 = xp3
+% We will disregard the message by setting the third argument to true, allowing 
+% xp4 to overwrite xp3.
+xp5 = merge(xp3,xp4, true, true); % or xp5 = xp3.merge(xp4, true);
+xp5b = merge(xp4,xp3, true, true); % or xp5 = xp3.merge(xp4, true);
+xp5 = squeeze(xp5);
+
+% Now plot the merged dataset
+dimensions = {[1,2],0};
+figl; recursiveFunc(xp5,{subplot_handle,@xp_matrix_imagesc},dimensions);
+
+% And compare this to the original.
+xp6 = xp(2,2,:,[3,1,2,4]);
+xp6 = squeeze(xp6);
+figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix_imagesc},dimensions);
 
 
 
