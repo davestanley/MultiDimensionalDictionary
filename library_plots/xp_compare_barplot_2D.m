@@ -103,7 +103,7 @@ function xp_compare_barplot_2D(xp, test_handle, significance, transpose_flag, fl
     
     barwitherr(norminv(1 - significance/2)*sample_se, sample_mean)
     
-    set(gca, 'XTick', 1:length(axis_values{1}), 'XTickLabel', axis_values{1}, 'XTickLabelRotation', 20)
+    set(gca, 'XTick', 1:length(axis_values{1}), 'XTickLabel', axis_values{1}) % , 'XTickLabelRotation', 20)
     
     axis tight, box off
     
