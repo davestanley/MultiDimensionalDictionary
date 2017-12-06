@@ -52,7 +52,7 @@ function hxp = xp1D_matrix_boundedline (xp, op)
                 errarr(:,1,i) = err;
                 hold on;
                 %hxp.hcurr = boundedline(t,mu,[err err],'alpha');
-                hxp.hcurr = plot(t,mu,'LineWidth',2);
+                hxp.hcurr = plot(t,mu,'k','LineWidth',2);
             else
                 error('Too many dimensions');
             end
@@ -60,7 +60,7 @@ function hxp = xp1D_matrix_boundedline (xp, op)
     end
     
     errarr = repmat(errarr,[1,2,1]);
-    hxp.hcurrErr = boundedline(repmat(t(:),[1,N]),muarr,errarr,'alpha');
+    hxp.hcurrErr = boundedline(repmat(t(:),[1,N]),muarr,errarr,'alpha','k');
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
