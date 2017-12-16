@@ -15,11 +15,13 @@ function hxp = xp1D_matrix_boundedline (xp, op)
     op = struct_addDef(op,'ylims',[]);
     op = struct_addDef(op,'meanfunc',@(x) mean(x,2));
     op = struct_addDef(op,'errfunc',@(x) std(x,[],2) ./ (sqrt(size(x,2)) * ones(size(x,1),1)));
+    op = struct_addDef(op,'linecolor',[]);
     
     xlims = op.xlims;
     ylims = op.ylims;
     meanfunc = op.meanfunc;
     errfunc = op.errfunc;
+    linecolor = op.linecolor;
     
     N = length(xp.data);
     
@@ -52,7 +54,11 @@ function hxp = xp1D_matrix_boundedline (xp, op)
                 errarr(:,1,i) = err;
                 hold on;
                 %hxp.hcurr = boundedline(t,mu,[err err],'alpha');
-                hxp.hcurr = plot(t,mu,'LineWidth',2);
+                if isempty(linecolor)
+                    hxp.hcurr = plot(t,mu,'LineWidth',2);
+                else
+                    hxp.hcurr = plot(t,mu,linecolor,'LineWidth',2);
+                end
             else
                 error('Too many dimensions');
             end
@@ -60,7 +66,11 @@ function hxp = xp1D_matrix_boundedline (xp, op)
     end
     
     errarr = repmat(errarr,[1,2,1]);
-    hxp.hcurrErr = boundedline(repmat(t(:),[1,N]),muarr,errarr,'alpha');
+    if isempty(linecolor)
+        hxp.hcurrErr = boundedline(repmat(t(:),[1,N]),muarr,errarr,'alpha');
+    else
+        hxp.hcurrErr = boundedline(repmat(t(:),[1,N]),muarr,errarr,'alpha',linecolor);
+    end
     
     if ~isempty(xlims); xlim(xlims); end
     if ~isempty(ylims); ylim(ylims); end
