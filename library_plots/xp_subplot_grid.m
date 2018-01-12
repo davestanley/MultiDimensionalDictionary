@@ -1,9 +1,7 @@
-
-
 function hxp = xp_subplot_grid (xp, op)
-	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
+  % This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
-    hxp = struct; 
+    hxp = struct;
     
     if nargin < 2
         op = struct;
@@ -22,7 +20,7 @@ function hxp = xp_subplot_grid (xp, op)
     op = struct_addDef(op,'autosuppress_interior_tics',false);
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
-                          % 2-Save to a figure file 
+                          % 2-Save to a figure file
                           
     transpose_on = op.transpose_on;
     display_mode = op.display_mode;
@@ -45,7 +43,7 @@ function hxp = xp_subplot_grid (xp, op)
     
     % Remove underscores from legend1
     if iscellstr(legend1)
-        legend1b = cellfunu(@(s) strrep(s,'_',' '),legend1);
+        legend1b = cellfunu(@(s) strrep(s,'_','\_'),legend1);  % escape underscores
     else
         legend1b = legend1;
     end
@@ -61,7 +59,7 @@ function hxp = xp_subplot_grid (xp, op)
         N2 = sz(2);
         
         
-            if display_mode == 1 
+            if display_mode == 1
                 h0 = gcf; ha0 = gca;
                 h1 = figure('visible','off');
             else
@@ -136,10 +134,10 @@ end
 
 function outstr = setup_axis_labels(xpa)
     vals = xpa.getvalues_cellstr;
-    vals = strrep(vals,'_',' ');
+    vals = strrep(vals,'_','\_'); % escape underscores
     outstr = cell(size(vals));
     for j = 1:length(outstr)
         outstr{j} = {'',vals{j}};
     end
-    outstr{round(end/2)}{1} = strrep(xpa.name,'_',' ');
+    outstr{round(end/2)}{1} = strrep(xpa.name,'_','\_');  % escape underscores
 end

@@ -1,6 +1,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % MDD Tutorial % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % Developer notes:
@@ -9,10 +9,10 @@
 % #tofix- These lines produce an error
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-%% % % % % % % % % % % % % % % MDD Setup % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDD Setup % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-%% Set up paths 
+%% Set up paths
 % Get ready...
 
 % Format
@@ -143,13 +143,13 @@ xp.meta = meta;
 clear meta
 
 
-%% % % % % % % % % % % % % % % MDD BASICS % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDD BASICS % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %% Importing data
 
 % MDD objects are just matrices or cell arrays with extra functionality to
-% keep track of what each dimension is storing. 
+% keep track of what each dimension is storing.
 
 % Above, we imported data into an MDD object along with axis values and names. 
 % But it is also possible to import a high dimensional matrix alone.
@@ -545,16 +545,18 @@ xp3.printAxisInfo;
 % as follows (note the NaNs)
 temp1 = squeeze(xp3.data{1}(100,:,:));  % Pick out a random time point
 temp2 = squeeze(xp3.data{2}(100,:,:));  % Pick out a random time point
-figure; 
+figure;
 subplot(211); imagesc(temp1);
 ylabel('Cells');
-xlabel(xp2.axis(2).name); 
-set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
+xlabel(xp2.axis(2).name);
+set(gca,'XTick',1:length(xp2.axis(2).values));
+set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_','\_'));  % escape underscores
 
 subplot(212); imagesc(temp2);
 ylabel('Cells');
-xlabel(xp2.axis(2).name); 
-set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
+xlabel(xp2.axis(2).name);
+set(gca,'XTick',1:length(xp2.axis(2).values));
+set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_','\_'));  % escape underscores
 
 %% Method unpackDim (undoing packDim)
 % When packDim is applied to an MDD object, say to pack dimension 3, the
@@ -603,7 +605,7 @@ disp(xp3.meta)
 disp('xp3a.meta = ')
 disp(xp3a.meta)
 
-% Plot 
+% Plot
 recursiveFunc(xp3,{@xp_handles_newfig,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
 
 %% Using unpackDim & mean_over_axis to average across cells
@@ -629,7 +631,7 @@ src=3;
 dest=2;
 xp2 = xp2.packDim(src,dest);
 
-% Plot 
+% Plot
 figl; recursiveFunc(xp2,{subplot_handle,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 % mean_over_axis can take an options structure with fields function_handle
@@ -776,9 +778,9 @@ figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix},dimensions);
 
 
 
-%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 %% Combine and Plot two MDD objects (Advanced, for debugging)
@@ -797,7 +799,7 @@ xp4.printAxisInfo
 
 % Notice that xp3 and xp4 are overlapping in places. Also notice that we've
 % permuted the axes and added a few singletons axes. This should not affect
-% the merge, since they are singleton dimensions. 
+% the merge, since they are singleton dimensions.
 
 % Attempt to merge them
 xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);

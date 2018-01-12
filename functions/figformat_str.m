@@ -1,8 +1,7 @@
 function output = figformat_str(input)
-    % Formats string or cell array of strings for plotting. (e.g. removes
-    % underscores and replaces them with spaces).
+    % Formats string or cell array of strings for plotting. (e.g. escapes underscores).
 
-    func1 = @(s) strrep(s,'_',' ');
+    func1 = @(s) strrep(s,'_','\_'); % escape underscores
 
     if iscellstr(input)
         output = cellfun(func1,input,'Uniform_Output',0);
