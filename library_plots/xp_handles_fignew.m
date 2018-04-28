@@ -25,6 +25,7 @@ function hxp = xp_handles_fignew (xp, op)
     op = struct_addDef(op,'max_num_newfigs',5);
     op = struct_addDef(op,'figwidth',1);
     op = struct_addDef(op,'figheight',1);
+    op = struct_addDef(op,'suppress_newfig',false);     % Suppress creation of new figure. Useful if want to do subplots in existing figure
     
     
     % Postpend date/time to save path
@@ -69,9 +70,11 @@ function hxp = xp_handles_fignew (xp, op)
             break
         end
         
-        pos = [0,0,op.figwidth,op.figheight];
-        
-        hxp.hcurr(i) = figure('Units','normalized','Position',pos,'visible',op.visible); hxp.hsub{i} = xp.data{i}();
+        if ~op.suppress_newfig
+            pos = [0,0,op.figwidth,op.figheight];
+            hxp.hcurr(i) = figure('Units','normalized','Position',pos,'visible',op.visible);
+        end
+        hxp.hsub{i} = xp.data{i}();
         
         % Add a title to the current figure
         if isa(hxp.hsub{i}.hcurr,'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
