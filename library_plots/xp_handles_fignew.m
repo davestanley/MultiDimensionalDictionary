@@ -73,25 +73,31 @@ function hxp = xp_handles_fignew (xp, op)
         if ~op.suppress_newfig
             pos = [0,0,op.figwidth,op.figheight];
             hxp.hcurr(i) = figure('Units','normalized','Position',pos,'visible',op.visible);
-        end
-        hxp.hsub{i} = xp.data{i}();
-        
-        % Add a title to the current figure
-        if isa(hxp.hsub{i}.hcurr,'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
-            mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvalues_cellstr{i})];
-            hxp.hsub{i}.hcurr.figtitle(mytitle);
-        end
-        
-        if op.save_figures
-            ext = '.png';
-            filename = [op.save_figname_prefix num2str(i) ext];
-            if op.prepend_date_time
-                filename = [sp '_' op.save_figname_prefix num2str(i) ext];
+            
+            
+            hxp.hsub{i} = xp.data{i}();
+            
+            % Add a title to the current figure
+            if isa(hxp.hsub{i}.hcurr,'subplot_grid') && ~strcmp(xp.axis(1).name(1:3),'Dim')
+                mytitle = [figformat_str(xp.axis(1).name) ': ' figformat_str(xp.axis(1).getvalues_cellstr{i})];
+                hxp.hsub{i}.hcurr.figtitle(mytitle);
             end
             
-            set(hxp.hcurr(i),'PaperPositionMode','auto');
-            tic; print(hxp.hcurr(i),'-dpng',['-r' num2str(op.save_res)],fullfile(foldername,filename));toc
-            close(hxp.hcurr(i));
+            if op.save_figures
+                ext = '.png';
+                filename = [op.save_figname_prefix num2str(i) ext];
+                if op.prepend_date_time
+                    filename = [sp '_' op.save_figname_prefix num2str(i) ext];
+                end
+                
+                set(hxp.hcurr(i),'PaperPositionMode','auto');
+                tic; print(hxp.hcurr(i),'-dpng',['-r' num2str(op.save_res)],fullfile(foldername,filename));toc
+                close(hxp.hcurr(i));
+            end
+        else
+            hxp.hsub{i} = xp.data{i}();
+            hxp.hcurr = [];
+            
         end
         
     end
