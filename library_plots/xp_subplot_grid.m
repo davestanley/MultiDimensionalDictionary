@@ -18,7 +18,9 @@ function hxp = xp_subplot_grid (xp, op)
     op = struct_addDef(op,'force_rowvect',false);
     op = struct_addDef(op,'zlims',[]);
     op = struct_addDef(op,'autosuppress_interior_tics',false);
-    op = struct_addDef(op,'subplot_grid_handle',[]);
+    op = struct_addDef(op,'subplot_grid_handle',[]);        % Plot ontop of existing subplot handle (using hold on) instead of creating new one
+    op = struct_addDef(op,'suppress_subplot',false);        % Turns off creating new subplot
+    op = struct_addDef(op,'suppress_legend',false);         % Turns off showing legend
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
                           % 2-Save to a figure file
@@ -31,6 +33,8 @@ function hxp = xp_subplot_grid (xp, op)
     zlims = op.zlims;               % This might be used for setting the colorbar limits (clims), but cannot get it working with subplot_grid
     autosuppress_interior_tics = op.autosuppress_interior_tics;
     subplot_grid_handle = op.subplot_grid_handle;
+    suppress_subplot = op.suppress_subplot;
+    suppress_legend = op.suppress_legend;
     
     if verLessThan('matlab','8.4') && display_mode == 1; warning('Display_mode==1 might not work with earlier versions of MATLAB.'); end
     if transpose_on && ismatrix(xp)
@@ -68,7 +72,7 @@ function hxp = xp_subplot_grid (xp, op)
                 %figure;
             end
             
-            if isempty(subplot_grid_handle)
+            if isempty(subplot_grid_handle) && ~suppress_subplot
                 if subplotzoom_enabled
                     hxp.hcurr = subplot_grid(N1,N2,subplot_grid_options{:});
                 else
@@ -81,10 +85,10 @@ function hxp = xp_subplot_grid (xp, op)
             for i = 1:N1
                 for j = 1:N2
                     c=c+1;
-                    hxp.hcurr.set_gca(c);
+                    if ~suppress_subplot; hxp.hcurr.set_gca(c); end
                     if ~isempty(subplot_grid_handle); hold on; end
                     hxp.hsub{i,j} = xp.data{i,j}();
-                    if i == 1 && j == 1 && ~isempty(legend1b)
+                    if i == 1 && j == 1 && ~isempty(legend1b) && ~suppress_legend
                         % Place a legend in the 1st subplot
                         legend(legend1b{1:min(end,op.max_legend)});
                     end
@@ -104,16 +108,19 @@ function hxp = xp_subplot_grid (xp, op)
                 end
             end
             
-            % Do labels for rows
-            if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if its not an empty axis
-                rowstr = setup_axis_labels(xp.axis(1));
-                hxp.hcurr.rowtitles(rowstr);
-            end
-            
-            % Do labels for columns
-            if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
-                colstr = setup_axis_labels(xp.axis(2));
-                hxp.hcurr.coltitles(colstr);
+            % Set up axis labels
+            if ~suppress_subplot
+                % Do labels for rows
+                if ~strcmp(xp.axis(1).name(1:3),'Dim')          % Only display if its not an empty axis
+                    rowstr = setup_axis_labels(xp.axis(1));
+                    hxp.hcurr.rowtitles(rowstr);
+                end
+
+                % Do labels for columns
+                if ~strcmp(xp.axis(2).name(1:3),'Dim')          % Only display if its not an empty axis
+                    colstr = setup_axis_labels(xp.axis(2));
+                    hxp.hcurr.coltitles(colstr);
+                end
             end
             
             
