@@ -30,9 +30,11 @@ if ~exist('MDD','class')
 end
 
 % Set up some global parameters used everywhere
+op = struct; op.figwidth = 0.75; op.figheight = 0.75;
+figure_handle = @(xp) xp_handles_fignew(xp, op);
 op = struct; op.subplotzoom_enabled = false;
 subplot_handle = @(xp) xp_subplot_grid(xp,op);
-
+clear op
 
 %% Load some sample data
 
@@ -380,7 +382,7 @@ clc
 xp4 = xp(:,:,'E','v');
 xp4.printAxisInfo
 
-% Set up plotting arguments
+% Set up plotting arguments         (NOTE: subplot_handle = @(xp) xp_subplot_grid(xp,op);)
 function_handles = {subplot_handle,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}};                % Specifies which axes of xp each function handle
                                                                 % will operate on. Note that dimension 'data' refers to the 
@@ -406,7 +408,7 @@ xp4.printAxisInfo
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursiveFunc(xp4,{@xp_handles_fignew,subplot_handle,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{figure_handle,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -416,7 +418,7 @@ recursiveFunc(xp4,{@xp_handles_fignew,subplot_handle,@xp_matrix_imagesc},dimensi
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursiveFunc(xp4,{@xp_handles_fignew,subplot_handle,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{figure_handle,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 %% Plot 4D data
 
@@ -424,7 +426,7 @@ close all;
 
 % Pull out sodium channel state variables for E and I cells.
 clc
-xp4 = xp(1:2,1:2,:,6:7);
+xp4 = xp(1:2,1:2,:,1:2);
 xp4.printAxisInfo
 
 dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};
@@ -438,7 +440,7 @@ xp_subplot_grid_options.display_mode = 1;
 function_arguments = {{},{},{xp_subplot_grid_options},{}};
 
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
-recursiveFunc(xp4,{@xp_handles_fignew,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
+recursiveFunc(xp4,{figure_handle,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_imagesc},dimensions,function_arguments);
 
 %% Plot multiple dimensions adaptively.
 
@@ -606,7 +608,7 @@ disp('xp3a.meta = ')
 disp(xp3a.meta)
 
 % Plot
-recursiveFunc(xp3,{@xp_handles_fignew,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
+recursiveFunc(xp3,{figure_handle,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
 
 %% Using unpackDim & mean_over_axis to average across cells
 
