@@ -227,6 +227,9 @@ xp.exportDataTable(true);
 % passing a second argument.
 xp.exportDataTable(true, 5); % printing 5 rows to screen
 
+% Preview table data manually
+previewTable( [{data_column}, axis_val_columns], [{'data'}, axis_names], 10);
+
 
 %% Importing Data from 2D Table
 
