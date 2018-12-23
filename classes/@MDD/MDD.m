@@ -928,7 +928,15 @@ classdef MDD
             else
                 order2 = order;
             end
+            
+            % Create additional dummy axes as needed, to maximum depth of
+            % order2. This allows the user to "pull in" additional
+            % singleton dimensions.
+            for j = obj.ndims+1:max(order2)
+                obj = obj.setAxisDefaults(j);
+            end
 
+            % Perumte axes
             obj.data_pr = builtin('permute', obj.data_pr, order2);
             obj.axis_pr = obj.axis_pr(order2);
         end
@@ -968,6 +976,14 @@ classdef MDD
         function obj = ipermute(obj,order)
             inverseorder(order) = 1:numel(order);
             obj.data_pr = permute(obj.data_pr,inverseorder);
+            
+            % Create additional dummy axes as needed, to maximum depth of
+            % inverseorder. This allows the user to "pull in" additional
+            % singleton dimensions.
+            for j = obj.ndims+1:max(inverseorder)
+                obj = obj.setAxisDefaults(j);
+            end
+            
             obj.axis_pr = obj.axis_pr(inverseorder);
         end
 
