@@ -23,6 +23,11 @@ function hxp = xp1D_matrix_boundedline (xp, op)
     errfunc = op.errfunc;
     linecolor = op.linecolor;
     
+    xp = squeeze(xp);
+    if ~isvector(xp.data)
+        error('Data matrix xp should be at most 1D');
+    end
+    
     N = length(xp.data);
     
     % Get 1st data point for estimating size
