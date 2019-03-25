@@ -17,12 +17,12 @@
 
 % Format
 format compact
+format short g
 
 % Check if in MDD folder
-if ~exist(fullfile('.','sample_data.mat'), 'file')
+if ~exist(fullfile('.','data','sample_data.mat'), 'file')
     error('Should be in MDD folder to run this code.')
 end
-
 
 % Add MDD toolbox to Matlab path if needed
 if ~exist('MDD','class')
