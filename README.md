@@ -51,12 +51,14 @@ mdd3 =
 ```
 
 ## Demos
-- Demo using MDD to analyze neural data:
-    - http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html
+The following demos showcase some of MDD's capabilities.
+- Using MDD to explore some neural data:
+    - [MultiDimensionalDictionary/html/demo_MDD.html](http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html)
+- Documentation for the simple stocks example above can be viewed [here](http://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD_simple.html).
 
 ## Getting started
 (From Bash)
-- `git@github.com:davestanley/MultiDimensionalDictionary.git`
+- `git clone git@github.com:davestanley/MultiDimensionalDictionary.git`
 - `matlab`
 
 (From Matlab)
@@ -64,7 +66,7 @@ mdd3 =
 - `addpath(genpath(pwd));`
 - `edit tutorial_MDD.m`
 
-To understand the capabilities of MultiDimensionalDictionary, go through the demos files above (`demo_MDD.m`). To get started with using MDD yourself, go through `tutorial_MDD.m`
+To understand the capabilities of MultiDimensionalDictionary, go through the demos files above (`demo_MDD.m`). To learn how to use MDD yourself, go through `tutorial_MDD.m`
 
 ## Details
 An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See section: MDD subscripts and indexing)
