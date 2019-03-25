@@ -40,6 +40,7 @@ clear op
 
 % Load some sample simulated data
 load('sample_data.mat');
+load('sample_data_meta1.mat');
 
 % We loaded 3 variables: dat, axis_values, and axis_names. dat contains a
 % 4D cell array containing time series data. It represents several
