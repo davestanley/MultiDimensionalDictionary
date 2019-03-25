@@ -1,14 +1,11 @@
 # MDD
-MATLAB Multidimensional Dictionary class. MDD allows the implementation of multidimensional Python-esque dictionaries in MATLAB.
+MDD is a MATLAB tool for managing high-dimensional data that often arises in scientific data analysis. It extends the core functionality of Matlab cells and matrices to allow more advanced labeling and indexing options. 
 
 ## In a Nutshell
 MDD can be interpreted in several different ways. 
-- A map/dictionary that associates multiple keys with a single value
 - An N-dimensional table (a table is equivalent to an MDD object in 2-dimensions)
 - A matrix or cell array that can be indexed by using strings and regular expressions
-
-## Overview
-MDD is a MATLAB tool for managing high-dimensional data that often arises in scientific data analysis. It extends the core functionality of Matlab cells and matrices to advanced labeling and indexing options. 
+- A map/dictionary that associates multiple keys with a single value
 
 ## Examples
 - Initialize an MDD object with axis labels:
