@@ -73,7 +73,7 @@ Additionally, MDD includes methods for performing operations on high dimensional
 
 ## Use cases
 Several projects are currently using MDD as a backend for either data processing or visualization
-- [Dynasim](https://github.com/DynaSim/DynaSim)
+- [DynaSim](https://github.com/DynaSim/DynaSim)
 - [GIMBL-Vis](https://github.com/erik-roberts/GIMBL-Vis)
 - MDD for experimental data analysis, [here](https://github.com/benpolletta/PD_Data)
 
