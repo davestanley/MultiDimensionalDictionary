@@ -3,7 +3,7 @@ MultiDimensionalDictionary, or MDD for short, is a MATLAB tool for managing high
 
 ## In a Nutshell
 MDD can be interpreted in several different ways. 
-- An N-dimensional table (a table is equivalent to an MDD object in 2-dimensions)
+- An N-dimensional table (an MDD object in 2-dimensions is equivalent to a table)
 - A matrix or cell array that can be indexed by using strings and regular expressions
 - A map/dictionary that associates multiple keys with a single value
 
