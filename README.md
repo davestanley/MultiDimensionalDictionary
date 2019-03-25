@@ -52,7 +52,7 @@ mdd3 =
 
 ## Demos
 The following demos showcase some of MDD's capabilities.
-- Using MDD to explore some neural data:
+- Using MDD to organize and plot some data:
     - [MultiDimensionalDictionary/html/demo_MDD.html](http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html)
 - Documentation for the simple stocks example above can be viewed [here](http://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD_simple.html).
 
