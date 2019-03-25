@@ -1,5 +1,5 @@
-# MDD
-MDD is a MATLAB tool for managing high-dimensional data that often arises in scientific data analysis. It extends the core functionality of Matlab cells and matrices to allow more advanced labeling and indexing options. 
+# MultiDimensionalDictionary
+MultiDimensionalDictionary, or MDD for short, is a MATLAB tool for managing high-dimensional data that often arises in scientific data analysis. It extends the core functionality of Matlab cells and matrices to allow more advanced labeling and indexing options. 
 
 ## In a Nutshell
 MDD can be interpreted in several different ways. 
@@ -52,14 +52,16 @@ mdd3 =
 - Demo using MDD to analyze neural data http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html
 
 ## Getting started
-From Bash
+(From Bash)
 - `git@github.com:davestanley/MultiDimensionalDictionary.git`
+- `matlab`
 
-From Matlab
+(From Matlab)
 - `cd MultiDimensionalDictionary`
 - `addpath(genpath(pwd));`
+- `edit tutorial_MDD.m`
 
-To understand how to use MultiDimensionalDictionary, go through the demos files above. For a complete introduction, go through `tutorial_MDD.m`
+To understand the capabilities of MultiDimensionalDictionary, go through the demos files above (`demo_MDD.m`). To get started with using MDD yourself, go through `tutorial_MDD.m`
 
 ## Details
 An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See section: MDD subscripts and indexing)
