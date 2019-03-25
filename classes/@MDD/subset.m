@@ -240,7 +240,7 @@ for i = 1:Ns
             % Convert selection to index if using regular expressions
             ro{i}(1,:) = obj.axis_pr(i).values;
             [selection{i} ro{i}(2,:)] = MDD.regex_lookup(obj.axis_pr(i).values, selection{i});
-        elseif numericsAsValuesFlag
+        elseif numericsAsValuesFlag || strcmp(axClasses{i}, 'numeric')
             % Convert expression on vals for numerics to indicies
             
             thisAxVals = obj.axis_pr(i).values;
