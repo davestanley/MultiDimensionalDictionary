@@ -76,7 +76,7 @@ An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some a
 Additionally, MDD includes methods for performing operations on high dimensional data. The goal is to modularize the process of working with high dimensional data. Within MDD, functions designed to work on low dimensional data (1 or 2 dimension) can each be assigned to each operate on different dimensions of a higher dimensional object. Chaining several of these functions together can allow the entire high dimensional object to be processed. The advantage of this modular approach is that functions can be easily assigned other dimensions or swapped out entirely, without necessitating substantial code re-writes. (See demo file, section: [Running functions on MDD objects](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#24))
 
 ## Use cases
-Several projects are currently using MDD as a backend for either data processing or visualization
+Several projects are currently using MDD as a backend for either data processing or visualization.
 - [DynaSim](https://github.com/DynaSim/DynaSim)
 - [GIMBL-Vis](https://github.com/erik-roberts/GIMBL-Vis)
 - MDD for experimental data analysis, [here](https://github.com/benpolletta/PD_Data)
