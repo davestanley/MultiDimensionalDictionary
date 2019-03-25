@@ -57,13 +57,13 @@ The following demos showcase some of MDD's capabilities.
 - Documentation for the simple stocks example above can be viewed [here](http://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD_simple.html).
 
 ## Getting started
-To get started, run the following
+To get started, run the following:
 
 (From Bash)
 - `git clone git@github.com:davestanley/MultiDimensionalDictionary.git`
 - `matlab`
 
-(From Matlab)
+(From within Matlab)
 - `cd MultiDimensionalDictionary`
 - `addpath(genpath(pwd));`
 - `edit tutorial_MDD.m`
@@ -71,9 +71,9 @@ To get started, run the following
 To understand the capabilities of MultiDimensionalDictionary, go through the demos files above (`demo_MDD.m`). To learn how to use MDD yourself, go through `tutorial_MDD.m`
 
 ## Details
-An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See demo file, [MDD subscripts and indexing](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#15))
+An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See demo file, section: [MDD subscripts and indexing](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#15))
 
-Additionally, MDD includes methods for performing operations on high dimensional data. The goal is to modularize the process of working with high dimensional data. Within MDD, functions designed to work on low dimensional data (1 or 2 dimension) can each be assigned to each operate on different dimensions of a higher dimensional object. Chaining several of these functions together can allow the entire high dimensional object to be processed. The advantage of this modular approach is that functions can be easily assigned other dimensions or swapped out entirely, without necessitating substantial code re-writes. (See demo file, [Running functions on MDD objects](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#24))
+Additionally, MDD includes methods for performing operations on high dimensional data. The goal is to modularize the process of working with high dimensional data. Within MDD, functions designed to work on low dimensional data (1 or 2 dimension) can each be assigned to each operate on different dimensions of a higher dimensional object. Chaining several of these functions together can allow the entire high dimensional object to be processed. The advantage of this modular approach is that functions can be easily assigned other dimensions or swapped out entirely, without necessitating substantial code re-writes. (See demo file, section: [Running functions on MDD objects](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#24))
 
 ## Use cases
 Several projects are currently using MDD as a backend for either data processing or visualization
