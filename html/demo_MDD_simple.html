@@ -66,16 +66,20 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Multidimensional Dictionary - Simple Demo</h1><!--introduction--><p>File demonstrating some the basic capabilities of MDD. For full instructions on using MDD, see tutorial_MDD.m</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Construct MDD object</a></li><li><a href="#3">Indexing based on numerical query</a></li><li><a href="#5">Indexing based on regular expression</a></li><li><a href="#7">Merging MDD objects</a></li></ul></div><h2 id="1">Construct MDD object</h2><p>Enter some stock prices and create an MDD object</p><pre class="codeinput"><span class="comment">% Some stock prices</span>
-x = [120.1, 175.3, 191.3;
+  </style></head><body><div class="content"><h1>Multidimensional Dictionary - Simple Demo</h1><!--introduction--><p>File demonstrating some the basic capabilities of MDD. For full instructions on using MDD, see tutorial_MDD.m</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Construct MDD object</a></li><li><a href="#3">Indexing based on numerical query</a></li><li><a href="#5">Indexing based on regular expression</a></li><li><a href="#7">Merging MDD objects</a></li></ul></div><h2 id="1">Construct MDD object</h2><p>Enter some stock prices and create an MDD object</p><pre class="codeinput"><span class="comment">% Add MDD toolbox to Matlab path if needed</span>
+<span class="keyword">if</span> ~exist(<span class="string">'MDD'</span>,<span class="string">'class'</span>)
+  addpath(genpath(pwd));
+<span class="keyword">end</span>
+
+<span class="comment">% Some stock prices</span>
+stocks_data = [120.1, 175.3, 191.3;
     62.6, 90.3, 117.2;
     82.2 ,78.4 , 56.4;
     68.3,100.1, 98.2];
 
 <span class="comment">% Create mdd object</span>
-names={<span class="string">'company'</span>,<span class="string">'years'</span>};
-vals= {{<span class="string">'Tech_Apple'</span>,<span class="string">'Tech_Microsoft'</span>,<span class="string">'Retail_CVS'</span>,<span class="string">'Retail_Walmart'</span>},2017:2019};
-mdd = MDD(x,vals);
+axis_labels= {{<span class="string">'Tech_Apple'</span>,<span class="string">'Tech_Microsoft'</span>,<span class="string">'Retail_CVS'</span>,<span class="string">'Retail_Walmart'</span>},2017:2019};
+mdd = MDD(stocks_data,axis_labels);
 </pre><p>This creates the following object:</p><pre class="codeinput"><span class="comment">% mdd =</span>
 <span class="comment">%                         2017         2018         2019</span>
 <span class="comment">% --------------------------------------------------------</span>
@@ -126,16 +130,20 @@ ans =
 %% Construct MDD object
 % Enter some stock prices and create an MDD object
 
+% Add MDD toolbox to Matlab path if needed
+if ~exist('MDD','class')
+  addpath(genpath(pwd));
+end
+
 % Some stock prices
-x = [120.1, 175.3, 191.3;
+stocks_data = [120.1, 175.3, 191.3;
     62.6, 90.3, 117.2;
     82.2 ,78.4 , 56.4;
     68.3,100.1, 98.2];
 
 % Create mdd object
-names={'company','years'};
-vals= {{'Tech_Apple','Tech_Microsoft','Retail_CVS','Retail_Walmart'},2017:2019};
-mdd = MDD(x,vals);
+axis_labels= {{'Tech_Apple','Tech_Microsoft','Retail_CVS','Retail_Walmart'},2017:2019};
+mdd = MDD(stocks_data,axis_labels);
 
 
 %%%
