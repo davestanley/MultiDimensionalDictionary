@@ -51,7 +51,8 @@ mdd3 =
 ```
 
 ## Demos
-- Demo using MDD to analyze neural data http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html
+- Demo using MDD to analyze neural data:
+    - http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html
 
 ## Getting started
 (From Bash)
