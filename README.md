@@ -82,6 +82,6 @@ Several projects are currently using MDD as a backend for either data processing
 - MDD for experimental data analysis, [here](https://github.com/benpolletta/PD_Data)
 
 ## See also
-This code is similar to the multidimensional map function implemented by David Young. However, this implementation does not use MATLAB maps and instead is adds functionality to traditional MATLAB matrices and cell arrays.
+This code is similar to the multidimensional map function implemented by David Young. However, this implementation does not use MATLAB maps and instead it adds functionality to traditional MATLAB matrices and cell arrays.
 - MATLAB Map Containers (https://www.mathworks.com/help/matlab/map-containers.html)
 - Multidimensional implementation of this by David Young (https://www.mathworks.com/matlabcentral/fileexchange/33068-a-multidimensional-map-class)
