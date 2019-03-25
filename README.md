@@ -10,6 +10,7 @@ MDD can be interpreted in several different ways.
 ## Examples
 - Initialize an MDD object with axis labels:
 ```
+>> load stocks_data.mat
 >> mdd = MDD(stocks_data,axis_labels);
 ```
 ```
