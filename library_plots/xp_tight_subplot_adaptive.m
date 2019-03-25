@@ -1,5 +1,5 @@
 function [hts, titles] = xp_tight_subplot_adaptive (xp, dim_order, max_subplot_side, transpose_on, sync_axes_flag)
-	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
+  % This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
 
     if nargin < 5, sync_axes_flag = []; end
 
@@ -171,10 +171,10 @@ end
 
 function vals = setup_axis_labels(xpa)
     vals = xpa.getvalues_cellstr;
-    vals = strrep(vals,'_',' ');
+    vals = strrep(vals,'_','\_'); % escape underscores
     % outstr = cell(size(vals));
     % for j = 1:length(outstr)
     %     outstr{j} = {'',vals{j}};
     % end
-    % outstr{round(end/2)}{1} = strrep(xpa.name,'_',' ');
+    % outstr{round(end/2)}{1} = strrep(xpa.name,'_','\_'); % escape underscores
 end

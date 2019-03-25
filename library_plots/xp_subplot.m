@@ -1,9 +1,7 @@
-
-
 function hxp=xp_subplot (xp,options)
     % xp must be 1D or 2D
     
-    hxp = struct; 
+    hxp = struct;
     
     if nargin < 2
         options = struct;
@@ -17,7 +15,7 @@ function hxp=xp_subplot (xp,options)
     if ~isfield(options,'ylims'); options.ylims = []; end
             % Display_mode: 0-Just plot directly
                           % 1-Plot as an image (cdata)
-                          % 2-Save to a figure file 
+                          % 2-Save to a figure file
                           
     transpose_on = options.transpose_on;
     display_mode = options.display_mode;
@@ -66,9 +64,9 @@ function hxp=xp_subplot1_noimage(xp)
                 %figure(h);
                 if do_tight_subplot; set(gcf,'CurrentAxes',hxp.hcurr(c));
                 else hxp.hcurr = subplot(N1,N2,c); end
-                hxp.hsub = xp.data{i,j}(); 
+                hxp.hsub = xp.data{i,j}();
                 xp2 = xp.subset(i,j);
-                title(strrep(xp2.printAxisInfo(0),'_',' '));
+                title(strrep(xp2.printAxisInfo(0),'_','\_'));  % escape underscores
             end
         end
 end
@@ -94,9 +92,9 @@ function hxp = xp_subplot2_asimage(xp)
             
             if do_tight_subplot; set(gcf,'CurrentAxes',hxp.hcurr(c));
             else hxp.hcurr = subplot(N1,N2,c); end
-            hxp.hsub = xp.data{i,j}(); 
+            hxp.hsub = xp.data{i,j}();
             xp2 = xp.subset(i,j);
-            title(strrep(xp2.printAxisInfo(0),'_',' '));
+            title(strrep(xp2.printAxisInfo(0),'_','\_'));  % escape underscores
         end
     end
     cdata = print(h,'-RGBImage');

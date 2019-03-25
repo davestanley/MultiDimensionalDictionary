@@ -1,6 +1,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % MDD Tutorial % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % Developer notes:
@@ -9,10 +9,10 @@
 % #tofix- These lines produce an error
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-%% % % % % % % % % % % % % % % MDD Setup % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDD Setup % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-%% Set up paths 
+%% Set up paths
 % Get ready...
 
 % Format
@@ -30,9 +30,11 @@ if ~exist('MDD','class')
 end
 
 % Set up some global parameters used everywhere
+op = struct; op.figwidth = 0.75; op.figheight = 0.75;
+figure_handle = @(xp) xp_handles_fignew(xp, op);
 op = struct; op.subplotzoom_enabled = false;
 subplot_handle = @(xp) xp_subplot_grid(xp,op);
-
+clear op
 
 %% Load some sample data
 
@@ -143,13 +145,13 @@ xp.meta = meta;
 clear meta
 
 
-%% % % % % % % % % % % % % % % MDD BASICS % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % MDD BASICS % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %% Importing data
 
 % MDD objects are just matrices or cell arrays with extra functionality to
-% keep track of what each dimension is storing. 
+% keep track of what each dimension is storing.
 
 % Above, we imported data into an MDD object along with axis values and names. 
 % But it is also possible to import a high dimensional matrix alone.
@@ -224,6 +226,9 @@ xp.exportDataTable(true);
 % The number of rows printed to screen can be changed from the default of 10 by
 % passing a second argument.
 xp.exportDataTable(true, 5); % printing 5 rows to screen
+
+% Preview table data manually
+previewTable( [{data_column}, axis_val_columns], [{'data'}, axis_names], 10);
 
 
 %% Importing Data from 2D Table
@@ -385,7 +390,7 @@ clc
 xp4 = xp(:,:,'E','v');
 xp4.printAxisInfo
 
-% Set up plotting arguments
+% Set up plotting arguments         (NOTE: subplot_handle = @(xp) xp_subplot_grid(xp,op);)
 function_handles = {subplot_handle,@xp_matrix_basicplot};   % Specifies the handles of the plotting functions
 dimensions = {{'E_Iapp','I_E_tauD'},{'data'}};                % Specifies which axes of xp each function handle
                                                                 % will operate on. Note that dimension 'data' refers to the 
@@ -411,7 +416,7 @@ xp4.printAxisInfo
 % This will plot E cells and I cells (axis 3) each in separate figures and
 % the parameter sweeps (axes 1 and 2) as subplots.
 dimensions = {{'populations'},{'I_E_tauD','E_Iapp'},{'data'}};
-recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{figure_handle,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 % Note that here we produced rastergrams instead of time series by
 % submitting a different function to operate on dimension zero.
@@ -421,7 +426,7 @@ recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensi
 % Alternatively, we can put E and I cells in the same figure. This
 % essentially swaps the population and tauD axes.
 dimensions = {{'I_E_tauD'},{'populations','E_Iapp'},'data'};
-recursiveFunc(xp4,{@xp_handles_newfig,subplot_handle,@xp_matrix_imagesc},dimensions);
+recursiveFunc(xp4,{figure_handle,subplot_handle,@xp_matrix_imagesc},dimensions);
 
 %% Plot 4D data
 
@@ -429,7 +434,7 @@ close all;
 
 % Pull out sodium channel state variables for E and I cells.
 clc
-xp4 = xp(1:2,1:2,:,6:7);
+xp4 = xp(1:2,1:2,:,1:2);
 xp4.printAxisInfo
 
 dimensions = {'populations',{'E_Iapp','I_E_tauD'},'variables',0};
@@ -443,7 +448,7 @@ xp_subplot_grid_options.display_mode = 1;
 function_arguments = {{},{},{xp_subplot_grid_options},{}};
 
 if verLessThan('matlab','8.4'); error('This will not work on earlier versions of MATLAB'); end
-recursiveFunc(xp4,{@xp_handles_newfig,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_basicplot},dimensions,function_arguments);
+recursiveFunc(xp4,{figure_handle,@xp_subplot_grid,@xp_subplot_grid,@xp_matrix_imagesc},dimensions,function_arguments);
 
 %% Plot multiple dimensions adaptively.
 
@@ -639,16 +644,18 @@ xp3.printAxisInfo;
 % as follows (note the NaNs)
 temp1 = squeeze(xp3.data{1}(100,:,:));  % Pick out a random time point
 temp2 = squeeze(xp3.data{2}(100,:,:));  % Pick out a random time point
-figure; 
+figure;
 subplot(211); imagesc(temp1);
 ylabel('Cells');
-xlabel(xp2.axis(2).name); 
-set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
+xlabel(xp2.axis(2).name);
+set(gca,'XTick',1:length(xp2.axis(2).values));
+set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_','\_'));  % escape underscores
 
 subplot(212); imagesc(temp2);
 ylabel('Cells');
-xlabel(xp2.axis(2).name); 
-set(gca,'XTick',1:length(xp2.axis(2).values)); set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_',' '));
+xlabel(xp2.axis(2).name);
+set(gca,'XTick',1:length(xp2.axis(2).values));
+set(gca,'XTickLabel',strrep(xp2.axis(2).values,'_','\_'));  % escape underscores
 
 %% Method unpackDim (undoing packDim)
 % When packDim is applied to an MDD object, say to pack dimension 3, the
@@ -697,8 +704,8 @@ disp(xp3.meta)
 disp('xp3a.meta = ')
 disp(xp3a.meta)
 
-% Plot 
-recursiveFunc(xp3,{@xp_handles_newfig,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
+% Plot
+recursiveFunc(xp3,{figure_handle,subplot_handle,@xp_matrix_basicplot},{[3],[1,2],[0]});
 
 %% Using unpackDim & mean_over_axis to average across cells
 
@@ -723,7 +730,7 @@ src=3;
 dest=2;
 xp2 = xp2.packDim(src,dest);
 
-% Plot 
+% Plot
 figl; recursiveFunc(xp2,{subplot_handle,@xp_matrix_basicplot},{[1,2],[]},{{},{}});
 
 % mean_over_axis can take an options structure with fields function_handle
@@ -870,9 +877,9 @@ figl; recursiveFunc(xp6,{subplot_handle,@xp_matrix},dimensions);
 
 
 
-%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % SCRIPTS FOR MDD DEBUGGING % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 %% Combine and Plot two MDD objects (Advanced, for debugging)
@@ -891,7 +898,7 @@ xp4.printAxisInfo
 
 % Notice that xp3 and xp4 are overlapping in places. Also notice that we've
 % permuted the axes and added a few singletons axes. This should not affect
-% the merge, since they are singleton dimensions. 
+% the merge, since they are singleton dimensions.
 
 % Attempt to merge them
 xp5 = merge(xp3,xp4); % or xp5 = xp3.merge(xp4);

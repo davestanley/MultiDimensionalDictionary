@@ -1,7 +1,5 @@
-
-
 function hsg = xp_subplot_grid_adaptive (xp, dim_order, max_subplot_side, display_mode, transpose_on)
-	% This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
+  % This handles 1D or 2D xp data. For 3D data see xp_subplot_grid3D.
     
     hxp = struct;
     
@@ -173,10 +171,10 @@ end
 
 function outstr = setup_axis_labels(xpa)
     vals = xpa.getvalues_cellstr;
-    vals = strrep(vals,'_',' ');
+    vals = strrep(vals,'_','\_'); % escape underscores
     outstr = cell(size(vals));
     for j = 1:length(outstr)
         outstr{j} = {'',vals{j}};
     end
-    outstr{round(end/2)}{1} = strrep(xpa.name,'_',' ');
+    outstr{round(end/2)}{1} = strrep(xpa.name,'_','\_'); % escape underscores
 end

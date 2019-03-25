@@ -1,8 +1,6 @@
-
-
 function hxp = xp_subplot_grid3D (xp, op)
-	% This handles 1D, 2D, or 3D xp data. 3D data is tiled across the
-	% screen in different figures.
+  % This handles 1D, 2D, or 3D xp data. 3D data is tiled across the
+  % screen in different figures.
     
     hxp = struct; 
     
@@ -93,10 +91,10 @@ end
 
 function outstr = setup_axis_labels(xpa)
     vals = xpa.getvalues_cellstr;
-    vals = strrep(vals,'_',' ');
+    vals = strrep(vals,'_','\_');  % escape underscores
     outstr = cell(size(vals));
     for j = 1:length(outstr)
         outstr{j} = {'',vals{j}};
     end
-    outstr{round(end/2)}{1} = strrep(xpa.name,'_',' ');
+    outstr{round(end/2)}{1} = strrep(xpa.name,'_','\_');
 end
