@@ -57,6 +57,8 @@ The following demos showcase some of MDD's capabilities.
 - Documentation for the simple stocks example above can be viewed [here](http://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD_simple.html).
 
 ## Getting started
+To get started, run the following
+
 (From Bash)
 - `git clone git@github.com:davestanley/MultiDimensionalDictionary.git`
 - `matlab`
