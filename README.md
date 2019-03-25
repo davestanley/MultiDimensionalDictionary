@@ -59,16 +59,16 @@ The following demos showcase some of MDD's capabilities.
 ## Getting started
 To get started, run the following:
 
-(From Bash)
+(First, from Bash)
 - `git clone git@github.com:davestanley/MultiDimensionalDictionary.git`
 - `matlab`
 
-(From within Matlab)
+(Second, from within Matlab)
 - `cd MultiDimensionalDictionary`
 - `addpath(genpath(pwd));`
 - `edit tutorial_MDD.m`
 
-To understand the capabilities of MultiDimensionalDictionary, go through the demos files above (`demo_MDD.m`). To learn how to use MDD yourself, go through `tutorial_MDD.m`
+To get a sense of the capabilities of MDD, go through the demos files (`demo_MDD.m`). To learn how to use MDD yourself, go through `tutorial_MDD.m`
 
 ## Details
 An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See demo file, section: [MDD subscripts and indexing](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#15))
