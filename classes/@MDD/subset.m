@@ -189,6 +189,7 @@ function [selection, ro] = selection2sub(obj,selection,numericsAsValuesFlag)
 ro = {};
 
 Ns = length(selection);
+selection0 = selection;         % Store original selections
 
 % Replace any ':' entries in selection with []. Empty
 % entries code for taking all entries along a dimension; ':' is
@@ -270,6 +271,13 @@ for i = 1:Ns
                     parsedSelection = parsedSelection & eval(['(thisAxVals' thisExpr ')']);
                 end
             end
+            
+            % Return error message if no matching axis values found
+            if all(parsedSelection == 0)
+                error(['Query' selection0{i} ' found no matching axis values.'])
+            end
+            
+            % Get index locations
             [~, selection{i}] = intersect(thisAxVals, thisAxVals(parsedSelection));
         end
     end
