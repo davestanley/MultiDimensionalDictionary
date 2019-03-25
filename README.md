@@ -52,7 +52,7 @@ mdd3 =
 
 ## Demos
 The following demos showcase some of MDD's capabilities.
-- Using MDD to organize and plot some data (estimated time ~20 minutes):
+- Using MDD to organize and plot some data (estimated reading time ~20 minutes):
     - [MultiDimensionalDictionary/html/demo_MDD.html](http://htmlpreview.github.com?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html)
 - Documentation for the simple stocks example above can be viewed [here](http://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD_simple.html).
 
@@ -68,7 +68,7 @@ To get started, run the following:
 - `addpath(genpath(pwd));`
 - `edit tutorial_MDD.m`
 
-To get a sense of the capabilities of MDD, go through the demos files (`demo_MDD.m`). To learn how to use MDD yourself, go through `tutorial_MDD.m` (estimated time is about 45-60 minutes).
+To get a sense of the capabilities of MDD, go through the demos files (`demo_MDD.m`). To learn how to use MDD yourself, go through `tutorial_MDD.m` (estimated time to complete the tutorial is about 45-60 minutes).
 
 ## Details
 An MDD object can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See demo file, section: [MDD subscripts and indexing](https://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD.html#15))
