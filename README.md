@@ -61,10 +61,10 @@ To get started, run the following:
 
 (First, from Bash)
 - `git clone git@github.com:davestanley/MultiDimensionalDictionary.git`
+- `cd MultiDimensionalDictionary`
 - `matlab`
 
 (Second, from within Matlab)
-- `cd MultiDimensionalDictionary`
 - `addpath(genpath(pwd));`
 - `edit tutorial_MDD.m`
 
