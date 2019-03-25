@@ -5,16 +5,20 @@
 %% Construct MDD object
 % Enter some stock prices and create an MDD object
 
+% Add MDD toolbox to Matlab path if needed
+if ~exist('MDD','class')
+  addpath(genpath(pwd));
+end
+
 % Some stock prices
-x = [120.1, 175.3, 191.3;
+stocks_data = [120.1, 175.3, 191.3;
     62.6, 90.3, 117.2;
     82.2 ,78.4 , 56.4;
     68.3,100.1, 98.2];
 
 % Create mdd object
-names={'company','years'};
-vals= {{'Tech_Apple','Tech_Microsoft','Retail_CVS','Retail_Walmart'},2017:2019};
-mdd = MDD(x,vals);
+axis_labels= {{'Tech_Apple','Tech_Microsoft','Retail_CVS','Retail_Walmart'},2017:2019};
+mdd = MDD(stocks_data,axis_labels);
 
 
 %%%

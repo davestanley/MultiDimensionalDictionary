@@ -6,25 +6,7 @@
 %% Overview
 % MDD is a MATLAB tool for managing high-dimensional data that often arises
 % in scientific data analysis. It can be thoughout of as a MATLAB cell
-% array (or matrix) with some additional functionality. At its core, it
-% extends the way cells and matrices are indexed by allowing string labels to be
-% assigned to each dimension of the cell array, similar to how row and column
-% names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed,
-% sorted, merged, and manipulated
-% according to these labels. 
-% (See section: MDD subscripts and indexing)
-%%%
-% Additionally, MDD includes methods for
-% performing operations on high dimensional data. The goal is to modularize
-% the process of working with high dimensional data. Within MDD, functions
-% designed to work on low dimensional data
-% (1 or 2 dimension) can each be assigned to each operate on different
-% dimensions of a higher dimensional object. Chaining several of these
-% functions together can allow the entire high dimensional object to be
-% processed. The advantage of this modular approach is that functions can be easily
-% assigned other dimensions or swapped out entirely, without necessitating
-% substantial code re-writes.
-% (See section: Running functions on MDD objects)
+% array (or matrix) with some additional functionality.
 
 %% Set up paths and formatting
 
@@ -33,7 +15,7 @@ format compact
 format short g
 
 % Check if in MDD folder
-if ~exist(fullfile('.','sample_data.mat'), 'file')
+if ~exist(fullfile('.','data','sample_data.mat'), 'file')
     error('Should be in MDD folder to run this code.')
 end
 
@@ -450,4 +432,25 @@ figure; mdd2.recursiveFunc({@xp_subplot_grid,@xp_matrix_basicplot},{{'variables'
 
 % Run the following
 edit tutorial_MDD.m
+
+%% Summary so far
+% At its core, MDD
+% extends the way cells and matrices are indexed by allowing string labels to be
+% assigned to each dimension of the cell array, similar to how row and column
+% names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed,
+% sorted, merged, and manipulated
+% according to these labels. 
+% (Section: MDD subscripts and indexing)
+%%%
+% Additionally, MDD includes methods for
+% performing operations on high dimensional data. The goal is to modularize
+% the process of working with high dimensional data. Within MDD, functions
+% designed to work on low dimensional data
+% (1 or 2 dimension) can each be assigned to each operate on different
+% dimensions of a higher dimensional object. Chaining several of these
+% functions together can allow the entire high dimensional object to be
+% processed. The advantage of this modular approach is that functions can be easily
+% assigned other dimensions or swapped out entirely, without necessitating
+% substantial code re-writes.
+% (Section: Running functions on MDD objects)
 
