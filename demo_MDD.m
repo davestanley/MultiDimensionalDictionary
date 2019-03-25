@@ -1,6 +1,7 @@
 %% Multidimensional Dictionary - Demo
-% File demonstrating some of the basic capabilities of MDD. For full
-% instructions on using MDD, see tutorial_MDD.m
+% File demonstrating some of the basic capabilities of MDD on a sample
+% neuroscience dataset. For full instructions on using MDD, see
+% tutorial_MDD.m
 
 %% Overview
 % MDD is a MATLAB tool for managing high-dimensional data that often arises
@@ -441,4 +442,12 @@ mdd2.printAxisInfo
 % Plot using recursiveFunc
 close all
 figure; mdd2.recursiveFunc({@xp_subplot_grid,@xp_matrix_basicplot},{{'variables','Cell Number'},{'data'}});
+
+%% Next steps
+% To start using MDD yourself, see `tutorial_MDD.m`. In particular, this
+% will provide additional details on how to build your own MDD objects and
+% advanced methods to manipulate them.
+
+% Run the following
+edit tutorial_MDD.m
 

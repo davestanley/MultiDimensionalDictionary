@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Multidimensional Dictionary - Demo</h1><!--introduction--><p>File demonstrating some of the basic capabilities of MDD. For full instructions on using MDD, see tutorial_MDD.m</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Overview</a></li><li><a href="#3">Set up paths and formatting</a></li><li><a href="#4">Load a sample dataset and build an MDD object</a></li><li><a href="#9">What is an MDD object and why use one?</a></li><li><a href="#15">MDD subscripts and indexing</a></li><li><a href="#22">Advanced indexing methods</a></li><li><a href="#24">Running functions on MDD objects</a></li><li><a href="#28">Plotting 3D data</a></li><li><a href="#37">Modularization of plotting</a></li><li><a href="#43">Merging two MDD objects</a></li><li><a href="#47">Packing MDD dimensions (analogous to cell2mat)</a></li><li><a href="#53">Unpacking MDD dimensions</a></li></ul></div><h2 id="1">Overview</h2><p>MDD is a MATLAB tool for managing high-dimensional data that often arises in scientific data analysis. It can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See section: MDD subscripts and indexing)</p><p>Additionally, MDD includes methods for performing operations on high dimensional data. The goal is to modularize the process of working with high dimensional data. Within MDD, functions designed to work on low dimensional data (1 or 2 dimension) can each be assigned to each operate on different dimensions of a higher dimensional object. Chaining several of these functions together can allow the entire high dimensional object to be processed. The advantage of this modular approach is that functions can be easily assigned other dimensions or swapped out entirely, without necessitating substantial code re-writes. (See section: Running functions on MDD objects)</p><h2 id="3">Set up paths and formatting</h2><pre class="codeinput"><span class="comment">% Format</span>
+  </style></head><body><div class="content"><h1>Multidimensional Dictionary - Demo</h1><!--introduction--><p>File demonstrating some of the basic capabilities of MDD on a sample neuroscience dataset. For full instructions on using MDD, see tutorial_MDD.m</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Overview</a></li><li><a href="#3">Set up paths and formatting</a></li><li><a href="#4">Load a sample dataset and build an MDD object</a></li><li><a href="#9">What is an MDD object and why use one?</a></li><li><a href="#15">MDD subscripts and indexing</a></li><li><a href="#22">Advanced indexing methods</a></li><li><a href="#24">Running functions on MDD objects</a></li><li><a href="#28">Plotting 3D data</a></li><li><a href="#37">Modularization of plotting</a></li><li><a href="#43">Merging two MDD objects</a></li><li><a href="#47">Packing MDD dimensions (analogous to cell2mat)</a></li><li><a href="#53">Unpacking MDD dimensions</a></li><li><a href="#57">Next steps</a></li></ul></div><h2 id="1">Overview</h2><p>MDD is a MATLAB tool for managing high-dimensional data that often arises in scientific data analysis. It can be thoughout of as a MATLAB cell array (or matrix) with some additional functionality. At its core, it extends the way cells and matrices are indexed by allowing string labels to be assigned to each dimension of the cell array, similar to how row and column names are assigned to a table (e.g., in Pandas or SQL). MDD objects can then be indexed, sorted, merged, and manipulated according to these labels. (See section: MDD subscripts and indexing)</p><p>Additionally, MDD includes methods for performing operations on high dimensional data. The goal is to modularize the process of working with high dimensional data. Within MDD, functions designed to work on low dimensional data (1 or 2 dimension) can each be assigned to each operate on different dimensions of a higher dimensional object. Chaining several of these functions together can allow the entire high dimensional object to be processed. The advantage of this modular approach is that functions can be easily assigned other dimensions or swapped out entirely, without necessitating substantial code re-writes. (See section: Running functions on MDD objects)</p><h2 id="3">Set up paths and formatting</h2><pre class="codeinput"><span class="comment">% Format</span>
 format <span class="string">compact</span>
 format <span class="string">short</span> <span class="string">g</span>
 
@@ -308,11 +308,14 @@ Axis 5: Cell Number (numeric) -&gt; 1, 3, 6, 9
 </pre><p>Finally, plot the result</p><pre class="codeinput"><span class="comment">% Plot using recursiveFunc</span>
 close <span class="string">all</span>
 figure; mdd2.recursiveFunc({@xp_subplot_grid,@xp_matrix_basicplot},{{<span class="string">'variables'</span>,<span class="string">'Cell Number'</span>},{<span class="string">'data'</span>}});
-</pre><img vspace="5" hspace="5" src="demo_MDD_09.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="demo_MDD_09.png" alt=""> <h2 id="57">Next steps</h2><p>To start using MDD yourself, see `tutorial_MDD.m`. In particular, this will provide additional details on how to build your own MDD objects and advanced methods to manipulate them.</p><pre class="codeinput"><span class="comment">% Run the following</span>
+edit <span class="string">tutorial_MDD.m</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Multidimensional Dictionary - Demo
-% File demonstrating some of the basic capabilities of MDD. For full
-% instructions on using MDD, see tutorial_MDD.m
+% File demonstrating some of the basic capabilities of MDD on a sample
+% neuroscience dataset. For full instructions on using MDD, see
+% tutorial_MDD.m
 
 %% Overview
 % MDD is a MATLAB tool for managing high-dimensional data that often arises
@@ -753,6 +756,14 @@ mdd2.printAxisInfo
 % Plot using recursiveFunc
 close all
 figure; mdd2.recursiveFunc({@xp_subplot_grid,@xp_matrix_basicplot},{{'variables','Cell Number'},{'data'}});
+
+%% Next steps
+% To start using MDD yourself, see `tutorial_MDD.m`. In particular, this
+% will provide additional details on how to build your own MDD objects and
+% advanced methods to manipulate them.
+
+% Run the following
+edit tutorial_MDD.m
 
 
 ##### SOURCE END #####
