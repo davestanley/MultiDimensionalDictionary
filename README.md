@@ -49,6 +49,7 @@ mdd3 =
 'Tech_Microsoft'    |     62.6        90.3       117.2
 
 ```
+Code for this demo is [here](https://github.com/davestanley/MultiDimensionalDictionary/blob/master/demo_MDD_simple.m), with documentation [here](http://htmlpreview.github.io/?https://github.com/davestanley/MultiDimensionalDictionary/blob/master/html/demo_MDD_simple.html).
 
 ## Demos
 The following demos showcase some of MDD's capabilities.
