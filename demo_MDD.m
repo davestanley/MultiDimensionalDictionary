@@ -69,7 +69,10 @@ mdd.printAxisInfo
 % * This also summarizes the values that each axis takes on, and the corresponding
 % data type of those values (numeric or cellstr). For example, the
 % 'populations' axis takes on values 'E' and 'I' (for excitatory and
-% inhibitory cells, respectively).
+% inhibitory cells, respectively). Because 'E' and 'I' are stored as strings, this
+% data type is a cell string. (Note: 'Data type' here refers to the data
+% type of the axis values, not the data stored in _mdd_ itself. As we saw a
+% above, the actual data in _mdd_ is a 3x3x2x8 cell array of matrices).
 
 %%% 
 % An MDD object can be thought of in several ways:
