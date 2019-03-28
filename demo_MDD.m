@@ -50,7 +50,7 @@ mdd = MDD(dat,axis_vals,axis_names);
 
 
 %% What is an MDD object and why use one?
-% When working with high-dimensional data, like that cell array _dat_, it's
+% When working with high-dimensional data, like the cell array _dat_, it's
 % often difficult to keep track of what each dimension represents.
 % *MDD objects provide a way of organizing and manipulating this 
 % information.*
@@ -107,8 +107,8 @@ mdd3D.printAxisInfo
 % Note that substring matching (based on Matlab's strcmp command)
 % was used here to select both iNa_m and iNa_h. However,
 % regular expressions can be used as well.
-% The "/" denotes to use regular expressions for the search. This command
-% picks out all variable names beginning with an "I".
+% The "/" denotes to use regular expressions for the search, instead of strcmp.
+% This command picks out all variable names beginning with an "I".
 
 % Indexing by regular expressions
 mdd3D = mdd(:,:,'E','/^I/');
