@@ -6,6 +6,7 @@ MDD can be interpreted in several different ways.
 - An N-dimensional table (an MDD object in 2-dimensions is equivalent to a table)
 - A matrix or cell array that can be indexed by using strings and regular expressions
 - A map/dictionary that associates multiple keys with a single value
+- Matlab equivalent of [Xarray](http://xarray.pydata.org/en/stable/) for Python
 
 ## Examples
 - Initialize an MDD object with axis labels:
@@ -86,3 +87,4 @@ Several projects are currently using MDD as a backend for either data processing
 This code is similar to the multidimensional map function implemented by David Young. However, this implementation does not use MATLAB maps and instead it adds functionality to traditional MATLAB matrices and cell arrays.
 - MATLAB Map Containers (https://www.mathworks.com/help/matlab/map-containers.html)
 - Multidimensional implementation of this by David Young (https://www.mathworks.com/matlabcentral/fileexchange/33068-a-multidimensional-map-class)
+- Python Xarray (http://xarray.pydata.org/en/stable/)
